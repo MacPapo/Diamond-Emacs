@@ -7,6 +7,7 @@
   (scroll-bar-mode 0)   ; Disable the scroll bar
   (tool-bar-mode 0)     ; Disable the tool bar
   (tooltip-mode 0))     ; Disable the tooltips
+
 ;; Better Default
 (setq-default
  ad-redefinition-action 'accept                   ; Silence warnings for redefinition
@@ -41,7 +42,9 @@
  make-backup-files nil                            ; Stop creating backup files
  vc-follow-symlinks t                             ; When the symlink points to a version-controlled file
  use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
- frame-inhibit-implied-resize nil)                ; Don't ask for confirmation when opening symlinked file
+ frame-inhibit-implied-resize nil                ; Don't ask for confirmation when opening symlinked file
+ )
+
 (cd "~/")                                         ; Move to the user directory
 (global-display-line-numbers-mode t)              ; Enable line numbers globally
 (delete-selection-mode 1)                         ; Replace region when inserting text
@@ -53,7 +56,7 @@
 (electric-indent-mode t)                          ; Auto indentation
 (fset 'yes-or-no-p 'y-or-n-p)                     ; Replace yes/no prompts with y/n
 (global-subword-mode 1)                           ; Iterate through CamelCase words
-(menu-bar-mode 0)                                 ; Disable the menu bar
+(menu-bar-mode 1)                                 ; Enable the menu bar for macOS Full Screen
 (mouse-avoidance-mode 'jump)                      ; Avoid collision of mouse with point
 (put 'downcase-region 'disabled nil)              ; Enable downcase-region
 (put 'upcase-region 'disabled nil)                ; Enable upcase-region
@@ -67,7 +70,6 @@
 
 ;; User name
 (setq user-full-name "Jacopo Costantini")
-
 (setq user-mail-address "891938@stud.unive.it")
 
 ;; make electric-pair-mode work on more brackets
@@ -82,16 +84,10 @@
 (prefer-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 
-
-;; backup in one place. flat, no tree structure
-;; (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
-;; (setq backup-by-copying t)
-
-
 ;; highlight brackets if visible, else entire expression
 (setq show-paren-style 'mixed)
 
-;; Modus theme customizations
+;; Modus theme customizations ;;
 
 ;; Modeline
 (setq modus-themes-mode-line '(borderless))
@@ -148,5 +144,3 @@
 (set-fontset-font t '(#xe000 . #xffdd)
                      (font-spec :name "RobotoMono Nerd Font"
                                 :size 12) nil)
-
-(menu-bar-mode 1)
