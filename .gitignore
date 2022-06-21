@@ -16,5 +16,6 @@
 
 # Diamond Emacs stuff
 var/
+var/*
 elpa/
 elpa/*

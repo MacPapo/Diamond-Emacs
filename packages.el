@@ -4,7 +4,7 @@
 
 ;; Update packages automatically
 (use-package auto-package-update
-  :defer 0.5
+  :defer 0.2
   :ensure t
   :commands update-packages
   :custom
@@ -23,6 +23,7 @@
 (use-package magit
   :commands magit-file-delete
   :defer 0.5
+  :ensure t
   :init
   (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
   ;; Must be set early to prevent ~/.emacs.d/transient from being created
@@ -40,7 +41,8 @@
   (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
 
   :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status)))
+         ("C-x C-g" . magit-status))
+  )
 
 ;; Declutter .emacs.d folder
 (use-package no-littering
@@ -57,13 +59,24 @@
 	  (expand-file-name  "var/eln-cache/" user-emacs-directory))))
   )
 
+;; Winum power
 (use-package winum
   :defer 0.5
   :ensure t
   :custom
-  (winum-auto-setup-mode-line nil)
+  (winum-auto-setup-mode-line t)
   :config
-  (winum-mode))
+  (winum-mode)
+  :bind (
+         ;; Select the window with Meta
+         ("M-1" . winum-select-window-1)
+         ("M-2" . winum-select-window-2)
+         ("M-3" . winum-select-window-3)
+         ("M-4" . winum-select-window-4)
+         ("M-5" . winum-select-window-5)
+         ("M-6" . winum-select-window-6))
+  )
+
 
 ;; Mail reader
 (use-package mu4e
@@ -97,6 +110,7 @@
 
 ;; Prais the suuuunnnn!!!!
 (use-package solaire-mode
+  :defer 0.5
   :ensure t
   :hook (after-init . solaire-global-mode))
 
