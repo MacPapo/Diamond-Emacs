@@ -15,7 +15,6 @@
 .DS_Store
 
 # Diamond Emacs stuff
-var
-elpa
-*elpa/
+var/
+elpa/
 elpa/*

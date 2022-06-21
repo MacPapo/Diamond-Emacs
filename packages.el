@@ -1,6 +1,6 @@
-;; MacPapo Emacs packages config
+;; Diamond Emacs for Mac
 ;;
-;; Config started in 2022
+;; MacPapo config started in 2022
 
 ;; Update packages automatically
 (use-package auto-package-update
@@ -21,12 +21,24 @@
 
 ;; Magit for git support
 (use-package magit
-  :defer 1
-  :ensure t
+  :commands magit-file-delete
+  :defer 0.5
   :init
-  (message "Loading Magit!")
+  (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
+  ;; Must be set early to prevent ~/.emacs.d/transient from being created
   :config
-  (message "Loaded Magit!")
+  (setq transient-default-level 5
+        magit-diff-refine-hunk t ; show granular diffs in selected hunk
+        ;; Don't autosave repo buffers. This is too magical, and saving can
+        ;; trigger a bunch of unwanted side-effects, like save hooks and
+        ;; formatters. Trust the user to know what they're doing.
+        magit-save-repository-buffers nil
+        ;; Don't display parent/related refs in commit buffers; they are rarely
+        ;; helpful and only add to runtime costs.
+        magit-revision-insert-related-refs nil)
+
+  (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
+
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
 
@@ -46,8 +58,8 @@
   )
 
 (use-package winum
+  :defer 0.5
   :ensure t
-  :defer 1
   :custom
   (winum-auto-setup-mode-line nil)
   :config
@@ -109,14 +121,14 @@
      ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
        "Homepage"
        "Browse homepage"
-       (lambda (&rest _) (browse-url "https://github.com/b-coimbra/.emacs.d")) nil "" " |")
+       (lambda (&rest _) (browse-url "https://github.com/MacPapo/Diamond-Emacs")) nil "" " |")
       (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
        "Update"
        "Update Megumacs"
        (lambda (&rest _) (update-packages)) warning "" " |")
       (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
        "Report a BUG"
-       (lambda (&rest _) (browse-url "https://github.com/b-coimbra/.emacs.d/issues/new")) error "" ""))
+       (lambda (&rest _) (browse-url "https://github.com/MacPapo/Diamond-Emacs/issues/new")) error "" ""))
      ;; Empty line
      (("" "\n" "" nil nil "" ""))
      ;; Keybindings
@@ -138,6 +150,7 @@
 
 ;; PDF Tools
 (use-package pdf-tools
-:ensure t
-:config   (pdf-tools-install)
-(setq-default pdf-view-display-size 'fit-page))
+  :defer 5 ; whait until 5 seconds after startup
+  :ensure t
+  :config   (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page))

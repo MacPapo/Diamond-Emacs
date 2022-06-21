@@ -1,6 +1,7 @@
-;; MacPapo Emacs config for Mac
+;; Diamond Emacs for Mac
 ;;
-;; Config started in 2022
+;; MacPapo config started in 2022
+
 
 (require 'package)
 
