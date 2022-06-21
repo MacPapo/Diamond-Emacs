@@ -13,3 +13,7 @@
 # macOS Stuff
 *.DS_Store
 .DS_Store
+
+# Diamond Emacs stuff
+var
+elpa
