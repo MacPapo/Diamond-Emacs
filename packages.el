@@ -80,7 +80,8 @@
   )
 
 ;; Use All the ICONS
-(use-package all-the-icons)
+(use-package all-the-icons
+  :ensure t)
 
 ;; Prais the suuuunnnn!!!!
 (use-package solaire-mode
