@@ -14,6 +14,7 @@
 
 ;; Garbaege collection Hack
 (use-package gcmh
+  :ensure t
   :demand t
   :config
   (gcmh-mode 1))
@@ -45,6 +46,7 @@
   )
 
 (use-package winum
+  :ensure t
   :defer 1
   :custom
   (winum-auto-setup-mode-line nil)
@@ -82,10 +84,12 @@
 
 ;; Prais the suuuunnnn!!!!
 (use-package solaire-mode
+  :ensure t
   :hook (after-init . solaire-global-mode))
 
 ;; Custom Dashboard
 (use-package dashboard
+  :ensure t
   :demand t
   :init
   (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
@@ -130,3 +134,9 @@
      ))
   :config
   (dashboard-setup-startup-hook))
+
+;; PDF Tools
+(use-package pdf-tools
+:ensure t
+:config   (pdf-tools-install)
+(setq-default pdf-view-display-size 'fit-page))
