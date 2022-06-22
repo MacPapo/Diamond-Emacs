@@ -46,10 +46,10 @@
  )
 
 (cd "~/")                                         ; Move to the user directory
-;; (global-display-line-numbers-mode t)              ; Enable line numbers globally
 (delete-selection-mode 1)                         ; Replace region when inserting text
 (display-time-mode 1)                             ; Enable time in the mode-line
-(display-battery-mode 1)
+(global-hl-line-mode 1)                           ; HIghlight the cursor line
+(display-battery-mode 1)                          ; Display battery percentage in modeline
 (global-auto-revert-mode 1)                       ; Automatically revert a buffer when it changes on disk
 (fringe-mode '(8 . 0))                            ; Enable fringe on the left for git-gutter-fringe+
 (electric-pair-mode t)                            ; Enable Matching delimeters
@@ -162,6 +162,8 @@
 ;;;###package ansi-color
 (setq ansi-color-for-comint-mode t)
 
+(setq org-hide-emphasis-markers t)
+
 ;; Fido
 (fido-vertical-mode 1)
 
@@ -202,7 +204,7 @@
 (setq modus-themes-bold-constructs t)
 (setq modus-themes-italic-constructs t)
 (setq modus-themes-paren-match '(bold intense))
-
+(setq modus-themes-hl-line t)
 (setq modus-themes-prompts '(bold italic))
 
 (setq modus-themes-completions
@@ -217,7 +219,7 @@
         (3 . (rainbow bold 1.2))
         (4 . (semilight 1.1))))
 
-(setq modus-themes-org-blocks 'gray-background)
+(setq modus-themes-org-blocks nil)
 (setq modus-themes-scale-headings t)
 
 (load-theme 'modus-operandi t)
