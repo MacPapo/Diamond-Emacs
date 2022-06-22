@@ -19,16 +19,29 @@
   :config
   (gcmh-mode 1))
 
-;; Magit for git support
 (use-package magit
-  :defer 1
+  :commands magit-file-delete
+  :defer 0.5
   :ensure t
   :init
-  (message "Loading Magit!")
+  (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
+  ;; Must be set early to prevent ~/.emacs.d/transient from being created
   :config
-  (message "Loaded Magit!")
+  (setq transient-default-level 5
+        magit-diff-refine-hunk t ; show granular diffs in selected hunk
+        ;; Don't autosave repo buffers. This is too magical, and saving can
+        ;; trigger a bunch of unwanted side-effects, like save hooks and
+        ;; formatters. Trust the user to know what they're doing.
+        magit-save-repository-buffers nil
+        ;; Don't display parent/related refs in commit buffers; they are rarely
+        ;; helpful and only add to runtime costs.
+        magit-revision-insert-related-refs nil)
+
+  (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
+
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
+
 
 ;; Declutter .emacs.d folder
 (use-package no-littering
@@ -45,13 +58,23 @@
 	  (expand-file-name  "var/eln-cache/" user-emacs-directory))))
   )
 
+;; Winum power
 (use-package winum
+  :defer 0.5
   :ensure t
-  :defer 1
   :custom
-  (winum-auto-setup-mode-line nil)
+  (winum-auto-setup-mode-line t)
   :config
-  (winum-mode))
+  (winum-mode)
+  :bind (
+         ;; Select the window with Meta
+         ("M-1" . winum-select-window-1)
+         ("M-2" . winum-select-window-2)
+         ("M-3" . winum-select-window-3)
+         ("M-4" . winum-select-window-4)
+         ("M-5" . winum-select-window-5)
+         ("M-6" . winum-select-window-6))
+  )
 
 ;; Mail reader
 (use-package mu4e
@@ -138,6 +161,16 @@
 
 ;; PDF Tools
 (use-package pdf-tools
-:ensure t
-:config   (pdf-tools-install)
-(setq-default pdf-view-display-size 'fit-page))
+  :defer 1
+  :ensure nil
+  :config
+  (setq-default pdf-view-display-size 'fit-page)
+  ;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
+  (setq pdf-view-use-scaling t
+        pdf-view-use-imagemagick nil)
+  )
+
+(use-package saveplace-pdf-view
+  :defer 2;
+  :ensure t
+  :after pdf-view)
