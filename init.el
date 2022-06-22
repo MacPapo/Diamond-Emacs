@@ -2,7 +2,6 @@
 ;;
 ;; MacPapo config started in 2022
 
-
 (require 'package)
 
 (add-to-list 'package-archives
@@ -20,8 +19,14 @@
 (eval-when-compile
  (require 'use-package))
 
+;; Packages list and config file
 (setq packages "~/.emacs.d/packages.el")
 (load-file packages)
 
+;; Emacs editor configurations file
 (setq customisation "~/.emacs.d/custom.el")
 (load-file customisation)
+
+;; Diamond Emacs Major and Minor mode customization file
+(setq modalities "~/.emacs.d/mode.el")
+(load-file modalities)
