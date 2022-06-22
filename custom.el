@@ -151,3 +151,5 @@
   (let ((buf (eshell)))
     (switch-to-buffer (other-buffer buf))
     (switch-to-buffer-other-window buf)))
+
+(global-set-key (kbd "C-c e") (lambda () (interactive) (eshell-other-window)))
