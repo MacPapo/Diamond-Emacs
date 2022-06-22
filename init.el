@@ -24,3 +24,5 @@
 
 (setq customisation "~/.emacs.d/custom.el")
 (load-file customisation)
+
+(global-set-key (kbd "C-c e") (lambda () (interactive) (eshell-other-window)))

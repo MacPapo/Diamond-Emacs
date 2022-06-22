@@ -161,9 +161,10 @@
 
 ;; PDF Tools
 (use-package pdf-tools
-  :defer 1
-  :ensure nil
-  :config
+  :defer 5 ; whait until 5 seconds after startup
+  :ensure t
+  :magic ("%PDF" . pdf-view-mode)
+  :config   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-page)
   ;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
   (setq pdf-view-use-scaling t
