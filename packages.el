@@ -190,3 +190,6 @@
   :ensure t
   :bind ("C-M-z" . olivetti-mode)
   )
+
+(use-package vterm
+  :ensure t)
