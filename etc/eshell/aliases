@@ -1,0 +1,5 @@
+alias ll ls -Alh
+alias cpv rsync -ah --info=progress2
+alias untar tar -zxvf
+alias emacs find-file $1
+alias ff find-file $1

@@ -246,12 +246,3 @@
 (set-fontset-font t '(#xe000 . #xffdd)
                      (font-spec :name "RobotoMono Nerd Font"
                                 :size 12) nil)
-
-(defun eshell-other-window ()
-  "Open a `eshell' in a new window."
-  (interactive)
-  (let ((buf (eshell)))
-    (switch-to-buffer (other-buffer buf))
-    (switch-to-buffer-other-window buf)))
-
-(global-set-key (kbd "C-c e") (lambda () (interactive) (eshell-other-window)))
