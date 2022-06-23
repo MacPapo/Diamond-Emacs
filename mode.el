@@ -23,3 +23,9 @@
   (olivetti-mode 1)
   )
 (add-hook 'org-mode-hook 'diamond-org-mode-hook)
+
+(defun diamond-eshell-mode-hook ()
+  (display-line-numbers-mode 0)
+  (hl-line-mode 0)
+  )
+(add-hool 'eshell-mode-hook 'diamond-eshell-mode-hook)

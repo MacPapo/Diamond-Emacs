@@ -59,6 +59,14 @@
 	  (expand-file-name  "var/eln-cache/" user-emacs-directory))))
   )
 
+(use-package org-auto-tangle
+  :defer t
+  :ensure t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t)
+  )
+
 ;; Winum power
 (use-package winum
   :defer 0.5
