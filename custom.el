@@ -2,13 +2,11 @@
 ;;
 ;; MacPapo config started in 2022
 
-;; Hide clutter
 (when window-system
   (scroll-bar-mode 0)   ; Disable the scroll bar
   (tool-bar-mode 0)     ; Disable the tool bar
   (tooltip-mode 0))     ; Disable the tooltips
 
-;; Better Default
 (setq-default
  ad-redefinition-action 'accept                   ; Silence warnings for redefinition
  auto-window-vscroll nil                          ; Lighten vertical scroll
@@ -165,7 +163,7 @@
 (setq org-hide-emphasis-markers t)
 
 ;; Fido
-(fido-vertical-mode 1)
+;; (fido-vertical-mode 1)
 
 ;; Winner for window managing
 (winner-mode 1)

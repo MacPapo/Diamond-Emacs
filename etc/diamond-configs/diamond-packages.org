@@ -40,12 +40,14 @@ Diamond Emacs use to auto update the packages
 Diamond Emacs use Garbage collection Hack to improve Emacs performance
 
 #+BEGIN_SRC elisp
-  ;; Garbage collection Hack
+
   (use-package gcmh
     :ensure t
     :demand t
     :config
-    (gcmh-mode 1))
+    (gcmh-mode 1)
+    )
+
 #+END_SRC
 
 
@@ -54,6 +56,7 @@ Diamond Emacs use Garbage collection Hack to improve Emacs performance
 Auto-tangle automatically tangle the source file from these org config files
 
 #+BEGIN_SRC elisp
+
   (use-package org-auto-tangle
     :defer t
     :ensure t
@@ -61,6 +64,7 @@ Auto-tangle automatically tangle the source file from these org config files
     :config
     (setq org-auto-tangle-default t)
     )
+
 #+END_SRC
 
 
@@ -86,7 +90,42 @@ Diamond Emacs want to remain clean during Emacs jurney
 
 #+END_SRC
 
+*** Vertico
 
+#+BEGIN_SRC elisp
+
+  (use-package vertico
+    :ensure t
+    :demand t
+    :init
+    (vertico-mode)
+
+    ;; Different scroll margin
+    (setq vertico-scroll-margin 0)
+
+    ;; Show more candidates
+    ;; (setq vertico-count 20)
+
+    ;; Grow and shrink the Vertico minibuffer
+    ;; (setq vertico-resize t)
+
+    ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+    (setq vertico-cycle t)
+    )
+
+#+END_SRC
+
+*** Save Hist
+
+#+BEGIN_SRC elisp
+
+  (use-package savehist
+    :ensure t
+    :init
+    (savehist-mode)
+    )
+
+#+END_SRC
 
 ** Diamond UI
 
@@ -303,6 +342,7 @@ ESHELL an Elisp Terminal for the love and life
 Some eshell improvements
 
 #+BEGIN_SRC elisp
+
   (use-package eshell
     :ensure t
     :defer t
@@ -325,7 +365,9 @@ Some eshell improvements
     (eshell-save-history-on-exit t)
     (eshell-destroy-buffer-when-process-dies t)
     :config
-    (setenv "PAGER" "cat"))
+    (setenv "PAGER" "cat")
+    )
+
 #+END_SRC
 
 **** ESHELL TOGGLE
@@ -357,7 +399,7 @@ Diamond Emacs can recive, sand and write emails thanks to mu4e
 
   (use-package mu4e
     :ensure nil
-    :defer 5 ; whait until 5 seconds after startup
+    :defer 5
     :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
     :config
     (setq mu4e-update-interval 300)            ; Update interval (seconds)
@@ -379,7 +421,7 @@ Diamond Emacs can recive, sand and write emails thanks to mu4e
                                    ("/uni/archive". ?a)
                                    ("/uni/sent" . ?s)))
     )
-  
+
 #+END_SRC
 
 
@@ -390,7 +432,7 @@ Diamond Emacs offer PDF Tools to interact with pdfs
 #+BEGIN_SRC elisp
 
   (use-package pdf-tools
-    :defer 5 ; whait until 5 seconds after startup
+    :defer 5
     :ensure t
     :magic ("%PDF" . pdf-view-mode)
     :config   (pdf-tools-install)
@@ -408,10 +450,8 @@ Diamond Emacs remembers the location where you last stopped to read the pdf
 #+BEGIN_SRC elisp
 
   (use-package saveplace-pdf-view
-    :defer 2;
+    :defer 2
     :ensure t
     :after pdf-view)
 
 #+END_SRC
-
-

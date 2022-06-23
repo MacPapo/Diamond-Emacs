@@ -12,12 +12,12 @@
   :config
   (auto-package-update-maybe))
 
-;; Garbage collection Hack
 (use-package gcmh
   :ensure t
   :demand t
   :config
-  (gcmh-mode 1))
+  (gcmh-mode 1)
+  )
 
 (use-package org-auto-tangle
   :defer t
@@ -39,6 +39,31 @@
     (startup-redirect-eln-cache
      (convert-standard-filename
       (expand-file-name  "var/eln-cache/" user-emacs-directory))))
+  )
+
+(use-package vertico
+  :ensure t
+  :demand t
+  :init
+  (vertico-mode)
+
+  ;; Different scroll margin
+  (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
+  )
+
+(use-package savehist
+  :ensure t
+  :init
+  (savehist-mode)
   )
 
 (use-package all-the-icons
@@ -185,7 +210,8 @@
   (eshell-save-history-on-exit t)
   (eshell-destroy-buffer-when-process-dies t)
   :config
-  (setenv "PAGER" "cat"))
+  (setenv "PAGER" "cat")
+  )
 
 (use-package eshell-toggle
     :defer t
@@ -201,7 +227,7 @@
 
 (use-package mu4e
   :ensure nil
-  :defer 5 ; whait until 5 seconds after startup
+  :defer 5
   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
   :config
   (setq mu4e-update-interval 300)            ; Update interval (seconds)
@@ -225,7 +251,7 @@
   )
 
 (use-package pdf-tools
-  :defer 5 ; whait until 5 seconds after startup
+  :defer 5
   :ensure t
   :magic ("%PDF" . pdf-view-mode)
   :config   (pdf-tools-install)
@@ -235,6 +261,6 @@
   )
 
 (use-package saveplace-pdf-view
-  :defer 2;
+  :defer 2
   :ensure t
   :after pdf-view)
