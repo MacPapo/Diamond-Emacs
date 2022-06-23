@@ -175,3 +175,15 @@
   :defer 2;
   :ensure t
   :after pdf-view)
+
+(use-package org-modern
+  :ensure t
+  :config
+  (global-org-modern-mode)
+  )
+
+(use-package olivetti
+  :defer 1
+  :ensure t
+  :bind ("C-M-z" . olivetti-mode)
+  )

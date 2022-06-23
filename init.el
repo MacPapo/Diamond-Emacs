@@ -25,3 +25,6 @@
 (setq customisation "~/.emacs.d/custom.el")
 (load-file customisation)
 
+;; Diamond Emacs Major and Minor mode customization file
+(setq modalities "~/.emacs.d/mode.el")
+(load-file modalities)
