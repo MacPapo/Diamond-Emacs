@@ -1,6 +1,6 @@
 ;; Diamond Emacs for Mac
 ;;
-;; MacPapo config started in 2022
+;; Visco config started in 2022
 
 (defun diamond-prog-mode-hook ()
   (display-line-numbers-mode 1)
@@ -23,3 +23,9 @@
   (olivetti-mode 1)
   )
 (add-hook 'org-mode-hook 'diamond-org-mode-hook)
+
+(defun diamond-eshell-mode-hook ()
+  (display-line-numbers-mode 0)
+  (hl-line-mode 0)
+  )
+(add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)

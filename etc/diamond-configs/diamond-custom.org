@@ -1,3 +1,12 @@
+#+TITLE: Custom Emacs Enviroment
+#+PROPERTY: header-args :tangle ../../custom.el
+#+auto_tangle: t
+#+STARTUP: showeverything
+#+AUTHOR: Pietro Visconti
+
+* Diamond Emacs customization for Look and Feel
+
+#+BEGIN_SRC elisp
 ;; Diamond Emacs for Mac
 ;;
 ;; Visco config started in 2022
@@ -7,7 +16,11 @@
   (scroll-bar-mode 0)   ; Disable the scroll bar
   (tool-bar-mode 0)     ; Disable the tool bar
   (tooltip-mode 0))     ; Disable the tooltips
+#+END_SRC
 
+* Better Default configuration
+
+#+BEGIN_SRC elisp
 ;; Better Default
 (setq-default
  ad-redefinition-action 'accept                   ; Silence warnings for redefinition
@@ -44,7 +57,10 @@
  use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
  frame-inhibit-implied-resize nil                ; Don't ask for confirmation when opening symlinked file
  )
+#+END_SRC
 
+* Caso
+#+BEGIN_SRC elisp
 (cd "~/")                                         ; Move to the user directory
 (delete-selection-mode 1)                         ; Replace region when inserting text
 (display-time-mode 1)                             ; Enable time in the mode-line
@@ -61,7 +77,10 @@
 (put 'downcase-region 'disabled nil)              ; Enable downcase-region
 (put 'upcase-region 'disabled nil)                ; Enable upcase-region
 (show-paren-mode 1)                               ; Highlight matching parenthesis
+#+END_SRC
 
+* Custom 
+#+BEGIN_SRC elisp
 ;; Resolve symlinks when opening files, so that any operations are conducted
 ;; from the file's true directory (like `find-file').
 (setq find-file-visit-truename t
@@ -163,7 +182,10 @@
 (setq ansi-color-for-comint-mode t)
 
 (setq org-hide-emphasis-markers t)
+#+END_SRC
 
+* Fido
+#+BEGIN_SRC elisp
 ;; Fido
 (fido-vertical-mode 1)
 
@@ -255,3 +277,5 @@
     (switch-to-buffer-other-window buf)))
 
 (global-set-key (kbd "C-c e") (lambda () (interactive) (eshell-other-window)))
+
+#+END_SRC

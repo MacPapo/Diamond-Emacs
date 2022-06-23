@@ -1,3 +1,10 @@
+#+TITLE: Diamond Early Init Enviroment
+#+PROPERTY: header-args :tangle ../../early-init.el
+#+auto_tangle: t
+#+STARTUP: showeverything
+#+AUTHOR: Pietro Visconti
+
+#+BEGIN_SRC elisp
 ;; Diamond Emacs for Mac
 ;;
 ;; Visco config started in 2022
@@ -33,3 +40,5 @@
   ;; may introduce down the road.
   (define-advice startup--load-user-init-file (:before (&rest _) init-doom)
     (advice-remove #'load-file #'load-file@silence))
+
+    #+END_SRC

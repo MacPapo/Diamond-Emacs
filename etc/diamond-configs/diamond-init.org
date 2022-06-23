@@ -1,3 +1,10 @@
+#+TITLE: Diamond Init Enviroment
+#+PROPERTY: header-args :tangle ../../init.el
+#+auto_tangle: t
+#+STARTUP: showeverything
+#+AUTHOR: Pietro Visconti
+
+#+BEGIN_SRC elisp
 ;; Diamond Emacs for Mac
 ;;
 ;; Visco config started in 2022
@@ -30,3 +37,5 @@
 ;; Diamond Emacs Major and Minor mode customization file
 (setq modalities "~/.emacs.d/mode.el")
 (load-file modalities)
+
+#+END_SRC

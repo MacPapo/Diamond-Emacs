@@ -1,10 +1,10 @@
-;; MacPapo Emacs packages config
+;; Diamond Emacs for Mac
 ;;
-;; Config started in 2022
+;; Visco config started in 2022
 
 ;; Update packages automatically
 (use-package auto-package-update
-  :defer 0.5
+  :defer 0.2
   :ensure t
   :commands update-packages
   :custom
@@ -19,6 +19,7 @@
   :config
   (gcmh-mode 1))
 
+;; Magit for git support
 (use-package magit
   :commands magit-file-delete
   :defer 0.5
@@ -40,8 +41,8 @@
   (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
 
   :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status)))
-
+         ("C-x C-g" . magit-status))
+  )
 
 ;; Declutter .emacs.d folder
 (use-package no-littering
@@ -49,13 +50,21 @@
   :demand t
   :config
   (setq auto-save-file-name-transforms
-	    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
   (setq custom-file (no-littering-expand-etc-file-name "packages.el"))
   (when (fboundp 'startup-redirect-eln-cache)
     (startup-redirect-eln-cache
      (convert-standard-filename
-	  (expand-file-name  "var/eln-cache/" user-emacs-directory))))
+      (expand-file-name  "var/eln-cache/" user-emacs-directory))))
+  )
+
+(use-package org-auto-tangle
+  :defer t
+  :ensure t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t)
   )
 
 ;; Winum power
@@ -76,31 +85,32 @@
          ("M-6" . winum-select-window-6))
   )
 
-;; Mail reader
-(use-package mu4e
-  :ensure nil
-  :defer 5 ; whait until 5 seconds after startup
-  :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
-  :config
-  (setq mu4e-update-interval 300)            ; Update interval (seconds)
-  (setq mu4e-index-cleanup t)                ; Cleanup after indexing
-  (setq mu4e-maildir "~/Documents/Mails")
-  (setq mu4e-attachment-dir "~/Downloads")
-  (setq mu4e-index-update-error-warning t)   ; Warnings during update
-  (setq mu4e-index-update-in-background t)   ; Background update
-  (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
-  (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
-  (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
-  (setq mu4e-confirm-quit nil)
-  (setq mu4e-headers-include-related t)
-  (setq mu4e-headers-skip-duplicates t)
-  (setq mu4e-sent-folder "/uni/sent")
-  (setq mu4e-trash-folder "/uni/trash")
-  (setq mu4e-drafts-folder "/uni/drafts")
-  (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
-                                 ("/uni/archive". ?a)
-                                 ("/uni/sent" . ?s)))
-  )
+
+;; ;; Mail reader
+;; (use-package mu4e
+;;   :ensure nil
+;;   :defer 5 ; whait until 5 seconds after startup
+;;   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
+;;   :config
+;;   (setq mu4e-update-interval 300)            ; Update interval (seconds)
+;;   (setq mu4e-index-cleanup t)                ; Cleanup after indexing
+;;   (setq mu4e-maildir "~/Documents/Mails")
+;;   (setq mu4e-attachment-dir "~/Downloads")
+;;   (setq mu4e-index-update-error-warning t)   ; Warnings during update
+;;   (setq mu4e-index-update-in-background t)   ; Background update
+;;   (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
+;;   (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
+;;   (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
+;;   (setq mu4e-confirm-quit nil)
+;;   (setq mu4e-headers-include-related t)
+;;   (setq mu4e-headers-skip-duplicates t)
+;;   (setq mu4e-sent-folder "/uni/sent")
+;;   (setq mu4e-trash-folder "/uni/trash")
+;;   (setq mu4e-drafts-folder "/uni/drafts")
+;;   (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
+;;                                  ("/uni/archive". ?a)
+;;                                  ("/uni/sent" . ?s)))
+;;   )
 
 ;; Use All the ICONS
 (use-package all-the-icons
@@ -108,6 +118,7 @@
 
 ;; Prais the suuuunnnn!!!!
 (use-package solaire-mode
+  :defer 0.5
   :ensure t
   :hook (after-init . solaire-global-mode))
 
@@ -132,14 +143,14 @@
      ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
        "Homepage"
        "Browse homepage"
-       (lambda (&rest _) (browse-url "https://github.com/b-coimbra/.emacs.d")) nil "" " |")
+       (lambda (&rest _) (browse-url "https://github.com/MacPapo/Diamond-Emacs")) nil "" " |")
       (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
        "Update"
        "Update Megumacs"
        (lambda (&rest _) (update-packages)) warning "" " |")
       (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
        "Report a BUG"
-       (lambda (&rest _) (browse-url "https://github.com/b-coimbra/.emacs.d/issues/new")) error "" ""))
+       (lambda (&rest _) (browse-url "https://github.com/MacPapo/Diamond-Emacs/issues/new")) error "" ""))
      ;; Empty line
      (("" "\n" "" nil nil "" ""))
      ;; Keybindings
@@ -187,3 +198,6 @@
   :ensure t
   :bind ("C-M-z" . olivetti-mode)
   )
+
+(use-package vterm
+  :ensure t)
