@@ -1,5 +1,5 @@
 #+TITLE: Custom Emacs Enviroment
-#+PROPERTY: header-args :tangle custom.el
+#+PROPERTY: header-args :tangle ../../custom.el
 #+auto_tangle: t
 #+STARTUP: showeverything
 #+AUTHOR: Jacopo Costantini

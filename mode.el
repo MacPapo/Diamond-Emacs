@@ -28,4 +28,4 @@
   (display-line-numbers-mode 0)
   (hl-line-mode 0)
   )
-(add-hool 'eshell-mode-hook 'diamond-eshell-mode-hook)
+(add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)

@@ -1,5 +1,5 @@
 #+TITLE: Diamond Custom Mode
-#+PROPERTY: header-args :tangle mode.el
+#+PROPERTY: header-args :tangle ../../mode.el
 #+auto_tangle: t
 #+STARTUP: showeverything
 #+AUTHOR: Jacopo Costantini
@@ -35,5 +35,5 @@
     (display-line-numbers-mode 0)
     (hl-line-mode 0)
     )
-  (add-hool 'eshell-mode-hook 'diamond-eshell-mode-hook)
+  (add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)
 #+END_SRC
