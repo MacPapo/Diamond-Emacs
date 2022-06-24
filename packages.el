@@ -192,6 +192,12 @@
 (use-package vterm
   :ensure t)
 
+(use-package vterm-toggle
+  :ensure t
+  :bind
+  ("C-c v" . vterm-toggle)
+  )
+
 (use-package eshell
   :ensure t
   :defer t

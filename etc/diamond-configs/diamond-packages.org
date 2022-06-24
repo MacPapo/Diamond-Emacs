@@ -331,6 +331,18 @@ Olivetti mode redefine the width of the screen and center the content in the mid
 
 #+END_SRC
 
+**** VTerm toggle
+
+#+BEGIN_SRC elisp
+
+  (use-package vterm-toggle
+    :ensure t
+    :bind
+    ("C-c v" . vterm-toggle)
+    )
+
+#+END_SRC
+
 *** ESHELL
 
 ESHELL an Elisp Terminal for the love and life
