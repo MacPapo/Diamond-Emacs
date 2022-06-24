@@ -2,7 +2,6 @@
 ;;
 ;; MacPapo config started in 2022
 
-;; Update packages automatically
 (use-package auto-package-update
   :defer 0.2
   :ensure t
@@ -10,7 +9,8 @@
   :custom
   (auto-package-update-delete-old-versions t)
   :config
-  (auto-package-update-maybe))
+  (auto-package-update-maybe)
+  )
 
 (use-package gcmh
   :ensure t
@@ -67,6 +67,17 @@
   )
 
 (use-package all-the-icons
+  :ensure t
+  )
+
+(use-package all-the-icons-dired
+  :ensure t
+  :defer t
+  :hook
+  (dired-mode . all-the-icons-dired-mode)
+  )
+
+(use-package all-the-icons-completion
   :ensure t
   )
 
@@ -176,13 +187,6 @@
   :defer 1
   :ensure t
   :bind ("C-M-z" . olivetti-mode)
-  )
-
-(use-package all-the-icons-dired
-  :ensure t
-  :defer t
-  :hook
-  (dired-mode . all-the-icons-dired-mode)
   )
 
 (use-package vterm
