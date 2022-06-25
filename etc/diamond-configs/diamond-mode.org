@@ -2,39 +2,69 @@
 #+PROPERTY: header-args :tangle ../../mode.el
 #+auto_tangle: t
 #+STARTUP: showeverything
-#+AUTHOR: Pietro Visconti
+#+AUTHOR: Jacopo Costantini
 
 #+BEGIN_SRC elisp
+
   ;; Diamond Emacs for Mac
   ;;
-  ;; Visco config started in 2022
+  ;; MacPapo config started in 2022
+
+#+END_SRC
+
+** Programmer mode
+#+BEGIN_SRC elisp
 
   (defun diamond-prog-mode-hook ()
     (display-line-numbers-mode 1)
-    (hl-line-mode 1))
+    (hl-line-mode 1)
+    )
   (add-hook 'prog-mode-hook 'diamond-prog-mode-hook)
+
+#+END_SRC
+
+** Text edit mode
+#+BEGIN_SRC elisp
 
   (defun diamond-text-mode-hook ()
     (display-line-numbers-mode 1)
-    (hl-line-mode 1))
+    (hl-line-mode 1)
+    )
   (add-hook 'text-mode-hook 'diamond-text-mode-hook)
+
+#+END_SRC
+
+** Config edit mode
+#+BEGIN_SRC elisp
 
   (defun diamond-conf-mode-hook ()
     (display-line-numbers-mode 1)
-    (hl-line-mode 1))
+    (hl-line-mode 1)
+    )
   (add-hook 'conf-mode-hook 'diamond-conf-mode-hook)
+
+#+END_SRC
+
+** Org mode
+#+BEGIN_SRC elisp
 
   (defun diamond-org-mode-hook ()
     (display-line-numbers-mode 0)
     (visual-line-mode 1)
     (olivetti-mode 1)
-    (olivetti-set-width 100)
+    (olivetti-set-width 115)
     )
   (add-hook 'org-mode-hook 'diamond-org-mode-hook)
+
+#+END_SRC
+
+** Eshell mode
+#+BEGIN_SRC elisp
 
   (defun diamond-eshell-mode-hook ()
     (display-line-numbers-mode 0)
     (hl-line-mode 0)
     )
   (add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)
+
 #+END_SRC

@@ -5,37 +5,59 @@
 #+AUTHOR: Pietro Visconti
 
 #+BEGIN_SRC elisp
-;; Diamond Emacs for Mac
-;;
-;; Visco config started in 2022
 
-(require 'package)
+  ;; Diamond Emacs for Mac
+  ;;
+  ;; Visco01 config started in 2022
 
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/") t)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+#+END_SRC
 
-(setq package-enable-at-startup nil)
-(package-initialize)
+#+BEGIN_SRC elisp
 
-(unless (package-installed-p 'use-package)
- (package-refresh-contents)
- (package-install 'use-package))
+  (require 'package)
 
-(eval-when-compile
- (require 'use-package))
+  (add-to-list 'package-archives
+               '("org" . "https://orgmode.org/elpa/") t)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
 
-;; Packages list and config file
-(setq packages "~/.emacs.d/packages.el")
-(load-file packages)
+  (setq package-enable-at-startup nil)
+  (package-initialize)
 
-;; Emacs editor configurations file
-(setq customisation "~/.emacs.d/custom.el")
-(load-file customisation)
+  (unless (package-installed-p 'use-package)
+   (package-refresh-contents)
+   (package-install 'use-package))
 
-;; Diamond Emacs Major and Minor mode customization file
-(setq modalities "~/.emacs.d/mode.el")
-(load-file modalities)
+  (eval-when-compile
+   (require 'use-package))
+
+#+END_SRC
+
+* File loaded
+
+** Packages config file
+
+#+BEGIN_SRC elisp
+
+  (setq packages "~/.emacs.d/packages.el")
+  (load-file packages)
+
+#+END_SRC
+
+** Customization config file
+
+#+BEGIN_SRC elisp
+
+  (setq customisation "~/.emacs.d/custom.el")
+  (load-file customisation)
+
+#+END_SRC
+
+** Mode config file
+
+#+BEGIN_SRC elisp
+
+  (setq modalities "~/.emacs.d/mode.el")
+  (load-file modalities)
 
 #+END_SRC

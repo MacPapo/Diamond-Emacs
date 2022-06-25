@@ -1,6 +1,6 @@
 ;; Diamond Emacs for Mac
 ;;
-;; Visco config started in 2022
+;; Visco01 config started in 2022
 
 (require 'package)
 
@@ -19,14 +19,11 @@
 (eval-when-compile
  (require 'use-package))
 
-;; Packages list and config file
 (setq packages "~/.emacs.d/packages.el")
 (load-file packages)
 
-;; Emacs editor configurations file
 (setq customisation "~/.emacs.d/custom.el")
 (load-file customisation)
 
-;; Diamond Emacs Major and Minor mode customization file
 (setq modalities "~/.emacs.d/mode.el")
 (load-file modalities)

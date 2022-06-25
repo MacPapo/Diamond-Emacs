@@ -4,57 +4,77 @@
 #+STARTUP: showeverything
 #+AUTHOR: Pietro Visconti
 
+* Diamond Packages
+
+Diamond Emacs is built using also Packages, and these are our selection divided in Categories.
+
+** Core Packages
+
 #+BEGIN_SRC elisp
   ;; Diamond Emacs for Mac
   ;;
-  ;; Visco config started in 2022
+  ;; Visco01 config started in 2022
+#+END_SRC
 
-  ;; Update packages automatically
+*** Auto package Update
+
+Diamond Emacs use to auto update the packages
+
+#+BEGIN_SRC elisp
+
   (use-package auto-package-update
-    :defer 0.2
     :ensure t
     :commands update-packages
     :custom
     (auto-package-update-delete-old-versions t)
     :config
-    (auto-package-update-maybe))
-
-  ;; Garbaege collection Hack
-  (use-package gcmh
-    :ensure t
-    :demand t
-    :config
-    (gcmh-mode 1))
-
-  ;; Magit for git support
-  (use-package magit
-    :commands magit-file-delete
-    :defer 0.5
-    :ensure t
-    :init
-    (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
-    ;; Must be set early to prevent ~/.emacs.d/transient from being created
-    :config
-    (setq transient-default-level 5
-          magit-diff-refine-hunk t ; show granular diffs in selected hunk
-          ;; Don't autosave repo buffers. This is too magical, and saving can
-          ;; trigger a bunch of unwanted side-effects, like save hooks and
-          ;; formatters. Trust the user to know what they're doing.
-          magit-save-repository-buffers nil
-          ;; Don't display parent/related refs in commit buffers; they are rarely
-          ;; helpful and only add to runtime costs.
-          magit-revision-insert-related-refs nil)
-
-    (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
-
-    :bind (("C-x g" . magit-status)
-           ("C-x C-g" . magit-status))
+    (auto-package-update-at-time "03:00")
     )
 
-  ;; Declutter .emacs.d folder
+#+END_SRC
+
+
+*** Garbage Collaction Hack
+
+Diamond Emacs use Garbage collection Hack to improve Emacs performance
+
+#+BEGIN_SRC elisp
+
+  (use-package gcmh
+    :ensure t
+    :config
+    (gcmh-mode 1)
+    )
+
+#+END_SRC
+
+
+*** Auto tangle
+
+Auto-tangle automatically tangle the source file from these org config files
+
+#+BEGIN_SRC elisp
+
+  (use-package org-auto-tangle
+    :ensure t
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode)
+    :config
+    (setq org-auto-tangle-default t)
+    )
+
+#+END_SRC
+
+
+*** No littering
+
+Diamond Emacs want to remain clean during Emacs jurney
+
+#+BEGIN_SRC elisp
+
   (use-package no-littering
     :ensure t
-    :demand t
+    :defer t
     :config
     (setq auto-save-file-name-transforms
           `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
@@ -66,15 +86,11 @@
         (expand-file-name  "var/eln-cache/" user-emacs-directory))))
     )
 
-  (use-package org-auto-tangle
-    :defer t
-    :ensure t
-    :hook (org-mode . org-auto-tangle-mode)
-    :config
-    (setq org-auto-tangle-default t)
-    )
+#+END_SRC
 
-  ;;helm
+*** Helm
+
+#+begin_src elisp
   (use-package helm
     :ensure t
     :demand t
@@ -84,8 +100,8 @@
            ("C-x C-f" . helm-find-files)
            )
     :config
-    (helm-mode 1)
     (helm-ff-icon-mode 1)
+    (helm-mode 1)
     )
 
   (use-package helm-descbinds
@@ -94,63 +110,64 @@
     (helm-descbinds-mode)
     )
 
-  ;; Winum power
-  (use-package winum
-    :defer 0.5
+#+end_src
+
+*** Save Hist
+
+#+BEGIN_SRC elisp
+
+  (use-package savehist
     :ensure t
-    :custom
-    (winum-auto-setup-mode-line t)
-    :config
-    (winum-mode)
-    :bind (
-           ;; Select the window with Meta
-           ("M-1" . winum-select-window-1)
-           ("M-2" . winum-select-window-2)
-           ("M-3" . winum-select-window-3)
-           ("M-4" . winum-select-window-4)
-           ("M-5" . winum-select-window-5)
-           ("M-6" . winum-select-window-6))
+    :defer t
+    :init
+    (savehist-mode)
     )
 
+#+END_SRC
 
-  ;; ;; Mail reader
-  ;; (use-package mu4e
-  ;;   :ensure nil
-  ;;   :defer 5 ; whait until 5 seconds after startup
-  ;;   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
-  ;;   :config
-  ;;   (setq mu4e-update-interval 300)            ; Update interval (seconds)
-  ;;   (setq mu4e-index-cleanup t)                ; Cleanup after indexing
-  ;;   (setq mu4e-maildir "~/Documents/Mails")
-  ;;   (setq mu4e-attachment-dir "~/Downloads")
-  ;;   (setq mu4e-index-update-error-warning t)   ; Warnings during update
-  ;;   (setq mu4e-index-update-in-background t)   ; Background update
-  ;;   (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
-  ;;   (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
-  ;;   (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
-  ;;   (setq mu4e-confirm-quit nil)
-  ;;   (setq mu4e-headers-include-related t)
-  ;;   (setq mu4e-headers-skip-duplicates t)
-  ;;   (setq mu4e-sent-folder "/uni/sent")
-  ;;   (setq mu4e-trash-folder "/uni/trash")
-  ;;   (setq mu4e-drafts-folder "/uni/drafts")
-  ;;   (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
-  ;;                                  ("/uni/archive". ?a)
-  ;;                                  ("/uni/sent" . ?s)))
-  ;;   )
+** Diamond UI
 
-  ;; Use All the ICONS
+*** All the icons
+
+Diamond Emacs use all-the-icons to feel cool
+
+#+BEGIN_SRC elisp
+
   (use-package all-the-icons
     :ensure t
-    :if (display-graphic-p))
+    )
 
-  ;; Prais the suuuunnnn!!!!
-  (use-package solaire-mode
-    :defer 0.5
+#+END_SRC
+
+Diamond Emacs use icons for dired to simplify the viewing of files and folders
+
+#+BEGIN_SRC elisp
+
+  (use-package all-the-icons-dired
     :ensure t
-    :hook (after-init . solaire-global-mode))
+    :defer t
+    :hook
+    (dired-mode . all-the-icons-dired-mode)
+    )
 
-  ;; Custom Dashboard
+#+END_SRC
+
+*** Solaire Mode
+
+#+BEGIN_SRC elisp
+
+  (use-package solaire-mode
+    :ensure t
+    :defer t
+    :hook (after-init . solaire-global-mode)
+    )
+
+#+END_SRC
+
+*** Diamond Dashboard
+
+#+BEGIN_SRC elisp
+
   (use-package dashboard
     :ensure t
     :init
@@ -195,23 +212,76 @@
      dashboard-setup-startup-hook)
     )
 
+#+END_SRC
 
-  ;; PDF Tools
-  (use-package pdf-tools
-    :defer 5 ; whait until 5 seconds after startup
+** Window Managing
+
+*** Winum
+
+Use winum to quickly change window by the number in the modeline
+
+#+BEGIN_SRC elisp
+
+  (use-package winum
     :ensure t
-    :magic ("%PDF" . pdf-view-mode)
-    :config   (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page)
-    ;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
-    (setq pdf-view-use-scaling t
-          pdf-view-use-imagemagick nil)
+    :defer t
+    :custom
+    (winum-auto-setup-mode-line t)
+    :config
+    (winum-mode)
+    :bind (
+           ;; Select the window with Meta
+           ("M-1" . winum-select-window-1)
+           ("M-2" . winum-select-window-2)
+           ("M-3" . winum-select-window-3)
+           ("M-4" . winum-select-window-4)
+           ("M-5" . winum-select-window-5)
+           ("M-6" . winum-select-window-6))
     )
 
-  (use-package saveplace-pdf-view
-    :defer 2;
+#+END_SRC
+
+** Git integration
+
+Magit Integration, the best Git interface
+
+#+BEGIN_SRC elisp
+
+  (use-package magit
+    :commands magit-file-delete
     :ensure t
-    :after pdf-view)
+    :defer t
+    :init
+    (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
+    ;; Must be set early to prevent ~/.emacs.d/transient from being created
+    :config
+    (setq transient-default-level 5
+          magit-diff-refine-hunk t ; show granular diffs in selected hunk
+          ;; Don't autosave repo buffers. This is too magical, and saving can
+          ;; trigger a bunch of unwanted side-effects, like save hooks and
+          ;; formatters. Trust the user to know what they're doing.
+          magit-save-repository-buffers nil
+          ;; Don't display parent/related refs in commit buffers; they are rarely
+          ;; helpful and only add to runtime costs.
+          magit-revision-insert-related-refs nil)
+
+    (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
+
+    :bind (("C-x g" . magit-status)
+           ("C-x C-g" . magit-status))
+    )
+
+#+END_SRC
+
+** Org Mode
+
+Org Mode is one of the best feature of Emacs and Diamond Emacs want to create a perfect harmony between writing and visualizing content in Org files
+
+*** Org Modern
+
+Org Modern create a stunning UI look for Org files
+
+#+BEGIN_SRC elisp
 
   (use-package org-modern
     :ensure t
@@ -219,14 +289,38 @@
     (global-org-modern-mode)
     )
 
+#+END_SRC
+
+*** Olivetti
+
+Olivetti mode redefine the width of the screen and center the content in the middle, creating a typewriter feel
+
+#+BEGIN_SRC elisp
+
   (use-package olivetti
-    :defer 1
     :ensure t
+    :defer t
     :bind ("C-M-z" . olivetti-mode)
     )
 
+#+END_SRC
+
+** Terminals
+
+*** VTerm
+
+#+BEGIN_SRC elisp
+
   (use-package vterm
-    :ensure t)
+    :ensure t
+    :defer t
+    )
+
+#+END_SRC
+
+**** VTerm toggle
+
+#+BEGIN_SRC elisp
 
   (use-package vterm-toggle
     :ensure t
@@ -234,6 +328,18 @@
     :bind
     ("C-c v" . vterm-toggle)
     )
+
+#+END_SRC
+
+*** ESHELL
+
+ESHELL an Elisp Terminal for the love and life
+
+**** ESHELL CONFIG
+
+Some eshell improvements
+
+#+BEGIN_SRC elisp
 
   (use-package eshell
     :ensure t
@@ -260,32 +366,102 @@
     (setenv "PAGER" "cat")
     )
 
+#+END_SRC
+
+**** ESHELL TOGGLE
+
+Toggle and eshell buffer with "C-c e"
+
+#+BEGIN_SRC elisp
+
   (use-package eshell-toggle
+      :ensure t
+      :defer t
+      :custom
+      (eshell-toggle-size-fraction 3)
+      (eshell-toggle-run-command nil)
+      (eshell-toggle-init-function #'eshell-toggle-init-eshell)
+      (eshell-toggle-window-side 'right)
+      :bind
+      ("C-c e" . eshell-toggle)
+      )
+
+#+END_SRC
+
+** Mail Reader
+
+Diamond Emacs can recive, sand and write emails thanks to mu4e
+
+#+BEGIN_SRC elisp
+
+  ;; (use-package mu4e
+  ;;   :ensure nil
+  ;;   :defer 5
+  ;;   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
+  ;;   :config
+  ;;   (setq mu4e-update-interval 300)            ; Update interval (seconds)
+  ;;   (setq mu4e-index-cleanup t)                ; Cleanup after indexing
+  ;;   (setq mu4e-maildir "~/Documents/Mails")
+  ;;   (setq mu4e-attachment-dir "~/Downloads")
+  ;;   (setq mu4e-index-update-error-warning t)   ; Warnings during update
+  ;;   (setq mu4e-index-update-in-background t)   ; Background update
+  ;;   (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
+  ;;   (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
+  ;;   (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
+  ;;   (setq mu4e-confirm-quit nil)
+  ;;   (setq mu4e-headers-include-related t)
+  ;;   (setq mu4e-headers-skip-duplicates t)
+  ;;   (setq mu4e-sent-folder "/uni/sent")
+  ;;   (setq mu4e-trash-folder "/uni/trash")
+  ;;   (setq mu4e-drafts-folder "/uni/drafts")
+  ;;   (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
+  ;;                                  ("/uni/archive". ?a)
+  ;;                                  ("/uni/sent" . ?s)))
+  ;;   )
+
+#+END_SRC
+
+** PDF Tools
+
+Diamond Emacs offer PDF Tools to interact with pdfs
+
+#+BEGIN_SRC elisp
+
+  (use-package pdf-tools
     :ensure t
     :defer t
-    :custom
-    (eshell-toggle-size-fraction 3)
-    (eshell-toggle-run-command nil)
-    (eshell-toggle-init-function #'eshell-toggle-init-eshell)
-    (eshell-toggle-window-side 'right)
-    :bind
-    ("C-c e" . eshell-toggle)
-    )
-
-  (use-package undo-tree
-    :ensure t
-    :config
-    (global-undo-tree-mode)
-    )
-
-  (use-package show-font-mode
-    :ensure t)
-
-  (use-package savehist
-    :ensure t
-    :defer t
-    :init
-    (savehist-mode)
+    :magic ("%PDF" . pdf-view-mode)
+    :config   (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+    (setq pdf-view-use-scaling t
+          pdf-view-use-imagemagick nil)
     )
 
 #+END_SRC
+
+*** Saveplace PDF view
+
+Diamond Emacs remembers the location where you last stopped to read the pdf
+
+#+BEGIN_SRC elisp
+
+  (use-package saveplace-pdf-view
+    :ensure t
+    :defer t
+    :after pdf-view)
+
+#+END_SRC
+
+*** Undo Tree
+
+It allows you to recover any past state of a buffer
+
+#+begin_src elisp
+
+(use-package undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode)
+  )
+
+#+end_src

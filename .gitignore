@@ -19,4 +19,10 @@ var/
 var/*
 elpa/
 elpa/*
+transient/
+transient/*
+recentf
+places
+history
+.last-package-update-day
 etc/packages.el

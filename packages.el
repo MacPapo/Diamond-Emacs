@@ -1,53 +1,33 @@
 ;; Diamond Emacs for Mac
 ;;
-;; Visco config started in 2022
+;; Visco01 config started in 2022
 
-;; Update packages automatically
 (use-package auto-package-update
-  :defer 0.2
   :ensure t
   :commands update-packages
   :custom
   (auto-package-update-delete-old-versions t)
   :config
-  (auto-package-update-maybe))
-
-;; Garbaege collection Hack
-(use-package gcmh
-  :ensure t
-  :demand t
-  :config
-  (gcmh-mode 1))
-
-;; Magit for git support
-(use-package magit
-  :commands magit-file-delete
-  :defer 0.5
-  :ensure t
-  :init
-  (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
-  ;; Must be set early to prevent ~/.emacs.d/transient from being created
-  :config
-  (setq transient-default-level 5
-        magit-diff-refine-hunk t ; show granular diffs in selected hunk
-        ;; Don't autosave repo buffers. This is too magical, and saving can
-        ;; trigger a bunch of unwanted side-effects, like save hooks and
-        ;; formatters. Trust the user to know what they're doing.
-        magit-save-repository-buffers nil
-        ;; Don't display parent/related refs in commit buffers; they are rarely
-        ;; helpful and only add to runtime costs.
-        magit-revision-insert-related-refs nil)
-
-  (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
-
-  :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status))
+  (auto-package-update-at-time "03:00")
   )
 
-;; Declutter .emacs.d folder
+(use-package gcmh
+  :ensure t
+  :config
+  (gcmh-mode 1)
+  )
+
+(use-package org-auto-tangle
+  :ensure t
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t)
+  )
+
 (use-package no-littering
   :ensure t
-  :demand t
+  :defer t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
@@ -59,15 +39,6 @@
       (expand-file-name  "var/eln-cache/" user-emacs-directory))))
   )
 
-(use-package org-auto-tangle
-  :defer t
-  :ensure t
-  :hook (org-mode . org-auto-tangle-mode)
-  :config
-  (setq org-auto-tangle-default t)
-  )
-
-;;helm
 (use-package helm
   :ensure t
   :demand t
@@ -77,8 +48,8 @@
          ("C-x C-f" . helm-find-files)
          )
   :config
-  (helm-mode 1)
   (helm-ff-icon-mode 1)
+  (helm-mode 1)
   )
 
 (use-package helm-descbinds
@@ -87,63 +58,30 @@
   (helm-descbinds-mode)
   )
 
-;; Winum power
-(use-package winum
-  :defer 0.5
+(use-package savehist
   :ensure t
-  :custom
-  (winum-auto-setup-mode-line t)
-  :config
-  (winum-mode)
-  :bind (
-         ;; Select the window with Meta
-         ("M-1" . winum-select-window-1)
-         ("M-2" . winum-select-window-2)
-         ("M-3" . winum-select-window-3)
-         ("M-4" . winum-select-window-4)
-         ("M-5" . winum-select-window-5)
-         ("M-6" . winum-select-window-6))
+  :defer t
+  :init
+  (savehist-mode)
   )
 
-
-;; ;; Mail reader
-;; (use-package mu4e
-;;   :ensure nil
-;;   :defer 5 ; whait until 5 seconds after startup
-;;   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
-;;   :config
-;;   (setq mu4e-update-interval 300)            ; Update interval (seconds)
-;;   (setq mu4e-index-cleanup t)                ; Cleanup after indexing
-;;   (setq mu4e-maildir "~/Documents/Mails")
-;;   (setq mu4e-attachment-dir "~/Downloads")
-;;   (setq mu4e-index-update-error-warning t)   ; Warnings during update
-;;   (setq mu4e-index-update-in-background t)   ; Background update
-;;   (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
-;;   (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
-;;   (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
-;;   (setq mu4e-confirm-quit nil)
-;;   (setq mu4e-headers-include-related t)
-;;   (setq mu4e-headers-skip-duplicates t)
-;;   (setq mu4e-sent-folder "/uni/sent")
-;;   (setq mu4e-trash-folder "/uni/trash")
-;;   (setq mu4e-drafts-folder "/uni/drafts")
-;;   (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
-;;                                  ("/uni/archive". ?a)
-;;                                  ("/uni/sent" . ?s)))
-;;   )
-
-;; Use All the ICONS
 (use-package all-the-icons
   :ensure t
-  :if (display-graphic-p))
+  )
 
-;; Prais the suuuunnnn!!!!
-(use-package solaire-mode
-  :defer 0.5
+(use-package all-the-icons-dired
   :ensure t
-  :hook (after-init . solaire-global-mode))
+  :defer t
+  :hook
+  (dired-mode . all-the-icons-dired-mode)
+  )
 
-;; Custom Dashboard
+(use-package solaire-mode
+  :ensure t
+  :defer t
+  :hook (after-init . solaire-global-mode)
+  )
+
 (use-package dashboard
   :ensure t
   :init
@@ -188,23 +126,46 @@
    dashboard-setup-startup-hook)
   )
 
-
-;; PDF Tools
-(use-package pdf-tools
-  :defer 5 ; whait until 5 seconds after startup
+(use-package winum
   :ensure t
-  :magic ("%PDF" . pdf-view-mode)
-  :config   (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page)
-  ;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
-  (setq pdf-view-use-scaling t
-        pdf-view-use-imagemagick nil)
+  :defer t
+  :custom
+  (winum-auto-setup-mode-line t)
+  :config
+  (winum-mode)
+  :bind (
+         ;; Select the window with Meta
+         ("M-1" . winum-select-window-1)
+         ("M-2" . winum-select-window-2)
+         ("M-3" . winum-select-window-3)
+         ("M-4" . winum-select-window-4)
+         ("M-5" . winum-select-window-5)
+         ("M-6" . winum-select-window-6))
   )
 
-(use-package saveplace-pdf-view
-  :defer 2;
+(use-package magit
+  :commands magit-file-delete
   :ensure t
-  :after pdf-view)
+  :defer t
+  :init
+  (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
+  ;; Must be set early to prevent ~/.emacs.d/transient from being created
+  :config
+  (setq transient-default-level 5
+        magit-diff-refine-hunk t ; show granular diffs in selected hunk
+        ;; Don't autosave repo buffers. This is too magical, and saving can
+        ;; trigger a bunch of unwanted side-effects, like save hooks and
+        ;; formatters. Trust the user to know what they're doing.
+        magit-save-repository-buffers nil
+        ;; Don't display parent/related refs in commit buffers; they are rarely
+        ;; helpful and only add to runtime costs.
+        magit-revision-insert-related-refs nil)
+
+  (add-hook 'magit-popup-mode-hook #'hide-mode-line-mode)
+
+  :bind (("C-x g" . magit-status)
+         ("C-x C-g" . magit-status))
+  )
 
 (use-package org-modern
   :ensure t
@@ -213,13 +174,15 @@
   )
 
 (use-package olivetti
-  :defer 1
   :ensure t
+  :defer t
   :bind ("C-M-z" . olivetti-mode)
   )
 
 (use-package vterm
-  :ensure t)
+  :ensure t
+  :defer t
+  )
 
 (use-package vterm-toggle
   :ensure t
@@ -254,29 +217,59 @@
   )
 
 (use-package eshell-toggle
+    :ensure t
+    :defer t
+    :custom
+    (eshell-toggle-size-fraction 3)
+    (eshell-toggle-run-command nil)
+    (eshell-toggle-init-function #'eshell-toggle-init-eshell)
+    (eshell-toggle-window-side 'right)
+    :bind
+    ("C-c e" . eshell-toggle)
+    )
+
+;; (use-package mu4e
+;;   :ensure nil
+;;   :defer 5
+;;   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
+;;   :config
+;;   (setq mu4e-update-interval 300)            ; Update interval (seconds)
+;;   (setq mu4e-index-cleanup t)                ; Cleanup after indexing
+;;   (setq mu4e-maildir "~/Documents/Mails")
+;;   (setq mu4e-attachment-dir "~/Downloads")
+;;   (setq mu4e-index-update-error-warning t)   ; Warnings during update
+;;   (setq mu4e-index-update-in-background t)   ; Background update
+;;   (setq mu4e-change-filenames-when-moving t) ; Needed for mbsync
+;;   (setq mu4e-get-mail-command "/opt/homebrew/bin/mbsync -a")
+;;   (setq mu4e-index-lazy-check nil)           ; Don't be lazy, index everything
+;;   (setq mu4e-confirm-quit nil)
+;;   (setq mu4e-headers-include-related t)
+;;   (setq mu4e-headers-skip-duplicates t)
+;;   (setq mu4e-sent-folder "/uni/sent")
+;;   (setq mu4e-trash-folder "/uni/trash")
+;;   (setq mu4e-drafts-folder "/uni/drafts")
+;;   (setq mu4e-maildir-shortcuts '(("/uni/inbox" . ?i)
+;;                                  ("/uni/archive". ?a)
+;;                                  ("/uni/sent" . ?s)))
+;;   )
+
+(use-package pdf-tools
   :ensure t
   :defer t
-  :custom
-  (eshell-toggle-size-fraction 3)
-  (eshell-toggle-run-command nil)
-  (eshell-toggle-init-function #'eshell-toggle-init-eshell)
-  (eshell-toggle-window-side 'right)
-  :bind
-  ("C-c e" . eshell-toggle)
+  :magic ("%PDF" . pdf-view-mode)
+  :config   (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page)
+  (setq pdf-view-use-scaling t
+        pdf-view-use-imagemagick nil)
   )
+
+(use-package saveplace-pdf-view
+  :ensure t
+  :defer t
+  :after pdf-view)
 
 (use-package undo-tree
   :ensure t
   :config
   (global-undo-tree-mode)
-  )
-
-(use-package show-font-mode
-  :ensure t)
-
-(use-package savehist
-  :ensure t
-  :defer t
-  :init
-  (savehist-mode)
   )
