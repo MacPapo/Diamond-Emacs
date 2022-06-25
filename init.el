@@ -27,3 +27,16 @@
 
 (setq modalities "~/.emacs.d/mode.el")
 (load-file modalities)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(helm page-break-line winum vterm-toggle visual-fill-column vertico use-package solaire-mode saveplace-pdf-view pdf-tools org-modern org-auto-tangle olivetti no-littering magit gcmh eshell-toggle auto-package-update)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

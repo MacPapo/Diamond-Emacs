@@ -6,6 +6,8 @@
 
 * Diamond Emacs customization for Look and Feel
 
+** Diamon Emacs sign
+
 #+BEGIN_SRC elisp
 ;; Diamond Emacs for Mac
 ;;
@@ -41,6 +43,7 @@
    display-time-default-load-average nil            ; Don't display load average
    display-time-format "%H:%M"                      ; Format the time string
    fill-column 80                                   ; Set width for automatic line breaks
+   bidi-paragraph-direction 'left-to-right
    help-window-select t                             ; Focus new help windows when opened
    indent-tabs-mode nil                             ; Use tabs to indent
    inhibit-startup-screen t                         ; Disable start-up screen
@@ -89,6 +92,11 @@
 (show-paren-mode 1)                               ; Highlight matching parenthesis
 #+END_SRC
 
+* Save Place
+
+#+begin_src elisp
+  (save-place-mode 1)
+#+end_src
 * Better Default configuration
 
 #+BEGIN_SRC elisp
@@ -423,7 +431,7 @@ highlight brackets if visible, else entire expression
 
   #+begin_src elisp
   (setq modus-themes-headings
-        '((1 . (rainbow overline background 1.4))
+        '((1 . (rainbow background 1.4))
           (2 . (rainbow background 1.3))
           (3 . (rainbow bold 1.2))
           (4 . (semilight 1.1))))
@@ -441,25 +449,13 @@ highlight brackets if visible, else entire expression
 * Font attribute
 
 #+BEGIN_SRC elisp
-  (set-face-attribute 'default nil
-                      :family "Roboto Mono"
-                      :weight 'light
-                      :height 140)
-
-  (set-face-attribute 'bold nil
-                      :family "Roboto Mono"
-                      :weight 'regular)
-
-  (set-face-attribute 'italic nil
-                      :family "Victor Mono"
-                      :weight 'semilight
-                      :slant 'italic)
-
-  (set-fontset-font t 'unicode
-                      (font-spec :name "Inconsolata Light"
-                                 :size 16) nil)
-
-  (set-fontset-font t '(#xe000 . #xffdd)
-                       (font-spec :name "RobotoMono Nerd Font"
-                                  :size 12) nil)
+(when (member "Iosevka" (font-family-list))
+  (set-frame-font "Iosevka-16" t t))
 #+END_SRC
+
+Enable Ligatures in Emacs Mac
+
+#+begin_src elisp
+  (if (fboundp 'mac-auto-operator-composition-mode)
+      (mac-auto-operator-composition-mode))
+#+end_src
