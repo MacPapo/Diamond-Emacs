@@ -97,6 +97,7 @@
 #+begin_src elisp
   (save-place-mode 1)
 #+end_src
+
 * Better Default configuration
 
 #+BEGIN_SRC elisp

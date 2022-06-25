@@ -41,21 +41,19 @@
 
 (use-package helm
   :ensure t
-  :demand t
-  :bind (
-         ("M-x" . helm-M-x)
-         ("M-y" . helm-show-kill-ring)
-         ("C-x C-f" . helm-find-files)
-         )
   :config
+  (require 'helm-config)
+  (setq helm-split-window-in-side-p t
+        helm-mode-to-line-cycle-in-source t)
   (helm-ff-icon-mode 1)
   (helm-mode 1)
-  )
-
-(use-package helm-descbinds
-  :ensure t
-  :config
-  (helm-descbinds-mode)
+  :bind(
+        ("C-x b" . helm-buffers-list)
+        ("C-x r b" . helm-bookmarks)
+        ("C-x C-f" . helm-find-files)
+        ("C-s" . helm-occur)
+        ("M-x" . helm-M-x)
+        ("M-y" . helm-show-kill-ring))
   )
 
 (use-package savehist

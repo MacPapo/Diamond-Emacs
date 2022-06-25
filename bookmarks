@@ -1,0 +1,30 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("Init"
+ (filename . "~/.emacs.d/etc/diamond-configs/diamond-init.org")
+ (front-context-string . " File loaded\n\n**")
+ (rear-context-string . "))\n\n#+END_SRC\n\n*")
+ (position . 711))
+("Early"
+ (filename . "~/.emacs.d/etc/diamond-configs/diamond-early-init.org")
+ (front-context-string . "#+TITLE: Diamond")
+ (rear-context-string)
+ (position . 1))
+("Custom"
+ (filename . "~/.emacs.d/etc/diamond-configs/diamond-custom.org")
+ (front-context-string . "\n   help-window-")
+ (rear-context-string . "n 'left-to-right")
+ (position . 1294))
+("Mode"
+ (filename . "~/.emacs.d/etc/diamond-configs/diamond-mode.org")
+ (front-context-string . "#+TITLE: Diamond")
+ (rear-context-string)
+ (position . 1))
+("Packages"
+ (filename . "~/.emacs.d/etc/diamond-configs/diamond-packages.org")
+ (front-context-string . "))\n    )\n\n\n#+end")
+ (rear-context-string . "m-show-kill-ring")
+ (position . 2262))
+)
