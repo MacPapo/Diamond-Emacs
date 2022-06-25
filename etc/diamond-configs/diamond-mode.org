@@ -28,6 +28,7 @@
     (display-line-numbers-mode 0)
     (visual-line-mode 1)
     (olivetti-mode 1)
+    (olivetti-set-width 92)
     )
   (add-hook 'org-mode-hook 'diamond-org-mode-hook)
 

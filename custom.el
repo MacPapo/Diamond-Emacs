@@ -240,12 +240,12 @@
                     :slant 'italic)
 
 (set-fontset-font t 'unicode
-                    (font-spec :name "Inconsolata Light"
-                               :size 16) nil)
+                  (font-spec :name "Inconsolata Light"
+                             :size 16) nil)
 
 (set-fontset-font t '(#xe000 . #xffdd)
-                     (font-spec :name "RobotoMono Nerd Font"
-                                :size 12) nil)
+                  (font-spec :name "RobotoMono Nerd Font"
+                             :size 12) nil)
 
 (defun eshell-other-window ()
   "Open a `eshell' in a new window."
@@ -255,3 +255,13 @@
     (switch-to-buffer-other-window buf)))
 
 (global-set-key (kbd "C-c e") (lambda () (interactive) (eshell-other-window)))
+
+
+(defun vterm-other-window ()
+  "Open a `vterm' in a new window."
+  (interactive)
+  (let ((buf (vterm)))
+    (switch-to-buffer (other-buffer buf))
+    (switch-to-buffer-other-window buf)))
+
+(global-set-key (kbd "C-c v") (lambda () (interactive) (vterm-other-window)))
