@@ -74,6 +74,26 @@
     (setq org-auto-tangle-default t)
     )
 
+  ;;helm
+  (use-package helm
+    :ensure t
+    :demand t
+    :bind (
+           ("M-x" . helm-M-x)
+           ("M-y" . helm-show-kill-ring)
+           ("C-x C-f" . helm-find-files)
+           )
+    :config
+    (helm-mode 1)
+    (helm-ff-icon-mode 1)
+    )
+
+  (use-package helm-descbinds
+    :ensure t
+    :config
+    (helm-descbinds-mode)
+    )
+
   ;; Winum power
   (use-package winum
     :defer 0.5
@@ -157,7 +177,7 @@
          (lambda (&rest _) (update-packages)) warning "" " |")
         (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
          "Report a BUG"
-         (lambda (&rest _) (browse-url "https://github.com/MacPapo/Diamond-Emacs/issues/new")) error "" ""))
+         (lambda (&rest _) (browse-url nn"https://github.com/MacPapo/Diamond-Emacs/issues/new")) error "" ""))
        ;; Empty line
        (("" "\n" "" nil nil "" ""))
        ;; Keybindings
@@ -208,6 +228,25 @@
 
   (use-package vterm
     :ensure t)
+
+  (use-package vterm-toggle
+    :ensure t
+    :defer t
+    :bind
+    ("C-c v" . vterm-toggle)
+    )
+
+  (use-package eshell-toggle
+    :ensure t
+    :defer t
+    :custom
+    (eshell-toggle-size-fraction 3)
+    (eshell-toggle-run-command nil)
+    (eshell-toggle-init-function #'eshell-toggle-init-eshell)
+    (eshell-toggle-window-side 'right)
+    :bind
+    ("C-c e" . eshell-toggle)
+    )
 
   (use-package undo-tree
     :ensure t
