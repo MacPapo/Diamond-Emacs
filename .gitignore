@@ -21,8 +21,11 @@ elpa/
 elpa/*
 transient/
 transient/*
+eshell/
+eshell/*
 recentf
 places
 history
 .last-package-update-day
+ac-comphist.dat
 etc/packages.el

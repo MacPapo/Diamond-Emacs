@@ -33,3 +33,14 @@
   (hl-line-mode 0)
   )
 (add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-enable-block-face t)
+  )
+(add-hook 'web-mode-hook  'my-web-mode-hook)

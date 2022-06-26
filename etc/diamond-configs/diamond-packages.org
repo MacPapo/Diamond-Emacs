@@ -452,6 +452,8 @@ Diamond Emacs remembers the location where you last stopped to read the pdf
 
 #+END_SRC
 
+** Programming/editing packages
+
 *** Undo Tree
 
 It allows you to recover any past state of a buffer
@@ -463,5 +465,38 @@ It allows you to recover any past state of a buffer
   :config
   (global-undo-tree-mode)
   )
+
+#+end_src
+
+*** Web Mode
+
+It's an autonomous Diamond Emmacs major-mode for editing web templates.
+HTML documents can embed parts (CSS / JavaScript) and blocks (client / server side).
+
+#+begin_src elisp
+
+  (use-package web-mode
+    :ensure t
+    :defer 1
+    :config
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
+#+end_Src
+
+*** Auto Complete
+
+Auto-Complete is an intelligent auto-completion extension for Diamond Emacs. It extends the standard Emacs completion interface and provides an environment that allows users to concentrate more on their own work.
+
+#+begin_src elisp
+
+  (use-package auto-complete
+    :ensure t
+    :defer 2
+    :bind
+    ("M-n" . ac-next)
+    ("M-p" . ac-previous)
+    :config
+    (ac-config-default)
+    )
 
 #+end_src

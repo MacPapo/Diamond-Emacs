@@ -273,3 +273,19 @@
   :config
   (global-undo-tree-mode)
   )
+
+(use-package web-mode
+  :ensure t
+  :defer 1
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
+(use-package auto-complete
+  :ensure t
+  :defer 2
+  :bind
+  ("M-n" . ac-next)
+  ("M-p" . ac-previous)
+  :config
+  (ac-config-default)
+  )
