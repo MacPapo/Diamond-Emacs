@@ -20,3 +20,17 @@ var/*
 elpa/
 elpa/*
 etc/packages.el
+eshell/
+eshell/*
+transient/
+transient/*
+projectile-bookmarks.*
+recentf
+url/
+url/*
+history
+bookmarks
+auto-save-list/
+auto-save-list/*
+.last_package-update-day
+places
