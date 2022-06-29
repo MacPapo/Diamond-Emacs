@@ -39,6 +39,17 @@
       (expand-file-name  "var/eln-cache/" user-emacs-directory))))
   )
 
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :config
+  (setq projectile-indexing-method 'alien)
+  (setq projectile-file-exists-remote-cache-expire nil)
+  (setq projectile-completion-system 'helm)
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
+
 (use-package helm
   :ensure t
   :config
@@ -56,11 +67,28 @@
         ("M-y" . helm-show-kill-ring))
   )
 
+(use-package helm-projectile
+  :ensure t
+  :init (helm-projectile-on)
+  )
+
 (use-package savehist
   :ensure t
   :defer t
   :init
   (savehist-mode)
+  )
+
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode)
+  :config
+  (which-key-setup-minibuffer)
+  (setq which-key-show-early-on-C-h t)
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05)
+  :diminish which-key-mode
   )
 
 (use-package all-the-icons
@@ -86,6 +114,7 @@
   (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
   (progn
     (setq dashboard-items '((recents . 8)
+                            (projects . 5)
                             (bookmarks . 5)))
     (setq dashboard-center-content t)
     (setq dashboard-set-init-info t)
@@ -300,4 +329,15 @@
         company-global-modes '(not eshell-mode)
         company-selection-wrap-around t
         company-abort-on-unique-match t)
+  )
+
+(use-package origami
+  :ensure t
+  :defer t
+  :bind (("C-c f f" . origami-toggle-node)
+         ("C-c f a" . origami-toggle-all-nodes)
+         ("C-c f s" . origami-show-only-node)
+         ("C-c f p" . origami-previous-fold)
+         ("C-c f n" . origami-forward-fold)
+         )
   )

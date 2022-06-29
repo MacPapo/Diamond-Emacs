@@ -8,6 +8,10 @@
   (tooltip-mode 0)
   )
 
+(set-frame-parameter (selected-frame) 'alpha '(97 . 100))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+(set-frame-parameter nil 'fullscreen 'fullboth)
+
 (setq-default
  ad-redefinition-action 'accept                   ; Silence warnings for redefinition
  auto-window-vscroll nil                          ; Lighten vertical scroll

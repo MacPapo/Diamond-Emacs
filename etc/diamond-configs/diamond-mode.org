@@ -18,6 +18,7 @@
   (defun diamond-prog-mode-hook ()
     (display-line-numbers-mode 1)
     (hl-line-mode 1)
+    (origami-mode 1)
     )
   (add-hook 'prog-mode-hook 'diamond-prog-mode-hook)
 
