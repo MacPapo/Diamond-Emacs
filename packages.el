@@ -278,12 +278,26 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
-(use-package auto-complete
+;; (use-package auto-complete
+;;   :ensure t
+;;   :defer 0.5
+;;   :bind
+;;   ("M-n" . ac-next)
+;;   ("M-p" . ac-previous)
+;;   :config
+;;   (ac-config-default)
+;;   (auto-complete-mode t)
+;;   )
+
+(use-package company
   :ensure t
-  :defer 2
-  :bind
-  ("M-n" . ac-next)
-  ("M-p" . ac-previous)
+  :defer t
+  :init (add-hook 'after-init-hook 'global-company-mode)
   :config
-  (ac-config-default)
+  (use-package company-irony :ensure t :defer t)
+  (setq company-minimum-prefix-length 2
+        company-idle-delay 0.3
+        company-global-modes '(not eshell-mode)
+        company-selection-wrap-around t
+        company-abort-on-unique-match t)
   )
