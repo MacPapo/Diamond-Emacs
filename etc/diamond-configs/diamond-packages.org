@@ -23,7 +23,6 @@ Diamond Emacs use to auto update the packages
 #+BEGIN_SRC elisp
 
   (use-package auto-package-update
-    :ensure t
     :commands update-packages
     :custom
     (auto-package-update-delete-old-versions t)
@@ -41,7 +40,7 @@ Diamond Emacs use Garbage collection Hack to improve Emacs performance
 #+BEGIN_SRC elisp
 
   (use-package gcmh
-    :ensure t
+    :demand t
     :config
     (gcmh-mode 1)
     )
@@ -56,8 +55,6 @@ Auto-tangle automatically tangle the source file from these org config files
 #+BEGIN_SRC elisp
 
   (use-package org-auto-tangle
-    :ensure t
-    :defer t
     :hook (org-mode . org-auto-tangle-mode)
     :config
     (setq org-auto-tangle-default t)
@@ -73,8 +70,6 @@ Diamond Emacs want to remain clean during Emacs jurney
 #+BEGIN_SRC elisp
 
   (use-package no-littering
-    :ensure t
-    :defer t
     :config
     (setq auto-save-file-name-transforms
           `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
@@ -93,7 +88,6 @@ Diamond Emacs want to remain clean during Emacs jurney
 #+begin_src elisp
 
   (use-package projectile
-  :ensure t
   :init
   (projectile-mode +1)
   :config
@@ -109,7 +103,6 @@ Diamond Emacs want to remain clean during Emacs jurney
 
 #+begin_src elisp
   (use-package helm
-    :ensure t
     :config
     (require 'helm-config)
     (setq helm-split-window-in-side-p t
@@ -133,11 +126,23 @@ Helm integration for projectile
 
 #+begin_src elisp
 
-      (use-package helm-projectile
-        :ensure t
-        :init (helm-projectile-on)
-        )
+  (use-package helm-projectile
+    :init (helm-projectile-on))
 
+#+end_src
+
+**** Helm Tramp
+
+#+begin_src elisp
+
+  (use-package helm-tramp)
+
+#+end_src
+
+**** Helm Docker
+
+#+begin_src elisp
+  (use-package docker-tramp)
 #+end_src
 
 *** Save Hist
@@ -145,11 +150,9 @@ Helm integration for projectile
 #+BEGIN_SRC elisp
 
   (use-package savehist
-    :ensure t
-    :defer t
+    :demand t
     :init
-    (savehist-mode)
-    )
+    (savehist-mode))
 
 #+END_SRC
 
@@ -160,7 +163,6 @@ Diamond Emacs offer whick-key integration, but only if you press C-h after the c
 #+begin_src elisp
 
   (use-package which-key
-    :ensure t
     :init
     (which-key-mode)
     :config
@@ -181,9 +183,7 @@ Diamond Emacs use all-the-icons to feel cool
 
 #+BEGIN_SRC elisp
 
-  (use-package all-the-icons
-    :ensure t
-    )
+  (use-package all-the-icons)
 
 #+END_SRC
 
@@ -192,11 +192,8 @@ Diamond Emacs use icons for dired to simplify the viewing of files and folders
 #+BEGIN_SRC elisp
 
   (use-package all-the-icons-dired
-    :ensure t
-    :defer t
     :hook
-    (dired-mode . all-the-icons-dired-mode)
-    )
+    (dired-mode . all-the-icons-dired-mode))
 
 #+END_SRC
 
@@ -205,19 +202,25 @@ Diamond Emacs use icons for dired to simplify the viewing of files and folders
 #+BEGIN_SRC elisp
 
   (use-package solaire-mode
-    :ensure t
-    :defer t
-    :hook (after-init . solaire-global-mode)
-    )
+    :hook (after-init . solaire-global-mode))
 
 #+END_SRC
+
+*** Dark mode
+
+#+begin_src elisp
+
+    (use-package auto-dark
+      :demand t)
+
+#+end_src
 
 *** Diamond Dashboard
 
 #+BEGIN_SRC elisp
 
   (use-package dashboard
-    :ensure t
+    :demand t
     :init
     (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
     (progn
@@ -272,8 +275,7 @@ Use winum to quickly change window by the number in the modeline
 #+BEGIN_SRC elisp
 
   (use-package winum
-    :ensure t
-    :defer t
+    :demand t
     :custom
     (winum-auto-setup-mode-line t)
     :config
@@ -298,8 +300,6 @@ Magit Integration, the best Git interface
 
   (use-package magit
     :commands magit-file-delete
-    :ensure t
-    :defer t
     :init
     (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
     ;; Must be set early to prevent ~/.emacs.d/transient from being created
@@ -334,10 +334,8 @@ Org Modern create a stunning UI look for Org files
 #+BEGIN_SRC elisp
 
   (use-package org-modern
-    :ensure t
     :config
-    (global-org-modern-mode)
-    )
+    (global-org-modern-mode))
 
 #+END_SRC
 
@@ -348,10 +346,7 @@ Olivetti mode redefine the width of the screen and center the content in the mid
 #+BEGIN_SRC elisp
 
   (use-package olivetti
-    :ensure t
-    :defer t
-    :bind ("C-M-z" . olivetti-mode)
-    )
+    :bind ("C-M-z" . olivetti-mode))
 
 #+END_SRC
 
@@ -361,10 +356,7 @@ Olivetti mode redefine the width of the screen and center the content in the mid
 
 #+BEGIN_SRC elisp
 
-  (use-package vterm
-    :ensure t
-    :defer t
-    )
+  (use-package vterm)
 
 #+END_SRC
 
@@ -373,11 +365,8 @@ Olivetti mode redefine the width of the screen and center the content in the mid
 #+BEGIN_SRC elisp
 
   (use-package vterm-toggle
-    :ensure t
-    :defer t
     :bind
-    ("C-c v" . vterm-toggle)
-    )
+    ("C-c v" . vterm-toggle))
 
 #+END_SRC
 
@@ -392,8 +381,6 @@ Some eshell improvements
 #+BEGIN_SRC elisp
 
   (use-package eshell
-    :ensure t
-    :defer t
     :hook
     ;; (eshell-load . (lambda ()
     ;;                       (eshell-git-prompt-use-theme 'multiline2)))
@@ -425,8 +412,6 @@ Toggle and eshell buffer with "C-c e"
 #+BEGIN_SRC elisp
 
   (use-package eshell-toggle
-      :ensure t
-      :defer t
       :custom
       (eshell-toggle-size-fraction 3)
       (eshell-toggle-run-command nil)
@@ -445,8 +430,7 @@ Diamond Emacs can recive, sand and write emails thanks to mu4e
 #+BEGIN_SRC elisp
 
   (use-package mu4e
-    :ensure nil
-    :defer 5
+    :defer 10
     :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
     :config
     (setq mu4e-update-interval 300)            ; Update interval (seconds)
@@ -478,8 +462,6 @@ Diamond Emacs offer PDF Tools to interact with pdfs
 #+BEGIN_SRC elisp
 
   (use-package pdf-tools
-    :ensure t
-    :defer t
     :magic ("%PDF" . pdf-view-mode)
     :config   (pdf-tools-install)
     (setq-default pdf-view-display-size 'fit-page)
@@ -496,8 +478,6 @@ Diamond Emacs remembers the location where you last stopped to read the pdf
 #+BEGIN_SRC elisp
 
   (use-package saveplace-pdf-view
-    :ensure t
-    :defer t
     :after pdf-view)
 
 #+END_SRC

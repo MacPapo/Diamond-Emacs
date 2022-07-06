@@ -22,8 +22,10 @@
 
 (defun diamond-org-mode-hook ()
   (display-line-numbers-mode 0)
+  (org-modern-mode 1)
   (visual-line-mode 1)
   (olivetti-mode 1)
+  (olivetti-set-width 115)
   )
 (add-hook 'org-mode-hook 'diamond-org-mode-hook)
 
@@ -32,3 +34,8 @@
   (hl-line-mode 0)
   )
 (add-hook 'eshell-mode-hook 'diamond-eshell-mode-hook)
+
+(add-hook 'helm-tramp-pre-command-hook '(lambda ()
+                                          (projectile-mode 0)))
+(add-hook 'helm-tramp-quit-hook '(lambda ()
+                                   (projectile-mode 1)))

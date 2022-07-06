@@ -8,6 +8,9 @@
   (tooltip-mode 0)
   )
 
+(set-frame-parameter (selected-frame) 'alpha '(97 . 100))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+
 (setq-default
  ad-redefinition-action 'accept                   ; Silence warnings for redefinition
  auto-window-vscroll nil                          ; Lighten vertical scroll
@@ -40,6 +43,7 @@
  inhibit-compacting-font-caches t                 ; Faster navigation point (costs more memory)
  recentf-mode t                                   ; Keep recent files
  make-backup-files nil                            ; Stop creating backup files
+ create-lockfiles nil
  vc-follow-symlinks t                             ; When the symlink points to a version-controlled file
  use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
  frame-inhibit-implied-resize nil                ; Don't ask for confirmation when opening symlinked file
@@ -63,59 +67,6 @@
 (show-paren-mode 1)                               ; Highlight matching parenthesis
 
 (save-place-mode 1)
-
-(setq-default
- ad-redefinition-action 'accept                   ; Silence warnings for redefinition
- auto-window-vscroll nil                          ; Lighten vertical scroll
- confirm-kill-emacs 'yes-or-no-p                  ; Confirm before exiting Emacs
- cursor-in-non-selected-windows nil               ; Hide the cursor in inactive windows
- delete-by-moving-to-trash t                      ; Delete files to trash
- display-time-default-load-average nil            ; Don't display load average
- display-time-format "%H:%M"                      ; Format the time string
- fill-column 80                                   ; Set width for automatic line breaks
- help-window-select t                             ; Focus new help windows when opened
- indent-tabs-mode nil                             ; Use tabs to indent
- inhibit-startup-screen t                         ; Disable start-up screen
- initial-scratch-message ""                       ; Empty the initial *scratch* buffer
- mouse-yank-at-point t                            ; Yank at point rather than pointer
- ns-use-srgb-colorspace nil                       ; Don't use sRGB colors
- select-enable-clipboard t                        ; Merge system's and Emacs' clipboard
- sentence-end-double-space nil                    ; End a sentence after a dot and a space
- show-help-function nil                           ; Disable help messages
- show-trailing-whitespace t                       ; Display trailing whitespaces
- split-height-threshold nil                       ; Disable vertical window splitting
- split-width-threshold nil                        ; Disable horizontal window splitting
- tab-width 4                                      ; Set width for tabs
- uniquify-buffer-name-style 'forward              ; Uniquify buffer names
- window-combination-resize t                      ; Resize windows proportionally
- x-stretch-cursor t                               ; Stretch cursor to the glyph width
- delete-old-versions -1                           ; Delete excess backup versions silently
- version-control t                                ; Use version control
- ring-bell-function 'ignore                       ; Silent bell when you make a mistake
- inhibit-compacting-font-caches t                 ; Faster navigation point (costs more memory)
- recentf-mode t                                   ; Keep recent files
- make-backup-files nil                            ; Stop creating backup files
- vc-follow-symlinks t                             ; When the symlink points to a version-controlled file
- use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
- frame-inhibit-implied-resize nil                ; Don't ask for confirmation when opening symlinked file
- )
-
-(cd "~/")                                         ; Move to the user directory
-(delete-selection-mode 1)                         ; Replace region when inserting text
-(display-time-mode 1)                             ; Enable time in the mode-line
-(global-hl-line-mode 1)                           ; HIghlight the cursor line
-(display-battery-mode 1)                          ; Display battery percentage in modeline
-(global-auto-revert-mode 1)                       ; Automatically revert a buffer when it changes on disk
-(fringe-mode '(8 . 0))                            ; Enable fringe on the left for git-gutter-fringe+
-(electric-pair-mode t)                            ; Enable Matching delimeters
-(electric-indent-mode t)                          ; Auto indentation
-(fset 'yes-or-no-p 'y-or-n-p)                     ; Replace yes/no prompts with y/n
-(global-subword-mode 1)                           ; Iterate through CamelCase words
-(menu-bar-mode 1)                                 ; Enable the menu bar for macOS Full Screen
-(mouse-avoidance-mode 'jump)                      ; Avoid collision of mouse with point
-(put 'downcase-region 'disabled nil)              ; Enable downcase-region
-(put 'upcase-region 'disabled nil)                ; Enable upcase-region
-(show-paren-mode 1)                               ; Highlight matching parenthesis
 
 (setq find-file-visit-truename t
       vc-follow-symlinks t)
@@ -219,3 +170,9 @@
 
 (if (fboundp 'mac-auto-operator-composition-mode)
     (mac-auto-operator-composition-mode))
+
+(setq tramp-default-method "ssh")
+(define-key global-map (kbd "C-c t") 'helm-tramp)
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))

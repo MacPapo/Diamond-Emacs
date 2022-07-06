@@ -3,7 +3,6 @@
 ;; MacPapo config started in 2022
 
 (use-package auto-package-update
-  :ensure t
   :commands update-packages
   :custom
   (auto-package-update-delete-old-versions t)
@@ -12,22 +11,18 @@
   )
 
 (use-package gcmh
-  :ensure t
+  :demand t
   :config
   (gcmh-mode 1)
   )
 
 (use-package org-auto-tangle
-  :ensure t
-  :defer t
   :hook (org-mode . org-auto-tangle-mode)
   :config
   (setq org-auto-tangle-default t)
   )
 
 (use-package no-littering
-  :ensure t
-  :defer t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
@@ -40,7 +35,6 @@
   )
 
 (use-package projectile
-:ensure t
 :init
 (projectile-mode +1)
 :config
@@ -51,7 +45,6 @@
             ("C-c p" . projectile-command-map)))
 
 (use-package helm
-  :ensure t
   :config
   (require 'helm-config)
   (setq helm-split-window-in-side-p t
@@ -69,19 +62,18 @@
   )
 
 (use-package helm-projectile
-  :ensure t
-  :init (helm-projectile-on)
-  )
+  :init (helm-projectile-on))
+
+(use-package helm-tramp)
+
+(use-package docker-tramp)
 
 (use-package savehist
-  :ensure t
-  :defer t
+  :demand t
   :init
-  (savehist-mode)
-  )
+  (savehist-mode))
 
 (use-package which-key
-  :ensure t
   :init
   (which-key-mode)
   :config
@@ -92,25 +84,20 @@
   :diminish which-key-mode
   )
 
-(use-package all-the-icons
-  :ensure t
-  )
+(use-package all-the-icons)
 
 (use-package all-the-icons-dired
-  :ensure t
-  :defer t
   :hook
-  (dired-mode . all-the-icons-dired-mode)
-  )
+  (dired-mode . all-the-icons-dired-mode))
 
 (use-package solaire-mode
-  :ensure t
-  :defer t
-  :hook (after-init . solaire-global-mode)
-  )
+  :hook (after-init . solaire-global-mode))
+
+(use-package auto-dark
+  :demand t)
 
 (use-package dashboard
-  :ensure t
+  :demand t
   :init
   (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
   (progn
@@ -155,8 +142,7 @@
   )
 
 (use-package winum
-  :ensure t
-  :defer t
+  :demand t
   :custom
   (winum-auto-setup-mode-line t)
   :config
@@ -173,8 +159,6 @@
 
 (use-package magit
   :commands magit-file-delete
-  :ensure t
-  :defer t
   :init
   (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
   ;; Must be set early to prevent ~/.emacs.d/transient from being created
@@ -196,32 +180,19 @@
   )
 
 (use-package org-modern
-  :ensure t
   :config
-  (global-org-modern-mode)
-  )
+  (global-org-modern-mode))
 
 (use-package olivetti
-  :ensure t
-  :defer t
-  :bind ("C-M-z" . olivetti-mode)
-  )
+  :bind ("C-M-z" . olivetti-mode))
 
-(use-package vterm
-  :ensure t
-  :defer t
-  )
+(use-package vterm)
 
 (use-package vterm-toggle
-  :ensure t
-  :defer t
   :bind
-  ("C-c v" . vterm-toggle)
-  )
+  ("C-c v" . vterm-toggle))
 
 (use-package eshell
-  :ensure t
-  :defer t
   :hook
   ;; (eshell-load . (lambda ()
   ;;                       (eshell-git-prompt-use-theme 'multiline2)))
@@ -245,8 +216,6 @@
   )
 
 (use-package eshell-toggle
-    :ensure t
-    :defer t
     :custom
     (eshell-toggle-size-fraction 3)
     (eshell-toggle-run-command nil)
@@ -257,8 +226,7 @@
     )
 
 (use-package mu4e
-  :ensure nil
-  :defer 5
+  :defer 10
   :load-path "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu4e/"
   :config
   (setq mu4e-update-interval 300)            ; Update interval (seconds)
@@ -282,8 +250,6 @@
   )
 
 (use-package pdf-tools
-  :ensure t
-  :defer t
   :magic ("%PDF" . pdf-view-mode)
   :config   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-page)
@@ -292,6 +258,4 @@
   )
 
 (use-package saveplace-pdf-view
-  :ensure t
-  :defer t
   :after pdf-view)

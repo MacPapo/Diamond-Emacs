@@ -8,16 +8,18 @@
              '("org" . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
-
-(setq package-enable-at-startup nil)
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
- (package-refresh-contents)
- (package-install 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-(eval-when-compile
- (require 'use-package))
+(require 'use-package-ensure)
+(setq use-package-always-pin  "melpa"
+      use-package-always-ensure t
+      use-package-compute-statistics t
+      use-package-verbose t
+      use-package-always-defer t)
 
 (setq packages "~/.emacs.d/packages.el")
 (load-file packages)
@@ -32,8 +34,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(helm page-break-line winum vterm-toggle use-package solaire-mode saveplace-pdf-view pdf-tools org-modern org-auto-tangle olivetti no-littering magit gcmh eshell-toggle auto-package-update)))
+ '(auto-dark--dark-theme 'modus-vivendi)
+ '(auto-dark--light-theme 'modus-operandi)
+ '(auto-dark--polling-interval-seconds 1)
+ '(package-selected-packages '(helm-tramp exec-path-from-shell all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
