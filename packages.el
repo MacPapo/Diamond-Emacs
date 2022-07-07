@@ -10,11 +10,17 @@
   (auto-package-update-at-time "03:00")
   )
 
+;; Garbage Collector Magic Hack
 (use-package gcmh
-  :demand t
-  :config
+  :demand
+  :init
+  ;; 在 minibuffer 显示 GC 信息。
+  (setq garbage-collection-messages t)
+  (setq gcmh-verbose t)
+  (setq gcmh-idle-delay 5)
+  (setq gcmh-high-cons-threshold (* 64 1024 1024))
   (gcmh-mode 1)
-  )
+  (gcmh-set-high-threshold))
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode)
@@ -64,12 +70,13 @@
 (use-package helm-projectile
   :init (helm-projectile-on))
 
-(use-package helm-tramp)
+(use-package helm-tramp
+  :bind (("C-c t s" . helm-tramp)
+         ("C-c t q" . helm-tramp-quit)))
 
 (use-package docker-tramp)
 
 (use-package savehist
-  :demand t
   :init
   (savehist-mode))
 
@@ -92,9 +99,6 @@
 
 (use-package solaire-mode
   :hook (after-init . solaire-global-mode))
-
-(use-package auto-dark
-  :demand t)
 
 (use-package dashboard
   :demand t
@@ -142,7 +146,6 @@
   )
 
 (use-package winum
-  :demand t
   :custom
   (winum-auto-setup-mode-line t)
   :config
@@ -259,3 +262,14 @@
 
 (use-package saveplace-pdf-view
   :after pdf-view)
+
+(use-package exec-path-from-shell
+  :demand
+  :custom
+  ;; 去掉 -i 参数, 加快启动速度。
+  (exec-path-from-shell-arguments '("-l")) 
+  (exec-path-from-shell-check-startup-files nil)
+  (exec-path-from-shell-variables '("PATH" "MANPATH"))
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))

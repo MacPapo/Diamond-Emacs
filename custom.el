@@ -109,7 +109,7 @@
 
 (setq enable-recursive-minibuffers t)
 
-(setq echo-keystrokes 0.02)
+(setq echo-keystrokes 0.1)
 
 (setq resize-mini-windows 'grow-only)
 
@@ -173,7 +173,48 @@
     (mac-auto-operator-composition-mode))
 
 (setq tramp-default-method "ssh")
-(define-key global-map (kbd "C-c t") 'helm-tramp)
+(setq tramp-save-ad-hoc-proxies nil)
+(setq remote-file-name-inhibit-cache 600)
+(setq tramp-inline-compress-start-size (* 1024 8))
+(setq tramp-copy-size-limit (* 1024 1024 2))
+(setq tramp-allow-unsafe-temporary-files t)
+(setq tramp-auto-save-directory temporary-file-directory)
+(setq tramp-persistency-file-name (expand-file-name "tramp-connection-history" user-emacs-directory))
+(setq password-cache-expiry nil)
+(add-to-list 'backup-directory-alist (cons tramp-file-name-regexp nil))
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+(defun my/load-theme (appearance)
+  "Load theme, taking current system APPEARANCE into consideration."
+  (mapc #'disable-theme custom-enabled-themes)
+  (pcase appearance
+    ('light (load-theme 'tango t))
+    ('dark (load-theme 'tango-dark t))))
+
+(add-hook 'ns-system-appearance-change-functions #'my/load-theme)
+
+;; 提升 IO 性能。
+(setq process-adaptive-read-buffering nil)
+;; 增加单次读取进程输出的数据量（缺省 4KB) 。
+(setq read-process-output-max (* 1024 1024))
+
+;; 提升长行处理性能。
+(setq bidi-inhibit-bpa t)
+(setq-default bidi-display-reordering 'left-to-right)
+(setq-default bidi-paragraph-direction 'left-to-right)
+
+;; 缩短 fontify 时间。
+(setq jit-lock-defer-time nil)
+(setq jit-lock-context-time 0.1)
+;; 更积极的 fontify 。
+(setq fast-but-imprecise-scrolling nil)
+(setq redisplay-skip-fontification-on-input nil)
+
+;; 缩短更新 screen 的时间。
+(setq idle-update-delay 0.1)
+
+
+;; 显示消息超时的时间。
+(setq minibuffer-message-timeout 1)
+
+;; 使用字体缓存，避免卡顿。
+(setq inhibit-compacting-font-caches t)

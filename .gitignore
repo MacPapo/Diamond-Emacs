@@ -35,3 +35,4 @@ auto-save-list/*
 .last_package-update-day
 places
 tramp
+tramp-connection-history
