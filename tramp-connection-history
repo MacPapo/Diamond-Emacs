@@ -1,9 +1,8 @@
-;; -*- emacs-lisp -*- <22/07/07 11:02:54 /Users/macpapo/.emacs.d/tramp-connection-history>
+;; -*- emacs-lisp -*- <22/07/07 22:38:15 /Users/macpapo/.emacs.d/tramp-connection-history>
 ;; Tramp connection history.  Don't change this file.
 ;; Run `M-x tramp-cleanup-all-connections' instead.
 
-(((tramp-file-name "ssh" nil nil "openbsd" nil nil nil)
-  ("bzr" nil)
+(((tramp-file-name "ssh" "root" nil "openbsd" nil nil nil)
   ("null-device" "/dev/null")
   ("uname" "OpenBSD 7.1")
   ("locale" "LC_ALL=en_US.UTF-8")
@@ -31,7 +30,4 @@
   ("df-blocksize" 1024)
   ("df" "\\df -k")
   ("inotifywait" nil)
-  ("gio-monitor" "/usr/local/bin/gio")
-  ("git" nil)
-  ("hg" nil)
-  ("uid-integer" 0)))
+  ("gio-monitor" "/usr/local/bin/gio")))

@@ -36,3 +36,8 @@ auto-save-list/*
 places
 tramp
 tramp-connection-history
+straight/
+straight/*
+eln-cache/
+eln-cache/*
+eww-bookmarks

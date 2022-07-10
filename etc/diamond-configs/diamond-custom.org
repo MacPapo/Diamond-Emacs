@@ -16,18 +16,13 @@
 
 * Hide Emacs clutter for noobs
 
-*Disabled*:
-- scroll-bar
-- Tool-bar
-- Tool-tips
-
 #+BEGIN_SRC elisp
 
   (when window-system
     (scroll-bar-mode 0)
     (tool-bar-mode 0)
     (tooltip-mode 0)
-    )
+    (menu-bar-mode 0))
 
 #+END_SRC
 
@@ -41,431 +36,65 @@
 
 #+end_src
 
+* Font
+
+#+begin_src elisp
+  (when (member "Iosevka" (font-family-list))
+    (set-frame-font "Iosevka-16" t t))
+#+end_src
+
 * Better Default configuration
 
 #+BEGIN_SRC elisp
-  (setq-default
-   ad-redefinition-action 'accept                   ; Silence warnings for redefinition
-   auto-window-vscroll nil                          ; Lighten vertical scroll
-   confirm-kill-emacs 'yes-or-no-p                  ; Confirm before exiting Emacs
-   cursor-in-non-selected-windows nil               ; Hide the cursor in inactive windows
-   delete-by-moving-to-trash t                      ; Delete files to trash
-   display-time-default-load-average nil            ; Don't display load average
-   display-time-format "%H:%M"                      ; Format the time string
-   fill-column 80                                   ; Set width for automatic line breaks
-   bidi-paragraph-direction 'left-to-right
-   help-window-select t                             ; Focus new help windows when opened
-   indent-tabs-mode nil                             ; Use tabs to indent
-   inhibit-startup-screen t                         ; Disable start-up screen
-   initial-scratch-message ""                       ; Empty the initial *scratch* buffer
-   mouse-yank-at-point t                            ; Yank at point rather than pointer
-   ns-use-srgb-colorspace nil                       ; Don't use sRGB colors
-   select-enable-clipboard t                        ; Merge system's and Emacs' clipboard
-   sentence-end-double-space nil                    ; End a sentence after a dot and a space
-   show-help-function nil                           ; Disable help messages
-   show-trailing-whitespace t                       ; Display trailing whitespaces
-   split-height-threshold nil                       ; Disable vertical window splitting
-   split-width-threshold nil                        ; Disable horizontal window splitting
-   tab-width 4                                      ; Set width for tabs
-   uniquify-buffer-name-style 'forward              ; Uniquify buffer names
-   window-combination-resize t                      ; Resize windows proportionally
-   x-stretch-cursor t                               ; Stretch cursor to the glyph width
-   delete-old-versions -1                           ; Delete excess backup versions silently
-   version-control t                                ; Use version control
-   ring-bell-function 'ignore                       ; Silent bell when you make a mistake
-   inhibit-compacting-font-caches t                 ; Faster navigation point (costs more memory)
-   recentf-mode t                                   ; Keep recent files
-   make-backup-files nil                            ; Stop creating backup files
-   create-lockfiles nil
-   vc-follow-symlinks t                             ; When the symlink points to a version-controlled file
-   use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
-   frame-inhibit-implied-resize nil                ; Don't ask for confirmation when opening symlinked file
-   )
+(setq-default
+ indent-tabs-mode nil                             ; Use tabs to indent
+ inhibit-startup-screen t                         ; Disable start-up screen
+ initial-scratch-message ";; Kept you waiting huh!"  ; Empty the initial *scratch* buffer
+ select-enable-clipboard t                        ; Merge system's and Emacs' clipboard
+ sentence-end-double-space nil                    ; End a sentence after a dot and a space
+ display-time-default-load-average nil            ; Don't display load average
+ tab-width 4                                      ; Set width for tabs
+ uniquify-buffer-name-style 'forward              ; Uniquify buffer names
+ delete-old-versions -1                           ; Delete excess backup versions silently
+ make-backup-files nil                            ; Stop creating backup files
+ create-lockfiles nil
+ use-default-font-for-symbols nil                 ; Do not use the frame font when rendering emojis
+ frame-inhibit-implied-resize nil                 ; Don't ask for confirmation when opening symlinked file
+ )
+
+(delete-selection-mode 1)                          ; Replace region when inserting text
+(display-time-mode 1)                              ; Enable time in the mode-line
+(fringe-mode '(8 . 0))                             ; Enable fringe on the left for git-gutter-fringe+
+(display-battery-mode 1)                           ; Display battery percentage in modeline
+(global-auto-revert-mode 1)                        ; Automatically revert a buffer when it changes on disk
+(fset 'yes-or-no-p 'y-or-n-p)                      ; Replace yes/no prompts with y/n
+(global-subword-mode 1)                            ; Iterate through CamelCase words
+
 #+END_SRC
 
 * Other config
 
 #+BEGIN_SRC elisp
-(cd "~/")                                         ; Move to the user directory
-(delete-selection-mode 1)                         ; Replace region when inserting text
-(display-time-mode 1)                             ; Enable time in the mode-line
-(global-hl-line-mode 1)                           ; HIghlight the cursor line
-(display-battery-mode 1)                          ; Display battery percentage in modeline
-(global-auto-revert-mode 1)                       ; Automatically revert a buffer when it changes on disk
-(fringe-mode '(8 . 0))                            ; Enable fringe on the left for git-gutter-fringe+
-(electric-pair-mode t)                            ; Enable Matching delimeters
-(electric-indent-mode t)                          ; Auto indentation
-(fset 'yes-or-no-p 'y-or-n-p)                     ; Replace yes/no prompts with y/n
-(global-subword-mode 1)                           ; Iterate through CamelCase words
-(menu-bar-mode 1)                                 ; Enable the menu bar for macOS Full Screen
-(mouse-avoidance-mode 'jump)                      ; Avoid collision of mouse with point
-(put 'downcase-region 'disabled nil)              ; Enable downcase-region
-(put 'upcase-region 'disabled nil)                ; Enable upcase-region
-(show-paren-mode 1)                               ; Highlight matching parenthesis
+(setq process-adaptive-read-buffering nil)
+(setq read-process-output-max (* 1024 1024))
+
+(setq bidi-inhibit-bpa t)
+(setq-default bidi-display-reordering 'left-to-right)
+(setq-default bidi-paragraph-direction 'left-to-right)
+
+(setq jit-lock-defer-time nil)
+(setq jit-lock-context-time 0.1)
+(setq fast-but-imprecise-scrolling nil)
+(setq redisplay-skip-fontification-on-input nil)
+(setq idle-update-delay 0.1)
+
+(setq minibuffer-message-timeout 1)
+
+(setq inhibit-compacting-font-caches t)                              ; Highlight matching parenthesis
 #+END_SRC
 
-* Save Place
-
+* Emacs Follow Appearance
 #+begin_src elisp
-  (save-place-mode 1)
+  (require 'emacs-mac-follow-appearance)
 #+end_src
 
-* Hacks
-
-Resolve symlinks when opening files, so that any operations are conducted
-from the file's true directory (like `find-file').
-
-#+BEGIN_SRC elisp
-
-  (setq find-file-visit-truename t
-        vc-follow-symlinks t)
-
-#+END_SRC
-
-Disable the warning "X and Y are the same file". It's fine to ignore this
-warning as it will redirect you to the existing buffer anyway.
-
-#+BEGIN_SRC elisp
-
-  (setq find-file-suppress-same-file-warnings t)
-
-#+END_SRC
-
-* Clipboard / Kill-ring
-
-Cull duplicates in the kill ring to reduce bloat and make the kill ring
-easier to peruse (with `counsel-yank-pop' or `helm-show-kill-ring'.
-
-#+BEGIN_SRC elisp
-
-  (setq kill-do-not-save-duplicates t)
-
-#+END_SRC
-
-* Extra file extensions to support
-
-#+BEGIN_SRC elisp
-
-  (nconc
-   auto-mode-alist
-   '(("/LICENSE\\'" . text-mode)
-     ("\\.log\\'" . text-mode)
-     ("rc\\'" . conf-mode)
-     ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode))
-   )
-
-#+END_SRC
-
-* Confirmations
-
-Don't prompt for confirmation when we create a new file or buffer (assume the
-user knows what they're doing).
-
-#+BEGIN_SRC elisp
-
-  (setq confirm-nonexistent-file-or-buffer nil)
-
-#+END_SRC
-
-* Scrolling
-
-Emacs spends too much effort recentering the screen if you scroll the
-cursor more than N lines past window edges (where N is the settings of
-`scroll-conservatively'). This is especially slow in larger files
-during large-scale scrolling commands. If kept over 100, the window is
-never automatically recentered.
-
-Reduce cursor lag by a tiny bit by not auto-adjusting `window-vscroll'
-for tall lines.
-
-#+BEGIN_SRC elisp
-
-  (setq hscroll-margin 2
-         hscroll-step 1
-         scroll-conservatively 101
-         scroll-margin 0
-         scroll-preserve-screen-position t
-         auto-window-vscroll nil
-         mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-         mouse-wheel-scroll-amount-horizontal 2
-         )
-
-#+END_SRC
-
-* Cursor customization
-
-Don't blink the paren matching the one at point, it's too distracting.
-
-#+BEGIN_SRC elisp
-
-  (setq blink-matching-paren nil)
-
-#+END_SRC
-
-Don't stretch the cursor to fit wide characters, it is disorienting,
-especially for tabs.
-
-#+BEGIN_SRC elisp
-
-  (setq x-stretch-cursor nil)
-
-#+END_SRC
-
-* Diamond buffer Title
-
-#+BEGIN_SRC elisp
-
-  (setq frame-title-format '("%b – Diamond Emacs")
-        icon-title-format frame-title-format)
-
-#+END_SRC
-
-* Resizing
-
-Don't resize the frames in steps; it looks weird, especially in tiling window
-managers, where it can leave unseemly gaps.
-
-#+BEGIN_SRC elisp
-
-  (setq frame-resize-pixelwise t)
-
-#+END_SRC
-
-But do not resize windows pixelwise, this can cause crashes in some cases
-when resizing too many windows at once or rapidly.
-
-#+BEGIN_SRC elisp
-
-  (setq window-resize-pixelwise nil)
-
-#+END_SRC
-
-* Minibuffer
-
-Allow for minibuffer-ception. Sometimes we need another minibuffer command
-while we're in the minibuffer.
-
-#+BEGIN_SRC elisp
-
-  (setq enable-recursive-minibuffers t)
-
-#+END_SRC
-
-Show current key-sequence in minibuffer ala 'set showcmd' in vim. Any
-feedback after typing is better UX than no feedback at all.
-
-#+BEGIN_SRC elisp
-
-  (setq echo-keystrokes 0.1)
-
-#+END_SRC
-
-
-Expand the minibuffer to fit multi-line text displayed in the echo-area. This
-doesn't look too great with direnv, however...
-#+BEGIN_SRC elisp
-
-  (setq resize-mini-windows 'grow-only)
-
-#+END_SRC
-
-* Line numbers
-
-Explicitly define a width to reduce the cost of on-the-fly computation
-
-Show absolute line numbers for narrowed regions to make it easier to tell the
-buffer is narrowed, and where you are, exactly.
-
-#+BEGIN_SRC elisp
-
-  (setq-default display-line-numbers-width 3)
-
-  (setq-default display-line-numbers-widen t)
-
-#+END_SRC
-
-* Built-it Packages
-
-#+BEGIN_SRC elisp
-
-  (setq ansi-color-for-comint-mode t)
-  (setq org-hide-emphasis-markers t)
-
-#+END_SRC
-
-* Diamond User
-
-#+BEGIN_SRC elisp
-
-  (setq user-full-name "Jacopo Costantini")
-  (setq user-mail-address "891938@stud.unive.it")
-
-#+END_SRC
-
-* Eletric
-
-make electric-pair-mode work on more brackets
-
-#+BEGIN_SRC elisp
-
-  (setq electric-pair-pairs
-        '(
-          (?\" . ?\")
-          (?\{ . ?\}))
-        )
-
-#+END_SRC
-
-* Encoding
-
-UTF-8 as default encoding
-
-#+BEGIN_SRC elisp
-
-  (set-default-coding-systems 'utf-8)
-  (set-language-environment "UTF-8")
-  (prefer-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-
-#+END_SRC
-
-highlight brackets if visible, else entire expression
-#+begin_src elisp
-
-  (setq show-paren-style 'mixed)
-
-#+end_src
-
-* Modus Theme customizations
-
-** Modeline
-
-#+begin_SRC elisp
-
-  (setq modus-themes-mode-line '(borderless)
-        )
-
-  #+END_SRC
-
-** Selection
-
-  #+begin_src elisp
-  (setq modus-themes-region '(bg-only))
-  #+end_src
-
-** Completion
-
-  #+begin_src elisp
-  (setq modus-themes-completions 'opinionated)
-  #+end_src
-
-#+begin_src elisp
-(setq modus-themes-completions
-        '((matches . (extrabold background intense))
-          (selection . (semibold accented intense))
-          (popup . (accented))))
-#+end_src
-
-
-** Syntax
-
-#+begin_src elisp
-
-  (setq modus-themes-bold-constructs t)
-  (setq modus-themes-italic-constructs t)
-  (setq modus-themes-paren-match '(bold intense))
-  (setq modus-themes-hl-line t)
-  (setq modus-themes-prompts '(bold italic)
-        )
-
-#+end_src
-
-
-** Org
-
-  #+begin_src elisp
-  (setq modus-themes-headings
-        '((1 . (rainbow background 1.4))
-          (2 . (rainbow background 1.3))
-          (3 . (rainbow bold 1.2))
-          (4 . (semilight 1.1))))
-
-  (setq modus-themes-org-blocks nil)
-  (setq modus-themes-scale-headings t)
-  #+end_src
-
-** Modus load
-
-  #+begin_src elisp
-  (load-theme 'modus-operandi t)
-  #+end_src
-
-* Font attribute
-
-#+BEGIN_SRC elisp
-(when (member "Iosevka" (font-family-list))
-  (set-frame-font "Iosevka-16" t t))
-#+END_SRC
-
-Enable Ligatures in Emacs Mac
-
-#+begin_src elisp
-  (if (fboundp 'mac-auto-operator-composition-mode)
-      (mac-auto-operator-composition-mode))
-#+end_src
-
-* Tramp config
-
-#+begin_src elisp
-  (setq tramp-default-method "ssh")
-  (setq tramp-save-ad-hoc-proxies nil)
-  (setq remote-file-name-inhibit-cache 600)
-  (setq tramp-inline-compress-start-size (* 1024 8))
-  (setq tramp-copy-size-limit (* 1024 1024 2))
-  (setq tramp-allow-unsafe-temporary-files t)
-  (setq tramp-auto-save-directory temporary-file-directory)
-  (setq tramp-persistency-file-name (expand-file-name "tramp-connection-history" user-emacs-directory))
-  (setq password-cache-expiry nil)
-  (add-to-list 'backup-directory-alist (cons tramp-file-name-regexp nil))
-#+end_src
-
-#+begin_src elisp
-  (defun my/load-theme (appearance)
-    "Load theme, taking current system APPEARANCE into consideration."
-    (mapc #'disable-theme custom-enabled-themes)
-    (pcase appearance
-      ('light (load-theme 'tango t))
-      ('dark (load-theme 'tango-dark t))))
-
-  (add-hook 'ns-system-appearance-change-functions #'my/load-theme)
-#+end_src
-
-
-#+begin_src elisp
-  ;; 提升 IO 性能。
-  (setq process-adaptive-read-buffering nil)
-  ;; 增加单次读取进程输出的数据量（缺省 4KB) 。
-  (setq read-process-output-max (* 1024 1024))
-
-  ;; 提升长行处理性能。
-  (setq bidi-inhibit-bpa t)
-  (setq-default bidi-display-reordering 'left-to-right)
-  (setq-default bidi-paragraph-direction 'left-to-right)
-
-  ;; 缩短 fontify 时间。
-  (setq jit-lock-defer-time nil)
-  (setq jit-lock-context-time 0.1)
-  ;; 更积极的 fontify 。
-  (setq fast-but-imprecise-scrolling nil)
-  (setq redisplay-skip-fontification-on-input nil)
-
-  ;; 缩短更新 screen 的时间。
-  (setq idle-update-delay 0.1)
-
-
-  ;; 显示消息超时的时间。
-  (setq minibuffer-message-timeout 1)
-
-  ;; 使用字体缓存，避免卡顿。
-  (setq inhibit-compacting-font-caches t)
-#+end_src
