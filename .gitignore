@@ -41,3 +41,5 @@ straight/*
 eln-cache/
 eln-cache/*
 eww-bookmarks
+.emacs.desktop
+.emacs.desktop.lock

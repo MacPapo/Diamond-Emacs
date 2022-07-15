@@ -1,33 +1,5 @@
-;; -*- emacs-lisp -*- <22/07/07 22:38:15 /Users/macpapo/.emacs.d/tramp-connection-history>
+;; -*- emacs-lisp -*- <22/07/14 23:53:42 /Users/macpapo/.emacs.d/tramp-connection-history>
 ;; Tramp connection history.  Don't change this file.
 ;; Run `M-x tramp-cleanup-all-connections' instead.
 
-(((tramp-file-name "ssh" "root" nil "openbsd" nil nil nil)
-  ("null-device" "/dev/null")
-  ("uname" "OpenBSD 7.1")
-  ("locale" "LC_ALL=en_US.UTF-8")
-  ("test" "test")
-  ("remote-path"
-   ("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/usr/X11R6/bin" "/usr/local/bin" "/usr/local/sbin"))
-  ("pipe-buf" 512)
-  ("remote-shell" "/bin/sh")
-  ("~" "/root")
-  ("file-exists" "test -e")
-  ("case-insensitive" nil)
-  ("readlink" nil)
-  ("perl-file-spec" t)
-  ("perl-cwd-realpath" t)
-  ("perl" "\\perl")
-  ("stat" nil)
-  ("id" "/usr/bin/id")
-  ("gid-integer" 0)
-  ("gid-string" "wheel")
-  ("uid-string" "root")
-  ("ls" "/bin/ls")
-  ("ls--quoting-style=literal --show-control-chars" nil)
-  ("ls-w" nil)
-  ("ls--dired" nil)
-  ("df-blocksize" 1024)
-  ("df" "\\df -k")
-  ("inotifywait" nil)
-  ("gio-monitor" "/usr/local/bin/gio")))
+(nil)

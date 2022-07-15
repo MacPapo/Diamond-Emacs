@@ -18,12 +18,12 @@
 ;;; Code:
 
 (defcustom emfa/dark-theme 'modus-vivendi
-  "The theme to enable when Dark appearance is active. Cannot be nil."
+  "The theme to enable when Dark appearance is active.  Cannot be nil."
   :type 'symbol
   :group 'emacs-mac-follow-appearance)
 
 (defcustom emfa/light-theme 'modus-operandi
-  "The theme to enable when Dark appearance is active. Nil means default theme will be used."
+  "The theme to enable when Dark appearance is active.  Nil means default theme will be used."
   :type 'symbol
   :group 'emacs-mac-follow-appearance)
 
