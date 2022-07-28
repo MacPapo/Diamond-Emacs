@@ -33,7 +33,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(auto-complete web-mode winum vterm-toggle vertico use-package undo-tree solaire-mode show-font-mode saveplace-pdf-view pdf-tools org-modern org-auto-tangle olivetti no-littering magit helm-descbinds gcmh eshell-toggle dashboard auto-package-update all-the-icons-dired)))
+   '(markdown-preview-mode markdown-mode web-mode winum vterm-toggle vertico use-package undo-tree solaire-mode show-font-mode saveplace-pdf-view pdf-tools org-modern org-auto-tangle olivetti no-littering magit helm-descbinds gcmh eshell-toggle dashboard auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

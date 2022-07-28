@@ -506,11 +506,12 @@ It allows you to recover any past state of a buffer
 
 #+begin_src elisp
 
-(use-package undo-tree
-  :ensure t
-  :config
-  (global-undo-tree-mode)
-  )
+  (use-package undo-tree
+    :ensure t
+    :config
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-parent-buffer t)
+    )
 
 #+end_src
 
@@ -583,5 +584,23 @@ Company is a text completion framework for Emacs
            ("C-c f n" . origami-forward-fold)
            )
     )
+
+#+end_src
+
+*** Multimarkdown processor
+
+#+begin_src elisp
+
+  (use-package markdown-mode
+    :ensure t
+    :defer 1
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "multimarkdown"))
+
+
+  (use-package markdown-preview-mode
+    :ensure t
+    :defer 1
+    :bind (("C-c m o" . markdown-preview-mode)))
 
 #+end_src
