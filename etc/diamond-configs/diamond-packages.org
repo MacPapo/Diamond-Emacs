@@ -604,3 +604,16 @@ Company is a text completion framework for Emacs
     :bind (("C-c m o" . markdown-preview-mode)))
 
 #+end_src
+
+*** Ox-twbs
+Output your org-mode docs with a simple, clean and modern look.
+
+#+begin_src elisp
+
+    (use-package ox-twbs
+      :ensure t
+      :defer 2
+      ;;:bind (("C-c e h" . org-twbs-export-to-html))
+      )
+
+#+end_src

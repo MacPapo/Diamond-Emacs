@@ -354,3 +354,9 @@
   :ensure t
   :defer 1
   :bind (("C-c m o" . markdown-preview-mode)))
+
+(use-package ox-twbs
+  :ensure t
+  :defer 2
+  ;;:bind (("C-c e h" . org-twbs-export-to-html))
+  )
