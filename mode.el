@@ -45,3 +45,5 @@
   (setq web-mode-enable-block-face t)
   )
 (add-hook 'web-mode-hook  'my-web-mode-hook)
+
+(add-to-list 'auto-mode-alist '("\\.ixx\\'" . c++-mode))

@@ -86,3 +86,9 @@
   (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 #+end_src
+
+** CPP configuration (*.ixx files)
+
+#+begin_src elisp
+  (add-to-list 'auto-mode-alist '("\\.ixx\\'" . c++-mode))
+#+end_src

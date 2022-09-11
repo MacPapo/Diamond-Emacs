@@ -319,6 +319,16 @@ Magit Integration, the best Git interface
 
 #+END_SRC
 
+** Docker package
+
+#+begin_src elisp
+
+  (use-package docker
+    :ensure t
+    :bind ("C-c d" . docker))
+
+#+end_src
+
 ** Org Mode
 
 Org Mode is one of the best feature of Emacs and Diamond Emacs want to create a perfect harmony between writing and visualizing content in Org files

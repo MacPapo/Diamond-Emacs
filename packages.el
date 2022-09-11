@@ -194,6 +194,10 @@
          ("C-x C-g" . magit-status))
   )
 
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
 (use-package org-modern
   :ensure t
   :config
