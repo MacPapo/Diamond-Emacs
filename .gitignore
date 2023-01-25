@@ -43,3 +43,4 @@ eln-cache/*
 eww-bookmarks
 .emacs.desktop
 .emacs.desktop.lock
+/.last-package-update-day

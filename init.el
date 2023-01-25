@@ -14,7 +14,8 @@
 
 (eval-and-compile
   (setq use-package-always-ensure t
-        use-package-expand-minimally t))
+        use-package-expand-minimally t
+	package-check-signature nil))
 
 (eval-when-compile
   (require 'use-package))
