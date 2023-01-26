@@ -7,12 +7,13 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-;; Install use-package
+;; install use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
 (eval-and-compile
+  (require 'use-package-ensure)
   (setq use-package-always-ensure t
         use-package-expand-minimally t
 	package-check-signature nil))
@@ -40,7 +41,7 @@
 (set-terminal-coding-system 'utf-8-unix)
 
 (setq create-lockfiles nil)
-(setq select-enable-clipboard t)                   ; Merge system's and Emacs' clipboard
+(setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
 
 (electric-pair-mode)
 (when (member "Iosevka" (font-family-list))
@@ -81,7 +82,6 @@
 (display-battery-mode 1)
 (size-indication-mode 1)
 
-(setq recentf-auto-cleanup 'never)
 (setq recentf-max-menu-items 100)
 (setq recentf-max-saved-items 600)
 (setq recentf-exclude `(,(expand-file-name "straight/" user-emacs-directory)
@@ -116,7 +116,7 @@
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
-;; Always rescan buffer for imenu
+;; always rescan buffer for imenu
 (set-default 'imenu-auto-rescan t)
 
 ;; backup in one place. flat, no tree structure
@@ -127,8 +127,6 @@
   (setq ispell-dictionary "italian"))
 
 (with-eval-after-load 'org
-  (when (not (package-installed-p 'org-pomodoro))
-      (message "Installa ORG Pomodoro pindolo che ti te fa na pausa!"))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((R . t)
@@ -141,6 +139,21 @@
      (sql . t)
      (C . t)
      (sqlite . t))))
+
+(use-package org-pomodoro
+  :defer 5)
+
+(use-package olivetti
+  :defer 5
+  :config
+  (setq olivetti--visual-line-mode t)
+  :init
+  (defun olivetti-writer-mode ()
+    (text-scale-set +2)
+    (olivetti-mode 1)
+    (flyspell-mode 1))
+  :hook
+  ((text-mode . olivetti-writer-mode)))
 
 (use-package corfu
   :custom
@@ -172,12 +185,14 @@
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 
 (use-package auto-package-update
+  :defer 3
   :config
   (setq auto-package-update-delete-old-versions t)
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
 (use-package beacon
+  :defer 3
   :diminish beacon-mode
   :config
   (beacon-mode 1)
@@ -190,6 +205,7 @@
   (beacon-size                      20))
 
 (use-package magit
+  :defer 3
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
 
@@ -203,24 +219,33 @@
   (ivy-count-format "[%d/%d] ")
   (ivy-use-virtual-buffers t))
 
-(use-package swiper
-  :after ivy
-  :bind
-  (("C-s" . swiper-isearch)
-   ("C-r" . swiper-isearch-backward)))
-
 (use-package counsel
   :diminish counsel-mode
   :after ivy
   :config
   (counsel-mode)
   :bind
-  (("C-x b"   . counsel-switch-buffer)
+  (("C-x B"   . counsel-switch-buffer)
    ("C-x C-b" . counsel-ibuffer)
    ("C-x G"   . counsel-git)
-   ("C-x C-G"   . counsel-git-grep)
+   ("C-x C-G" . counsel-git-grep)
    ("C-x C-r" . counsel-rg)
    ("C-x M-l" . counsel-locate)))
+
+(use-package swiper
+  :after ivy
+  :bind
+  (("M-s s" . swiper)))
+
+(use-package amx
+  :after ivy
+  :custom
+  (amx-backend 'auto)
+  (amx-save-file (concat user-emacs-directory "amx-items"))
+  (amx-history-length 50)
+  (amx-show-key-bindings nil)
+  :config
+  (amx-mode 1))
 
 (use-package dashboard
   :custom
@@ -243,9 +268,8 @@
   :custom
   (winum-auto-setup-mode-line t)
   :hook (after-init . winum-mode)
-  :bind (
-         ;; Select the window with Meta
-         ("M-1" . winum-select-window-1)
+  ;; Select the window with Meta
+  :bind (("M-1" . winum-select-window-1)
          ("M-2" . winum-select-window-2)
          ("M-3" . winum-select-window-3)
          ("M-4" . winum-select-window-4)

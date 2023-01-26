@@ -8,7 +8,7 @@
  ;; If there is more than one, they won't work right.
  '(doc-view-continuous t)
  '(package-selected-packages
-   '(magit winum which-key dashboard diminish counsel consuel swiper ivy beacon corfu auto-package-update rg exec-path-from-shell org-pomodoro)))
+   '(olivetti counsel org-pomodoro winum which-key dashboard amx ivy magit beacon auto-package-update corfu exec-path-from-shell diminish)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
