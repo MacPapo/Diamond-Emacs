@@ -212,17 +212,15 @@
   :bind (("C-x g"   . magit-status)
          ("C-x C-g" . magit-status)))
 
-(require 'ido)
-(setq ido-everywhere t
-      ido-virtual-buffers t
-      ido-use-faces nil
-      ido-default-buffer-method 'selected-window
-      ido-auto-merge-work-directories-length -1)
-(ido-mode 1)
-
 (use-package ido-completing-read+
-  :requires ido
   :custom
+  (ido-virtual-buffers t)
+  (ido-use-virtual-buffers 'auto)
+  (ido-default-buffer-method 'selected-window)
+  (ido-auto-merge-work-directories-length -1)
+  :init
+  (ido-mode 1)
+  (ido-everywhere t)
   (ido-ubiquitous-mode 1))
 
 (use-package ido-at-point
@@ -236,11 +234,12 @@
   :init
   (ido-vertical-mode 1))
 
-(use-package flx-ido
-  :requires ido
-  :custom
-  (ido-enable-flex-matching t)
-  :config (flx-ido-mode))
+;; (use-package flx-ido
+;;   :requires ido
+;;   :custom
+;;   (ido-use-faces nil)
+;;   (ido-enable-flex-matching t)
+;;   :config (flx-ido-mode))
 
 (use-package smex
   :requires ido
@@ -248,57 +247,6 @@
   (smex-initialize)
   :bind
   (("M-x" . smex)))
-
-
-;; (use-package ivy
-;;   :diminish ivy-mode
-;;   :init
-;;   (ivy-mode 1)
-;;   :custom
-;;   (enable-recursive-minibuffers t)
-;;   (ivy-height 10)
-;;   (ivy-count-format "[%d/%d] ")
-;;   (ivy-use-virtual-buffers t))
-
-;; (use-package counsel
-;;   :diminish counsel-mode
-;;   :after ivy
-;;   :config
-;;   (counsel-mode)
-;;   :bind
-;;   (("C-x B"   . counsel-switch-buffer)
-;;    ("C-x C-b" . counsel-ibuffer)
-;;    ("C-x G"   . counsel-git)
-;;    ("C-x C-G" . counsel-git-grep)
-;;    ("C-x C-r" . counsel-rg)
-;;    ("C-x M-l" . counsel-locate)))
-
-;; (use-package swiper
-;;   :after ivy
-;;   :bind
-;;   (("M-s s" . swiper)))
-
-;; (use-package amx
-;;   :after ivy
-;;   :custom
-;;   (amx-backend 'auto)
-;;   (amx-save-file (concat user-emacs-directory "amx-items"))
-;;   (amx-history-length 50)
-;;   (amx-show-key-bindings nil)
-;;   :config
-;;   (amx-mode 1))
-
-;; (use-package dashboard
-;;   :custom
-;;   (dashboard-center-content t)
-;;   (dashboard-set-init-info t)
-;;   (dashboard-set-navigator t)
-;;   (dashboard-startup-banner (concat user-emacs-directory "banner/snake.gif"))
-;;   (dashboard-banner-logo-title "[ D I A M O N D   E M A C S ]")
-;;   :init
-;;   (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
-;;   :config
-;;   (dashboard-setup-startup-hook))
 
 (use-package which-key
   :diminish which-key-mode

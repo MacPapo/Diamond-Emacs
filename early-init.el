@@ -23,7 +23,8 @@
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
-  (menu-bar-mode 0))
+  (menu-bar-mode 0)
+  (setq inhibit-startup-message t))
 
 (fringe-mode '(8 . 0))
 (load-theme 'modus-vivendi t)
