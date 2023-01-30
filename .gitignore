@@ -45,3 +45,6 @@ eww-bookmarks
 .emacs.desktop.lock
 /.last-package-update-day
 /amx-items
+*.last
+/session.*
+/smex-items

@@ -40,6 +40,8 @@
 (set-keyboard-coding-system 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
+(setq gc-cons-threshold 20000000)
+
 (setq create-lockfiles nil)
 (setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
 
@@ -51,14 +53,15 @@
 		      :weight 'normal
 		      :width 'normal))
 
-(when (memq window-system '(mac ns))
+(if (memq window-system '(mac ns))
   (use-package exec-path-from-shell
     :ensure t
     :init
     (setq mac-command-modifier 'meta)
     (setq mac-option-modifier 'none)
     :config
-    (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
+   (setq x-super-keysym 'meta))
 
 (setq display-time-default-load-average nil)
 (setq use-short-answers t)
@@ -155,23 +158,23 @@
   :hook
   ((text-mode . olivetti-writer-mode)))
 
-(use-package corfu
-  :custom
-  (corfu-cycle t)
-  (corfu-auto t)
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 1)
-  (corfu-preselect 'prompt) ;; Always preselect the prompt
-  (corfu-quit-no-match 'separator)
-  (corfu-quit-at-boundary 'separator)
-  (corfu-preview-current 'insert)
-  (completion-styles '(basic))
-  :hook
-  ((prog-mode	. corfu-mode)
-   (shell-mode	. corfu-mode)
-   (eshell-mode . corfu-mode))
-  :init
-  (global-corfu-mode))
+;; (use-package corfu
+;;   :custom
+;;   (corfu-cycle t)
+;;   (corfu-auto t)
+;;   (corfu-auto-delay 0)
+;;   (corfu-auto-prefix 1)
+;;   (corfu-preselect 'prompt) ;; Always preselect the prompt
+;;   (corfu-quit-no-match 'separator)
+;;   (corfu-quit-at-boundary 'separator)
+;;   (corfu-preview-current 'insert)
+;;   (completion-styles '(basic))
+;;   :hook
+;;   ((prog-mode	. corfu-mode)
+;;    (shell-mode	. corfu-mode)
+;;    (eshell-mode . corfu-mode))
+;;   :init
+;;   (global-corfu-mode))
 
 ;;; Eglot
 (setq eglot-autoshutdown t)
@@ -206,58 +209,96 @@
 
 (use-package magit
   :defer 3
-  :bind (("C-x g" . magit-status)
+  :bind (("C-x g"   . magit-status)
          ("C-x C-g" . magit-status)))
 
-(use-package ivy
-  :diminish ivy-mode
+(require 'ido)
+(setq ido-everywhere t
+      ido-virtual-buffers t
+      ido-use-faces nil
+      ido-default-buffer-method 'selected-window
+      ido-auto-merge-work-directories-length -1)
+(ido-mode 1)
+
+(use-package ido-completing-read+
+  :requires ido
+  :custom
+  (ido-ubiquitous-mode 1))
+
+(use-package ido-at-point
+  :requires ido
+  :after ido
   :init
-  (ivy-mode 1)
-  :custom
-  (enable-recursive-minibuffers t)
-  (ivy-height 10)
-  (ivy-count-format "[%d/%d] ")
-  (ivy-use-virtual-buffers t))
+  (ido-at-point-mode))
 
-(use-package counsel
-  :diminish counsel-mode
-  :after ivy
-  :config
-  (counsel-mode)
-  :bind
-  (("C-x B"   . counsel-switch-buffer)
-   ("C-x C-b" . counsel-ibuffer)
-   ("C-x G"   . counsel-git)
-   ("C-x C-G" . counsel-git-grep)
-   ("C-x C-r" . counsel-rg)
-   ("C-x M-l" . counsel-locate)))
-
-(use-package swiper
-  :after ivy
-  :bind
-  (("M-s s" . swiper)))
-
-(use-package amx
-  :after ivy
-  :custom
-  (amx-backend 'auto)
-  (amx-save-file (concat user-emacs-directory "amx-items"))
-  (amx-history-length 50)
-  (amx-show-key-bindings nil)
-  :config
-  (amx-mode 1))
-
-(use-package dashboard
-  :custom
-  (dashboard-center-content t)
-  (dashboard-set-init-info t)
-  (dashboard-set-navigator t)
-  (dashboard-startup-banner (concat user-emacs-directory "banner/snake.gif"))
-  (dashboard-banner-logo-title "[ D I A M O N D   E M A C S ]")
+(use-package ido-vertical-mode
+  :requires ido
   :init
-  (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
-  :config
-  (dashboard-setup-startup-hook))
+  (ido-vertical-mode 1))
+
+(use-package flx-ido
+  :requires ido
+  :custom
+  (ido-enable-flex-matching t)
+  :config (flx-ido-mode))
+
+(use-package smex
+  :requires ido
+  :init
+  (smex-initialize)
+  :bind
+  (("M-x" . smex)))
+
+
+;; (use-package ivy
+;;   :diminish ivy-mode
+;;   :init
+;;   (ivy-mode 1)
+;;   :custom
+;;   (enable-recursive-minibuffers t)
+;;   (ivy-height 10)
+;;   (ivy-count-format "[%d/%d] ")
+;;   (ivy-use-virtual-buffers t))
+
+;; (use-package counsel
+;;   :diminish counsel-mode
+;;   :after ivy
+;;   :config
+;;   (counsel-mode)
+;;   :bind
+;;   (("C-x B"   . counsel-switch-buffer)
+;;    ("C-x C-b" . counsel-ibuffer)
+;;    ("C-x G"   . counsel-git)
+;;    ("C-x C-G" . counsel-git-grep)
+;;    ("C-x C-r" . counsel-rg)
+;;    ("C-x M-l" . counsel-locate)))
+
+;; (use-package swiper
+;;   :after ivy
+;;   :bind
+;;   (("M-s s" . swiper)))
+
+;; (use-package amx
+;;   :after ivy
+;;   :custom
+;;   (amx-backend 'auto)
+;;   (amx-save-file (concat user-emacs-directory "amx-items"))
+;;   (amx-history-length 50)
+;;   (amx-show-key-bindings nil)
+;;   :config
+;;   (amx-mode 1))
+
+;; (use-package dashboard
+;;   :custom
+;;   (dashboard-center-content t)
+;;   (dashboard-set-init-info t)
+;;   (dashboard-set-navigator t)
+;;   (dashboard-startup-banner (concat user-emacs-directory "banner/snake.gif"))
+;;   (dashboard-banner-logo-title "[ D I A M O N D   E M A C S ]")
+;;   :init
+;;   (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+;;   :config
+;;   (dashboard-setup-startup-hook))
 
 (use-package which-key
   :diminish which-key-mode
