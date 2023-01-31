@@ -40,8 +40,6 @@
 (set-keyboard-coding-system 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
-(setq gc-cons-threshold 20000000)
-
 (setq create-lockfiles nil)
 (setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
 
@@ -55,7 +53,6 @@
 
 (if (memq window-system '(mac ns))
   (use-package exec-path-from-shell
-    :ensure t
     :init
     (setq mac-command-modifier 'meta)
     (setq mac-option-modifier 'none)
@@ -80,6 +77,7 @@
 (global-subword-mode 1)
 (diminish 'subword-mode)
 (diminish 'eldoc-mode)
+(diminish 'hi-lock-mode)
 
 (display-time-mode 1)
 (display-battery-mode 1)
@@ -119,6 +117,20 @@
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
+
+;;; NEWSTICKER - RSS FEED
+(require 'newsticker)
+(setq newsticker-url-list
+      '(("EmacsWiki Recently Change"
+         "http://www.emacswiki.org/cgi-bin/emacs?action=rss;showedit=1"
+         nil nil nil)
+        ("Planet Emacs Life"
+         "https://planet.emacslife.com/atom.xml"
+         nil nil nil)
+        ("Haskell Planet"
+         "http://planet.haskell.org/rss20.xml"
+         nil nil nil)))
+
 ;; always rescan buffer for imenu
 (set-default 'imenu-auto-rescan t)
 
@@ -144,10 +156,13 @@
      (sqlite . t))))
 
 (use-package org-pomodoro
-  :defer 5)
+  :after org)
+
+(use-package org-bullets
+  :after org)
 
 (use-package olivetti
-  :defer 5
+  :after org
   :config
   (setq olivetti--visual-line-mode t)
   :init
@@ -157,24 +172,6 @@
     (flyspell-mode 1))
   :hook
   ((text-mode . olivetti-writer-mode)))
-
-;; (use-package corfu
-;;   :custom
-;;   (corfu-cycle t)
-;;   (corfu-auto t)
-;;   (corfu-auto-delay 0)
-;;   (corfu-auto-prefix 1)
-;;   (corfu-preselect 'prompt) ;; Always preselect the prompt
-;;   (corfu-quit-no-match 'separator)
-;;   (corfu-quit-at-boundary 'separator)
-;;   (corfu-preview-current 'insert)
-;;   (completion-styles '(basic))
-;;   :hook
-;;   ((prog-mode	. corfu-mode)
-;;    (shell-mode	. corfu-mode)
-;;    (eshell-mode . corfu-mode))
-;;   :init
-;;   (global-corfu-mode))
 
 ;;; Eglot
 (setq eglot-autoshutdown t)
@@ -208,13 +205,27 @@
   (beacon-size                      20))
 
 (use-package magit
-  :defer 3
+  :defer 5
   :bind (("C-x g"   . magit-status)
          ("C-x C-g" . magit-status)))
+
+(use-package forge
+  :after magit)
+
+;; (use-package magithub
+;;   :after magit
+;;   :config
+;;   (magithub-feature-autoinject t)
+;;   (setq magithub-clone-default-directory "~/Documents/Code"))
+
+(use-package magit-todos
+  :after magit)
 
 (use-package ido-completing-read+
   :custom
   (ido-virtual-buffers t)
+  (ido-use-faces t)
+  (ido-enable-flex-matching t)
   (ido-use-virtual-buffers 'auto)
   (ido-default-buffer-method 'selected-window)
   (ido-auto-merge-work-directories-length -1)
@@ -223,23 +234,12 @@
   (ido-everywhere t)
   (ido-ubiquitous-mode 1))
 
-(use-package ido-at-point
-  :requires ido
-  :after ido
-  :init
-  (ido-at-point-mode))
-
 (use-package ido-vertical-mode
   :requires ido
+  :custom
+  (ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
   :init
   (ido-vertical-mode 1))
-
-;; (use-package flx-ido
-;;   :requires ido
-;;   :custom
-;;   (ido-use-faces nil)
-;;   (ido-enable-flex-matching t)
-;;   :config (flx-ido-mode))
 
 (use-package smex
   :requires ido
@@ -248,7 +248,14 @@
   :bind
   (("M-x" . smex)))
 
+(use-package ido-at-point
+  :requires ido
+  :after ido
+  :init
+  (ido-at-point-mode))
+
 (use-package which-key
+  :defer 5
   :diminish which-key-mode
   :init
   (which-key-mode))
@@ -257,10 +264,133 @@
   :custom
   (winum-auto-setup-mode-line t)
   :hook (after-init . winum-mode)
-  ;; Select the window with Meta
   :bind (("M-1" . winum-select-window-1)
          ("M-2" . winum-select-window-2)
          ("M-3" . winum-select-window-3)
          ("M-4" . winum-select-window-4)
          ("M-5" . winum-select-window-5)
          ("M-6" . winum-select-window-6)))
+
+(use-package buffer-move
+  :defer 10
+  :config
+  (setq buffer-move-behavior 'move)
+  :bind
+  (("M-<up>"    . buf-move-up)
+   ("M-<down>"  . buf-move-down)
+   ("M-<left>"  . buf-move-left)
+   ("M-<right>" . buf-move-right)))
+
+(use-package ctrlf
+  :defer 5
+  :init
+  (ctrlf-mode +1))
+
+;; (use-package solaire-mode
+;;   :init
+;;   (solaire-global-mode +1))
+
+(use-package dimmer
+  :defer 3
+  :init
+  (dimmer-configure-which-key)
+  (dimmer-configure-helm)
+  (dimmer-mode t))
+
+(use-package indent-guide
+  :defer 12
+  :diminish indent-guide-mode
+  :custom
+  (indent-guide-delay 0.1)
+  :init
+  (indent-guide-global-mode))
+
+(use-package highlight-thing
+  :defer 14
+  :diminish highlight-thing-mode
+  :custom
+  (highlight-thing-exclude-thing-under-point t)
+  (highlight-thing-ignore-list '("False" "True"))
+  (highlight-thing-limit-to-region-in-large-buffers-p nil)
+  (highlight-thing-narrow-region-lines 15)
+  (highlight-thing-large-buffer-limit 5000)
+  :init
+  (global-highlight-thing-mode))
+
+(use-package multiple-cursors
+  :defer 16
+  :bind
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C-S-c C-S-a" . mc/edit-beginnings-of-lines)
+   ("C-S-c C-S-e" . mc/edit-ends-of-lines)
+   ("C-S-c C-S-w" . mc/mark-all-words-like-this)
+   ("C-S-c C-S-q" . mc/mark-all-words-like-this-in-defun)
+   ("C->"         . mc/mark-next-like-this)
+   ("C-<"         . mc/mark-previous-like-this)
+   ("C-c C-<"     . mc/mark-all-like-this)))
+
+(use-package phi-search
+  :after multiple-cursors
+  :bind
+  (("C-S-c C-s" . phi-search)
+   ("C-S-c C-r" . phi-search-backward)))
+
+(use-package smartparens
+  :hook
+  ((prog-mode . smartparens-mode)))
+
+(use-package move-dup
+  :defer 5
+  :bind
+  (("M-p"   . move-dup-move-lines-up)
+   ("M-n"   . move-dup-move-lines-down)
+   ("C-M-p" . move-dup-duplicate-up)
+   ("C-M-n" . move-dup-duplicate-down)))
+
+;; (use-package eshell-prompt-extras)
+
+;;; RUBY - TODO
+(use-package bundler
+  :defer 5)
+(use-package yari
+  :defer 6)
+(use-package robe
+  :defer 7)
+(use-package rspec-mode
+  :defer 8)
+(use-package rinari
+  :defer 9)
+
+;;; LISP - TODO
+(use-package lispy
+  :defer 5)
+(use-package sly
+  :defer 6)
+(use-package suggest
+  :defer 7)
+
+;;; HASKELL - TODO
+(use-package haskell-mode
+  :defer 8)
+
+;;; SWIFT - TODO
+(use-package swift-mode
+  :defer 10)
+
+;;; R - TODO
+(use-package ess
+  :defer 11)
+
+;;; MARKDOWN - TODO
+(use-package markdown-mode
+  :defer 10)
+(use-package grip-mode
+  :after markdown-mode)
+
+;;; LATEX - TODO
+;; (use-package auctex)
+;; (use-package latex-preview-pane)
+
+;;; DOCKER - TODO
+(use-package docker
+  :defer 10)

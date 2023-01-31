@@ -48,3 +48,7 @@ eww-bookmarks
 *.last
 /session.*
 /smex-items
+/.mc-lists.el
+/forge-database.sqlite
+/newsticker/
+/projects
