@@ -171,10 +171,10 @@
     (olivetti-mode 1)
     (flyspell-mode 1))
   :hook
-  ((text-mode . olivetti-writer-mode)))
+  ((org-mode . olivetti-writer-mode)))
 
 ;;; Eglot
-(setq eglot-autoshutdown t)
+;; (setq eglot-autoshutdown t)
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 (add-hook 'ruby-mode-hook 'eglot-ensure)
@@ -182,7 +182,7 @@
 ;; (add-hook 'rust-mode-hook 'eglot-ensure)
 
 ;; setup files ending in .java to open in java-tree-sitter-mode
-(add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
+;; (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 
 (use-package auto-package-update
   :defer 3
@@ -286,22 +286,17 @@
   :init
   (ctrlf-mode +1))
 
-;; (use-package solaire-mode
-;;   :init
-;;   (solaire-global-mode +1))
-
 (use-package dimmer
   :defer 3
   :init
   (dimmer-configure-which-key)
-  (dimmer-configure-helm)
   (dimmer-mode t))
 
 (use-package indent-guide
   :defer 12
   :diminish indent-guide-mode
   :custom
-  (indent-guide-delay 0.1)
+  (indent-guide-delay 0.2)
   :init
   (indent-guide-global-mode))
 
@@ -335,9 +330,9 @@
   (("C-S-c C-s" . phi-search)
    ("C-S-c C-r" . phi-search-backward)))
 
-(use-package smartparens
-  :hook
-  ((prog-mode . smartparens-mode)))
+;; (use-package smartparens
+;;   :hook
+;;   ((prog-mode . smartparens-mode)))
 
 (use-package move-dup
   :defer 5
@@ -346,8 +341,6 @@
    ("M-n"   . move-dup-move-lines-down)
    ("C-M-p" . move-dup-duplicate-up)
    ("C-M-n" . move-dup-duplicate-down)))
-
-;; (use-package eshell-prompt-extras)
 
 ;;; RUBY - TODO
 (use-package bundler
@@ -363,11 +356,15 @@
 
 ;;; LISP - TODO
 (use-package lispy
-  :defer 5)
+  :diminish lispy-mode
+  :hook
+  ((emacs-lisp-mode . lispy-mode)
+   (lisp-mode       . lispy-mode)))
+
 (use-package sly
-  :defer 6)
+  :defer 10)
 (use-package suggest
-  :defer 7)
+  :defer 20)
 
 ;;; HASKELL - TODO
 (use-package haskell-mode
@@ -394,3 +391,6 @@
 ;;; DOCKER - TODO
 (use-package docker
   :defer 10)
+
+(use-package csv-mode
+  :defer 20)
