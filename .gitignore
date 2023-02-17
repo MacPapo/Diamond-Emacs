@@ -57,3 +57,4 @@ eww-bookmarks
 /network-security.data
 /projectile.cache
 /tree-sitter/
+/.lsp-session*
