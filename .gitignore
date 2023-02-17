@@ -53,3 +53,7 @@ eww-bookmarks
 /newsticker/
 /projects
 /semanticdb/
+/.cache/
+/network-security.data
+/projectile.cache
+/tree-sitter/

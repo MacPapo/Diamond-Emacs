@@ -1,4 +1,7 @@
 ;;   -*- lexical-binding: t; -*-
+
+(defconst *is-a-mac* (eq system-type 'darwin))
+
 (require 'package)
 (setq package-archives '(("elpa"  . "https://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")
@@ -27,12 +30,44 @@
 (use-package diminish
   :ensure t)
 
+(use-package gcmh
+  :diminish gcmh-mode
+  :init
+  (gcmh-mode 1))
+
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+(unless (window-system nil)
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (tooltip-mode 0)
+  (menu-bar-mode 0)
+  (setq inhibit-startup-message t)
+  (if *is-a-mac*
+      (progn
+	(use-package exec-path-from-shell
+	  :init
+	  (setq mac-command-modifier 'meta)
+	  (setq mac-option-modifier 'none)
+	  :config
+	  (exec-path-from-shell-initialize)))
+    (setq x-super-keysym 'meta)))
+
+(fringe-mode '(8 . 0))
+(load-theme 'modus-vivendi t)
+(global-auto-revert-mode 1)  ;; auto revert/refresh file when change detected
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+(setq user-full-name "Jacopo Costantini")
+(setq user-mail-address "891938@stud.unive.it")
+
+(setq read-process-output-max (* 4 1024 1024))
+(setq global-prettify-symbols-mode 1)
 
 (set-charset-priority 'unicode)
 (set-language-environment "UTF-8")
@@ -44,21 +79,13 @@
 (setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
 
 (electric-pair-mode)
-(when (member "Iosevka" (font-family-list))
-  (set-face-attribute 'default nil
-		      :family "Iosevka"
-		      :height 150
-		      :weight 'normal
-		      :width 'normal))
 
-(if (memq window-system '(mac ns))
-  (use-package exec-path-from-shell
-    :init
-    (setq mac-command-modifier 'meta)
-    (setq mac-option-modifier 'none)
-    :config
-    (exec-path-from-shell-initialize))
-   (setq x-super-keysym 'meta))
+;; (when (member "Iosevka" (font-family-list))
+;;   (set-face-attribute 'default nil
+;; 		      :family "Iosevka"
+;; 		      :height 150
+;; 		      :weight 'normal
+;; 		      :width 'normal))
 
 (setq display-time-default-load-average nil)
 (setq use-short-answers t)
@@ -69,6 +96,8 @@
 (dolist (mode '(org-mode-hook
 		term-mode-hook
 		eshell-mode-hook
+		xwidget-webkit-mode-hook
+		neotree-mode-hook
 		doc-view-mode-hook
 		dired-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
@@ -162,6 +191,7 @@
   :after org)
 
 (use-package olivetti
+  :diminish olivetti-mode
   :after org
   :config
   (setq olivetti--visual-line-mode t)
@@ -175,24 +205,47 @@
 
 ;;; Eglot
 ;; (setq eglot-autoshutdown t)
-(add-hook 'c-mode-hook 'eglot-ensure)
-(add-hook 'c++-mode-hook 'eglot-ensure)
-(add-hook 'ruby-mode-hook 'eglot-ensure)
-;; (add-hook 'java-mode-hook 'eglot-ensure)
+(add-hook 'c-ts-mode-hook 'eglot-ensure)
+(add-hook 'c++-ts-mode-hook 'eglot-ensure)
+(add-hook 'ruby-ts-mode-hook 'eglot-ensure)
+(add-hook 'java-ts-mode-hook 'eglot-ensure)
 ;; (add-hook 'rust-mode-hook 'eglot-ensure)
 
 ;; setup files ending in .java to open in java-tree-sitter-mode
 ;; (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 
+(setq treesit-language-source-alist
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+	(c "https://github.com/tree-sitter/tree-sitter-c")
+	(cmake "https://github.com/uyha/tree-sitter-cmake")
+	(common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+	(cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+	(css "https://github.com/tree-sitter/tree-sitter-css")
+	(csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
+	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
+	(go "https://github.com/tree-sitter/tree-sitter-go")
+	(go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
+	(html "https://github.com/tree-sitter/tree-sitter-html")
+	(js . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+	(json "https://github.com/tree-sitter/tree-sitter-json")
+	(lua "https://github.com/Azganoth/tree-sitter-lua")
+	(make "https://github.com/alemuller/tree-sitter-make")
+	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	(python "https://github.com/tree-sitter/tree-sitter-python")
+	(r "https://github.com/r-lib/tree-sitter-r")
+	(rust "https://github.com/tree-sitter/tree-sitter-rust")
+	(toml "https://github.com/tree-sitter/tree-sitter-toml")
+	(tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+	(typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
 (use-package auto-package-update
-  :defer 3
   :config
   (setq auto-package-update-delete-old-versions t)
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
 (use-package beacon
-  :defer 3
   :diminish beacon-mode
   :config
   (beacon-mode 1)
@@ -205,7 +258,6 @@
   (beacon-size                      20))
 
 (use-package magit
-  :defer 5
   :bind (("C-x g"   . magit-status)
          ("C-x C-g" . magit-status)))
 
@@ -234,12 +286,12 @@
   (ido-everywhere t)
   (ido-ubiquitous-mode 1))
 
-(use-package ido-vertical-mode
-  :requires ido
-  :custom
-  (ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
-  :init
-  (ido-vertical-mode 1))
+;; (use-package ido-vertical-mode
+;;   :requires ido
+;;   :custom
+;;   (ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
+;;   :init
+;;   (ido-vertical-mode 1))
 
 (use-package smex
   :requires ido
@@ -248,14 +300,221 @@
   :bind
   (("M-x" . smex)))
 
-(use-package ido-at-point
-  :requires ido
-  :after ido
+;; (use-package ido-at-point
+;;   :requires ido
+;;   :after ido
+;;   :init
+;;   (ido-at-point-mode))
+
+(use-package treesit-auto
+  :demand t
+  :config
+  (global-treesit-auto-mode))
+
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.05)
+  (corfu-quit-no-match t)
+  (corfu-preview-current 'insert)
+  (corfu-preselect 'prompt)
+
+  (lsp-completion-provider :none) ; Use corfu instead for lsp completions
+
+  ;; Works with `indent-for-tab-command'. Make sure tab doesn't indent when you
+  ;; want to perform completion
+  (tab-always-indent 'complete)
+  (completion-cycle-threshold nil)    ; Always show candidates in menu
+  
+  :bind
+  (:map corfu-map
+	("C-n"		.	'corfu-next)
+	("C-p"		.	'corfu-previous)
+	("<escape>"	.	'corfu-quit)
+	("<return>"	.	'corfu-insert)
+	("S-SPC"	.	'corfu-insert-separator))
   :init
-  (ido-at-point-mode))
+  (global-corfu-mode)
+  (corfu-history-mode)
+  :config
+  (add-hook 'eshell-mode-hook
+	    (lambda () (setq-local corfu-quit-at-boundary t
+				   corfu-quit-no-match t
+				   corfu-auto nil)
+	      (corfu-mode)))
+  ;; Enable Corfu more generally for every minibuffer, as long as no other
+  ;; completion UI is active. If you use Mct or Vertico as your main minibuffer
+  ;; completion UI. From
+  ;; https://github.com/minad/corfu#completing-with-corfu-in-the-minibuffer
+  (defun corfu-enable-always-in-minibuffer ()
+    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+    (unless (or (bound-and-true-p mct--active) ; Useful if I ever use MCT
+                (bound-and-true-p vertico--input))
+      (setq-local corfu-auto nil) ; Ensure auto completion is disabled
+      (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+  ;; Setup lsp to use corfu for lsp completion
+  (defun kb/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))))
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-use-icons t)
+  (kind-icon-default-face 'corfu-default) ; Have background color be the same as `corfu' face background
+  (kind-icon-blend-background nil)  ; Use midpoint color between foreground and background colors ("blended")?
+  (kind-icon-blend-frac 0.08)
+
+  ;; NOTE 2022-02-05: `kind-icon' depends `svg-lib' which creates a cache
+  ;; directory that defaults to the `user-emacs-directory'. Here, I change that
+  ;; directory to a location appropriate to `no-littering' conventions, a
+  ;; package which moves directories of other packages to sane locations.
+  ;; (svg-lib-icons-dir (no-littering-expand-var-file-name "svg-lib/cache/")) ; Change cache dir
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter) ; Enable `kind-icon'
+
+  ;; Add hook to reset cache so the icon colors match my theme
+  ;; NOTE 2022-02-05: This is a hook which resets the cache whenever I switch
+  ;; the theme using my custom defined command for switching themes. If I don't
+  ;; do this, then the backgound color will remain the same, meaning it will not
+  ;; match the background color corresponding to the current theme. Important
+  ;; since I have a light theme and dark theme I switch between. This has no
+  ;; function unless you use something similar
+  (add-hook 'kb/themes-hooks #'(lambda () (interactive) (kind-icon-reset-cache))))
+
+;; (use-package cape
+;;   :hook ((emacs-lisp-mode .  kb/cape-capf-setup-elisp)
+;;          (lsp-completion-mode . kb/cape-capf-setup-lsp)
+;;          (org-mode . kb/cape-capf-setup-org)
+;;          (eshell-mode . kb/cape-capf-setup-eshell)
+;;          (git-commit-mode . kb/cape-capf-setup-git-commit)
+;;          (LaTeX-mode . kb/cape-capf-setup-latex)
+;;          (sh-mode . kb/cape-capf-setup-sh)
+;;          )
+;;   ;; :general (:prefix "M-c"               ; Particular completion function
+;;   ;;           "p" 'completion-at-point
+;;   ;;           "t" 'complete-tag           ; etags
+;;   ;;           "d" 'cape-dabbrev           ; or dabbrev-completion
+;;   ;;           "f" 'cape-file
+;;   ;;           "k" 'cape-keyword
+;;   ;;           "s" 'cape-symbol
+;;   ;;           "a" 'cape-abbrev
+;;   ;;           "i" 'cape-ispell
+;;   ;;           "l" 'cape-line
+;;   ;;           "w" 'cape-dict
+;;   ;;           "\\"' cape-tex
+;;   ;;           "_" 'cape-tex
+;;   ;;           "^" 'cape-tex
+;;   ;;           "&" 'cape-sgml
+;;   ;;           "r" 'cape-rfc1345
+;;   ;;           )
+;;   :custom
+;;   (cape-dabbrev-min-length 3)
+;;   :init
+;;   ;; Elisp
+;;   (defun kb/cape-capf-ignore-keywords-elisp (cand)
+;;     "Ignore keywords with forms that begin with \":\" (e.g.
+;; :history)."
+;;     (or (not (keywordp cand))
+;;         (eq (char-after (car completion-in-region--data)) ?:)))
+;;   (defun kb/cape-capf-setup-elisp ()
+;;     "Replace the default `elisp-completion-at-point'
+;; completion-at-point-function. Doing it this way will prevent
+;; disrupting the addition of other capfs (e.g. merely setting the
+;; variable entirely, or adding to list).
+
+;; Additionally, add `cape-file' as early as possible to the list."
+;;     (setf (elt (cl-member 'elisp-completion-at-point completion-at-point-functions) 0)
+;;           #'elisp-completion-at-point)
+;;     (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;     ;; I prefer this being early/first in the list
+;;     (add-to-list 'completion-at-point-functions #'cape-file)
+;;     (require 'company-yasnippet)
+;;     (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-yasnippet)))
+
+;;   ;; LSP
+;;   (defun kb/cape-capf-setup-lsp ()
+;;     "Replace the default `lsp-completion-at-point' with its
+;; `cape-capf-buster' version. Also add `cape-file' and
+;; `company-yasnippet' backends."
+;;     (setf (elt (cl-member 'lsp-completion-at-point completion-at-point-functions) 0)
+;;           (cape-capf-buster #'lsp-completion-at-point))
+;;     ;; TODO 2022-02-28: Maybe use `cape-wrap-predicate' to have candidates
+;;     ;; listed when I want?
+;;     (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-yasnippet))
+;;     (add-to-list 'completion-at-point-functions #'cape-dabbrev t))
+
+;;   ;; Org
+;;   (defun kb/cape-capf-setup-org ()
+;;     ;; (require 'org-roam)
+;;     ;; (if (org-roam-file-p)
+;;     ;;     (org-roam--register-completion-functions-h)
+;;       (let (result)
+;;         (dolist (element (list
+;;                           (cape-super-capf #'cape-ispell #'cape-dabbrev)
+;;                           (cape-company-to-capf #'company-yasnippet))
+;;                          result)
+;;           (add-to-list 'completion-at-point-functions element)))
+;;       )
+
+;;   ;; Eshell
+;;   (defun kb/cape-capf-setup-eshell ()
+;;     (let ((result))
+;;       (dolist (element '(pcomplete-completions-at-point cape-file) result)
+;;         (add-to-list 'completion-at-point-functions element))
+;;       ))
+
+;;   ;; Git-commit
+;;   (defun kb/cape-capf-setup-git-commit ()
+;;     (general-define-key
+;;      :keymaps 'local
+;;      :states 'insert
+;;      "<tab>" 'completion-at-point)      ; Keybinding for `completion-at-point'
+;;     (let ((result))
+;;       (dolist (element '(cape-dabbrev cape-symbol) result)
+;;         (add-to-list 'completion-at-point-functions element))))
+
+;;   ;; LaTeX
+;;   (defun kb/cape-capf-setup-latex ()
+;;     (require 'company-auctex)
+;;     (let ((result))
+;;       (dolist (element (list
+;;                         ;; First add `company-yasnippet'
+;;                         (cape-company-to-capf #'company-yasnippet)
+;;                         ;; Then add `cape-tex'
+;;                         #'cape-tex
+;;                         ;; Then add `company-auctex' in the order it adds its
+;;                         ;; backends.
+;;                         (cape-company-to-capf #'company-auctex-bibs)
+;;                         (cape-company-to-capf #'company-auctex-labels)
+;;                         (cape-company-to-capf
+;;                          (apply-partially #'company--multi-backend-adapter
+;;                                           '(company-auctex-macros company-auctex-symbols company-auctex-environments))))
+;;                        result)
+;;         (add-to-list 'completion-at-point-functions element))))
+
+
+;;   ;; Sh
+;;   (defun kb/cape-capf-setup-sh ()
+;;     (require 'company-shell)
+;;     (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-shell)))
+;;   :config
+;;   ;; For pcomplete. For now these two advices are strongly recommended to
+;;   ;; achieve a sane Eshell experience. See
+;;   ;; https://github.com/minad/corfu#completing-with-corfu-in-the-shell-or-eshell
+
+;;   ;; Silence the pcomplete capf, no errors or messages!
+;;   (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+;;   ;; Ensure that pcomplete does not write to the buffer and behaves as a pure
+;;   ;; `completion-at-point-function'.
+;;   (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+
 
 (use-package which-key
-  :defer 5
   :diminish which-key-mode
   :init
   (which-key-mode))
@@ -269,10 +528,12 @@
          ("M-3" . winum-select-window-3)
          ("M-4" . winum-select-window-4)
          ("M-5" . winum-select-window-5)
-         ("M-6" . winum-select-window-6)))
+         ("M-6" . winum-select-window-6)
+         ("M-7" . winum-select-window-7)
+         ("M-8" . winum-select-window-8)
+         ("M-9" . winum-select-window-9)))
 
 (use-package buffer-move
-  :defer 10
   :config
   (setq buffer-move-behavior 'move)
   :bind
@@ -282,18 +543,15 @@
    ("M-<right>" . buf-move-right)))
 
 (use-package ctrlf
-  :defer 5
   :init
   (ctrlf-mode +1))
 
 (use-package dimmer
-  :defer 3
   :init
   (dimmer-configure-which-key)
   (dimmer-mode t))
 
 (use-package indent-guide
-  :defer 12
   :diminish indent-guide-mode
   :custom
   (indent-guide-delay 0.2)
@@ -301,7 +559,6 @@
   (indent-guide-global-mode))
 
 (use-package highlight-thing
-  :defer 14
   :diminish highlight-thing-mode
   :custom
   (highlight-thing-exclude-thing-under-point t)
@@ -313,7 +570,6 @@
   (global-highlight-thing-mode))
 
 (use-package multiple-cursors
-  :defer 16
   :bind
   (("C-S-c C-S-c" . mc/edit-lines)
    ("C-S-c C-S-a" . mc/edit-beginnings-of-lines)
@@ -335,24 +591,73 @@
 ;;   ((prog-mode . smartparens-mode)))
 
 (use-package move-dup
-  :defer 5
   :bind
   (("M-p"   . move-dup-move-lines-up)
    ("M-n"   . move-dup-move-lines-down)
    ("C-M-p" . move-dup-duplicate-up)
    ("C-M-n" . move-dup-duplicate-down)))
 
+(use-package projectile
+  :custom
+  (projectile-mode-line-prefix " Proj")
+  (projectile-generic-command "rg --files --hidden")
+  (projectile-indexing-method 'alien)
+  (projectile-enable-caching t)
+  (projectile-completion-systemp 'ido)
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
+
+(use-package projectile-rails
+  :after projectile
+  :init
+  (projectile-rails-global-mode)
+  :bind (:map projectile-rails-mode-map
+              ("C-c r" . projectile-rails-command-map)))
+
+(use-package projectile-ripgrep
+  :after projectile)
+
+(use-package ag
+  :after projectile)
+
+;;; HTML + ERB
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'"		.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'"	.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'"	.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"	.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'"		.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'"	.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'"	.	web-mode)))
+
+(use-package js2-mode
+  :hook
+  ((javascript-mode-hook . js2-mode)))
+
+(use-package tide
+  :after (flycheck)
+  :hook ((typescript-ts-mode	.	tide-setup)
+         (tsx-ts-mode		.	tide-setup)
+         (typescript-ts-mode	.	tide-hl-identifier-mode)
+         (before-save		.	tide-format-before-save)))
+
 ;;; RUBY - TODO
-(use-package bundler
-  :defer 5)
-(use-package yari
-  :defer 6)
-(use-package robe
-  :defer 7)
-(use-package rspec-mode
-  :defer 8)
-(use-package rinari
-  :defer 9)
+(use-package bundler)
+(use-package yari)
+
+;; (use-package robe
+;;   :defer 7)
+
+(use-package rspec-mode)
+
+(use-package ruby-electric
+  :diminish ruby-electric-mode
+  :hook
+  ((ruby-mode . ruby-electric-mode)))
 
 ;;; LISP - TODO
 (use-package lispy
@@ -361,26 +666,20 @@
   ((emacs-lisp-mode . lispy-mode)
    (lisp-mode       . lispy-mode)))
 
-(use-package sly
-  :defer 10)
-(use-package suggest
-  :defer 20)
+(use-package sly)
+(use-package suggest)
 
 ;;; HASKELL - TODO
-(use-package haskell-mode
-  :defer 8)
+(use-package haskell-mode)
 
 ;;; SWIFT - TODO
-(use-package swift-mode
-  :defer 10)
+(use-package swift-mode)
 
 ;;; R - TODO
-(use-package ess
-  :defer 11)
+(use-package ess)
 
 ;;; MARKDOWN - TODO
-(use-package markdown-mode
-  :defer 10)
+(use-package markdown-mode)
 (use-package grip-mode
   :after markdown-mode)
 
@@ -389,8 +688,13 @@
 ;; (use-package latex-preview-pane)
 
 ;;; DOCKER - TODO
-(use-package docker
-  :defer 10)
+(use-package docker)
 
-(use-package csv-mode
-  :defer 20)
+(use-package csv-mode)
+
+(use-package neotree
+  :custom
+  (neo-smart-open t)
+  (projectile-switch-project-action 'neotree-projectile-action)
+  :bind
+  (("C-c n" . neotree-toggle)))
