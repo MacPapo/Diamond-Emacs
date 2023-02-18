@@ -66,6 +66,7 @@
 (setq user-full-name "Jacopo Costantini")
 (setq user-mail-address "891938@stud.unive.it")
 
+(setq inhibit-compacting-font-caches t)
 (setq global-prettify-symbols-mode 1)
 
 (set-charset-priority 'unicode)
@@ -186,9 +187,9 @@
 (use-package org-pomodoro
   :after org)
 
-(use-package org-bullets
+(use-package org-superstar
   :hook
-  ((org-mode org-bullets-mode)))
+  ((org-mode org-superstart-mode)))
 
 (use-package auto-package-update
   :config
@@ -229,8 +230,7 @@
   (("M-x" . smex)))
 
 (use-package magit
-  :bind (("C-x g"   . magit-status)
-         ("C-x C-g" . magit-status)))
+  :bind (("C-x g"   . magit-status)))
 
 (use-package forge
   :after magit)
@@ -257,21 +257,7 @@
   (company-minimum-prefix-length 1)
   (company-selection-wrap-around t)
   :config
-
-  (defun my-text-mode ()
-    (setq-local company-backends
-		'((company-dabbrev company-ispell :separate)
-                  company-files)))
-
-  (defun my-prog-mode ()
-    (setq-local company-backends
-		'((company-capf :with company-yasnippet)
-                  (company-capf company-dabbrev-code))))
-
   (setq company-backends '((company-capf :with company-yasnippet)))
-  :hook
-  ((text-mode . my-text-mode))
-  ((prog-mode . my-prog-mode))
   :init
   (global-company-mode))
 
@@ -283,7 +269,6 @@
   (lsp-log-io nil)	  ; if set to true can cause a performance hit
   :init
   (require 'lsp-ido)
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (
 	 (ruby-mode . lsp-deferred)
