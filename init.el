@@ -42,7 +42,7 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(unless (window-system nil)
+(unless (eq window-system nil)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
@@ -210,6 +210,13 @@
   (ido-mode 1)
   (ido-everywhere t)
   (ido-ubiquitous-mode 1))
+
+(use-package ido-vertical-mode
+  :requires ido
+  :custom
+  (ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
+  :init
+  (ido-vertical-mode 1))
 
 (use-package smex
   :requires ido
