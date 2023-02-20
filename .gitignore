@@ -58,3 +58,7 @@ eww-bookmarks
 /projectile.cache
 /tree-sitter/
 /.lsp-session*
+/.dap-breakpoints
+/.extension/
+/eclipse.jdt.ls/
+/workspace/

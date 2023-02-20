@@ -92,16 +92,6 @@
 (setq new-line-add-newlines t)
 
 (column-number-mode)
-(global-display-line-numbers-mode t)
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		eshell-mode-hook
-		xwidget-webkit-mode-hook
-		neotree-mode-hook
-		doc-view-mode-hook
-		dired-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
 (delete-selection-mode 1)
 (global-subword-mode 1)
 (diminish 'subword-mode)
@@ -124,7 +114,6 @@
 			".png" ".jpg" "/\\.git/" ".gitignore" "\\.log" "COMMIT_EDITMSG"
                         ,(concat package-user-dir "/.*-autoloads\\.el\\'")))
 (recentf-mode 1)
-
 (winner-mode 1)
 (setq winner-boring-buffers
       '("*Completions*"
@@ -140,20 +129,20 @@
         "*Ibuffer*"
         "*esh command on file*"))
 
+;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
 (defun flash-mode-line ()
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
+(add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
 
 ;;; NEWSTICKER - RSS FEED
 (require 'newsticker)
 (setq newsticker-url-list
-      '(("EmacsWiki Recently Change"
-         "http://www.emacswiki.org/cgi-bin/emacs?action=rss;showedit=1"
-         nil nil nil)
-        ("Planet Emacs Life"
+      '(("Planet Emacs Life"
          "https://planet.emacslife.com/atom.xml"
          nil nil nil)
         ("Haskell Planet"
@@ -230,7 +219,7 @@
   (("M-x" . smex)))
 
 (use-package magit
-  :bind (("C-x g"   . magit-status)))
+  :bind (("C-x g" . magit-status)))
 
 (use-package forge
   :after magit)
@@ -242,6 +231,10 @@
   :diminish which-key-mode
   :init
   (which-key-mode))
+
+(use-package flycheck
+  :hook
+  ((flycheck-mode . flycheck-elm-setup)))
 
 (use-package yasnippet
   :init
@@ -261,22 +254,130 @@
   :init
   (global-company-mode))
 
-(use-package lsp-mode
+(use-package treemacs
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
+  (progn
+    (setq treemacs-deferred-git-apply-delay        0.5
+	  treemacs-directory-name-transformer      #'identity
+	  treemacs-display-in-side-window          t
+	  treemacs-eldoc-display                   'simple
+	  treemacs-file-event-delay                2000
+	  treemacs-file-extension-regex            treemacs-last-period-regex-value
+	  treemacs-file-follow-delay               0.2
+	  treemacs-file-name-transformer           #'identity
+	  treemacs-follow-after-init               t
+	  treemacs-expand-after-init               t
+	  treemacs-find-workspace-method           'find-for-file-or-pick-first
+	  treemacs-git-command-pipe                ""
+	  treemacs-goto-tag-strategy               'refetch-index
+	  treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+	  treemacs-hide-dot-git-directory          t
+	  treemacs-indentation                     2
+	  treemacs-indentation-string              " "
+	  treemacs-is-never-other-window           nil
+	  treemacs-max-git-entries                 5000
+	  treemacs-missing-project-action          'ask
+	  treemacs-move-forward-on-expand          nil
+	  treemacs-no-png-images                   nil
+	  treemacs-no-delete-other-windows         t
+	  treemacs-project-follow-cleanup          nil
+	  treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+	  treemacs-position                        'left
+	  treemacs-read-string-input               'from-child-frame
+	  treemacs-recenter-distance               0.1
+	  treemacs-recenter-after-file-follow      nil
+	  treemacs-recenter-after-tag-follow       nil
+	  treemacs-recenter-after-project-jump     'always
+	  treemacs-recenter-after-project-expand   'on-distance
+	  treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+	  treemacs-project-follow-into-home        nil
+	  treemacs-show-cursor                     nil
+	  treemacs-show-hidden-files               t
+	  treemacs-silent-filewatch                nil
+	  treemacs-silent-refresh                  nil
+	  treemacs-sorting                         'alphabetic-asc
+	  treemacs-select-when-already-in-treemacs 'move-back
+	  treemacs-space-between-root-nodes        t
+	  treemacs-tag-follow-cleanup              t
+	  treemacs-tag-follow-delay                1.5
+	  treemacs-text-scale                      nil
+	  treemacs-user-mode-line-format           nil
+	  treemacs-user-header-line-format         nil
+	  treemacs-wide-toggle-width               70
+	  treemacs-width                           35
+	  treemacs-width-increment                 1
+	  treemacs-width-is-initially-locked       t
+	  treemacs-workspace-switch-cleanup        nil)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
+
+(use-package lsp-java)
+(use-package lsp-mode
+  :requires lsp-java
+  :config
+  (require 'lsp-ido)
   (setq read-process-output-max (* 3 1024 1024)) ; 3MB
   :custom
-  (lsp-idle-delay 0.1)
+  (lsp-idle-delay 0.0)
   (lsp-log-io nil)	  ; if set to true can cause a performance hit
   :init
-  (require 'lsp-ido)
   (setq lsp-keymap-prefix "C-c l")
-  :hook (
-	 (ruby-mode . lsp-deferred)
-	 (c-mode . lsp-deferred)
-	 (c++-mode . lsp-deferred)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
+  :hook ((ruby-mode		.	lsp-deferred)
+	 (c-mode		.	lsp-deferred)
+	 (c++-mode		.	lsp-deferred)
+	 (go-ts-mode		.	lsp-deferred)
+	 (java-mode		.	lsp-deferred)
+	 (elm-mode		.	lsp-deferred)
+	 (typescript-ts-mode	.	lsp-deferred)
+	 ;; (sql-mode . lsp-deferred)
+         (lsp-mode		.	lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))
+
+(use-package company-box
+  :diminish company-box-mode
+  :hook (company-mode . company-box-mode))
+
+(use-package lsp-ui
+  :config
+  (setq lsp-ui-doc-max-width 100)
+  (setq lsp-ui-doc-max-height 30)
+  (setq lsp-ui-sideline-show-code-actions nil)
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-show-with-cursor nil)
+  (setq lsp-ui-doc-show-with-mouse nil)
+  (setq lsp-lens-enable nil)
+  (setq lsp-enable-symbol-highlighting nil))
+
+(use-package dap-mode
+  :config
+  (require 'dap-ruby)
+  (require 'dap-cpptools)
+  (require 'dap-java)
+  (require 'dap-node))
+
+(use-package lsp-treemacs
+  :init
+  (lsp-treemacs-sync-mode 1))
 
 (use-package winum
   :custom
@@ -317,16 +418,16 @@
   :init
   (indent-guide-global-mode))
 
-(use-package highlight-thing
-  :diminish highlight-thing-mode
-  :custom
-  (highlight-thing-exclude-thing-under-point t)
-  (highlight-thing-ignore-list '("False" "True"))
-  (highlight-thing-limit-to-region-in-large-buffers-p nil)
-  (highlight-thing-narrow-region-lines 15)
-  (highlight-thing-large-buffer-limit 5000)
-  :init
-  (global-highlight-thing-mode))
+;; (use-package highlight-thing
+;;   :diminish highlight-thing-mode
+;;   :custom
+;;   (highlight-thing-exclude-thing-under-point t)
+;;   (highlight-thing-ignore-list '("False" "True"))
+;;   (highlight-thing-limit-to-region-in-large-buffers-p nil)
+;;   (highlight-thing-narrow-region-lines 15)
+;;   (highlight-thing-large-buffer-limit 5000)
+;;   :init
+;;   (global-highlight-thing-mode))
 
 (use-package multiple-cursors
   :bind
@@ -344,10 +445,6 @@
   :bind
   (("C-S-c C-s" . phi-search)
    ("C-S-c C-r" . phi-search-backward)))
-
-;; (use-package smartparens
-;;   :hook
-;;   ((prog-mode . smartparens-mode)))
 
 (use-package move-dup
   :bind
@@ -390,7 +487,7 @@
   (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"	.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.erb\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache\\'"	.	web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'"	.	web-mode)))
 
 (use-package js2-mode
@@ -419,11 +516,11 @@
   ((ruby-mode . ruby-electric-mode)))
 
 ;;; LISP - TODO
-(use-package lispy
-  :diminish lispy-mode
-  :hook
-  ((emacs-lisp-mode . lispy-mode)
-   (lisp-mode       . lispy-mode)))
+;; (use-package lispy
+;;   :diminish lispy-mode
+;;   :hook
+;;   ((emacs-lisp-mode . lispy-mode)
+;;    (lisp-mode       . lispy-mode)))
 
 (use-package sly)
 (use-package suggest)
@@ -447,9 +544,9 @@
 
 (use-package csv-mode)
 
-(use-package neotree
-  :custom
-  (neo-smart-open t)
-  (projectile-switch-project-action 'neotree-projectile-action)
-  :bind
-  (("C-c t" . neotree-toggle)))
+;;; ELM
+
+(use-package elm-mode
+  :diminish elm-indent-mode)
+
+(use-package flycheck-elm)
