@@ -10,10 +10,19 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+(when *is-a-mac*
+  (unless (package-installed-p 'exec-path-from-shell)
+    (package-install 'exec-path-from-shell)
+    (setq mac-command-modifier 'meta)
+    (setq mac-option-modifier 'none)))
+
 ;; install use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
 
 (eval-and-compile
   (require 'use-package-ensure)
@@ -21,9 +30,7 @@
         use-package-expand-minimally t
 	package-check-signature nil))
 
-(eval-when-compile
-  (require 'use-package))
-
+(exec-path-from-shell-initialize)
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
@@ -32,15 +39,7 @@
   (tool-bar-mode 0)
   (tooltip-mode 0)
   (menu-bar-mode 0)
-  (setq inhibit-startup-message t)
-  (if *is-a-mac*
-      (progn
-	(use-package exec-path-from-shell
-	  :init
-	  (setq mac-command-modifier 'meta)
-	  (setq mac-option-modifier 'none)
-	  (exec-path-from-shell-initialize)))
-    (setq x-super-keysym 'meta)))
+  (setq inhibit-startup-message t))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
@@ -82,9 +81,6 @@
 (column-number-mode)
 (delete-selection-mode 1)
 (global-subword-mode 1)
-(diminish 'subword-mode)
-(diminish 'eldoc-mode)
-(diminish 'hi-lock-mode)
 
 (display-time-mode 1)
 (display-battery-mode 1)
@@ -130,6 +126,10 @@
 (use-package use-package-ensure-system-package)
 
 (use-package diminish)
+
+(diminish 'subword-mode)
+(diminish 'eldoc-mode)
+(diminish 'hi-lock-mode)
 
 (use-package gcmh
   :diminish gcmh-mode
