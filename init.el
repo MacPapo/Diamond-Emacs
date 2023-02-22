@@ -24,25 +24,10 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package use-package-ensure-system-package
-  :ensure t)
-
-(use-package diminish
-  :ensure t)
-
-(use-package gcmh
-  :diminish gcmh-mode
-  :init
-  (gcmh-mode 1))
-
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-(unless (window-system nil)
+(unless (eq window-system nil)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
@@ -54,9 +39,12 @@
 	  :init
 	  (setq mac-command-modifier 'meta)
 	  (setq mac-option-modifier 'none)
-	  :config
 	  (exec-path-from-shell-initialize)))
     (setq x-super-keysym 'meta)))
+
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (fringe-mode '(8 . 0))
 (load-theme 'modus-vivendi t)
@@ -138,6 +126,15 @@
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
 (add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
+
+(use-package use-package-ensure-system-package)
+
+(use-package diminish)
+
+(use-package gcmh
+  :diminish gcmh-mode
+  :init
+  (gcmh-mode 1))
 
 ;;; NEWSTICKER - RSS FEED
 (require 'newsticker)
