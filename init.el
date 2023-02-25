@@ -14,7 +14,8 @@
   (unless (package-installed-p 'exec-path-from-shell)
     (package-install 'exec-path-from-shell)
     (setq mac-command-modifier 'meta)
-    (setq mac-option-modifier 'none)))
+    (setq mac-option-modifier 'none))
+  (exec-path-from-shell-initialize))
 
 ;; install use-package
 (unless (package-installed-p 'use-package)
@@ -30,7 +31,7 @@
         use-package-expand-minimally t
 	package-check-signature nil))
 
-(exec-path-from-shell-initialize)
+
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
@@ -177,12 +178,6 @@
   :hook
   ((org-mode org-superstart-mode)))
 
-(use-package auto-package-update
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
-
 (use-package beacon
   :diminish beacon-mode
   :config
@@ -196,16 +191,31 @@
   (beacon-size                      20))
 
 (use-package ido-completing-read+
-  :custom
-  (ido-virtual-buffers t)
-  (ido-use-faces t)
-  (ido-enable-flex-matching t)
-  (ido-use-virtual-buffers 'auto)
-  (ido-default-buffer-method 'selected-window)
-  (ido-auto-merge-work-directories-length -1)
-  :init
+  :config
   (ido-mode 1)
-  (ido-everywhere t)
+  (setq ido-everywhere t
+	ido-enable-prefix         nil
+	ido-enable-flex-matching t
+	ido-auto-merge-work-directories-length nil
+	ido-max-prospects         10
+	ido-create-new-buffer     'always
+	ido-virtual-buffers t
+	ido-use-virtual-buffers 'auto
+	ido-default-buffer-method 'selected-window
+	ido-default-file-method   'selected-window
+	ido-use-faces t)
+  (setq ido-file-extensions-order     '(".cc" ".h" ".tex" ".sh" ".org"
+					".el" ".tex" ".png"))
+  (setq completion-ignored-extensions '(".o" ".elc" "~" ".bin" ".bak"
+					".obj" ".map" ".a" ".so"
+					".mod" ".aux" ".out" ".pyg"))
+  (setq ido-ignore-extensions t)
+  (setq ido-ignore-buffers (list (rx (or (and bos  " ")
+                                       (and bos
+                                            (or "*Completions*"
+                                                "*Shell Command Output*"
+                                                "*vc-diff*")
+                                            eos)))))
   (ido-ubiquitous-mode 1))
 
 (use-package smex
@@ -213,7 +223,16 @@
   :init
   (smex-initialize)
   :bind
-  (("M-x" . smex)))
+  (("M-x" . smex)
+   ("M-X" . smex-major-mode-commands)))
+
+(use-package browse-kill-ring
+  :config
+  (setq browse-kill-ring-highlight-current-entry t
+	browse-kill-ring-highlight-inserted-item t
+	browse-kill-ring-display-duplicates      nil)
+  :bind
+  (("M-y" . browse-kill-ring)))
 
 (use-package magit
   :bind (("C-x g" . magit-status)))
