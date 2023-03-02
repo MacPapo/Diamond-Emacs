@@ -10,10 +10,20 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+(when *is-a-mac*
+  (unless (package-installed-p 'exec-path-from-shell)
+    (package-install 'exec-path-from-shell)
+    (setq mac-command-modifier 'meta)
+    (setq mac-option-modifier 'none))
+  (exec-path-from-shell-initialize))
+
 ;; install use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
 
 (eval-and-compile
   (require 'use-package-ensure)
@@ -21,42 +31,19 @@
         use-package-expand-minimally t
 	package-check-signature nil))
 
-(eval-when-compile
-  (require 'use-package))
-
-(use-package use-package-ensure-system-package
-  :ensure t)
-
-(use-package diminish
-  :ensure t)
-
-(use-package gcmh
-  :diminish gcmh-mode
-  :init
-  (gcmh-mode 1))
-
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
-
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (unless (eq window-system nil)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
-  (menu-bar-mode 0)
-  (setq inhibit-startup-message t)
-  (if *is-a-mac*
-      (progn
-	(use-package exec-path-from-shell
-	  :init
-	  (setq mac-command-modifier 'meta)
-	  (setq mac-option-modifier 'none)
-	  :config
-	  (exec-path-from-shell-initialize)))
-    (setq x-super-keysym 'meta)))
+  (menu-bar-mode 1)
+  (setq inhibit-startup-message t))
+
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (fringe-mode '(8 . 0))
 (load-theme 'modus-vivendi t)
@@ -80,6 +67,11 @@
 
 (electric-pair-mode)
 
+
+;;; GUARDAMI
+(setq c-basic-offset 2)
+(setq js-indent-level 2)
+
 ;; (when (member "Iosevka" (font-family-list))
 ;;   (set-face-attribute 'default nil
 ;; 		      :family "Iosevka"
@@ -94,9 +86,6 @@
 (column-number-mode)
 (delete-selection-mode 1)
 (global-subword-mode 1)
-(diminish 'subword-mode)
-(diminish 'eldoc-mode)
-(diminish 'hi-lock-mode)
 
 (display-time-mode 1)
 (display-battery-mode 1)
@@ -129,8 +118,6 @@
         "*Ibuffer*"
         "*esh command on file*"))
 
-;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
 (defun flash-mode-line ()
@@ -138,6 +125,19 @@
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
 (add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
+
+(use-package use-package-ensure-system-package)
+
+(use-package diminish)
+
+(diminish 'subword-mode)
+(diminish 'eldoc-mode)
+(diminish 'hi-lock-mode)
+
+(use-package gcmh
+  :diminish gcmh-mode
+  :init
+  (gcmh-mode 1))
 
 ;;; NEWSTICKER - RSS FEED
 (require 'newsticker)
@@ -180,12 +180,6 @@
   :hook
   ((org-mode org-superstart-mode)))
 
-(use-package auto-package-update
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
-
 (use-package beacon
   :diminish beacon-mode
   :config
@@ -199,16 +193,31 @@
   (beacon-size                      20))
 
 (use-package ido-completing-read+
-  :custom
-  (ido-virtual-buffers t)
-  (ido-use-faces t)
-  (ido-enable-flex-matching t)
-  (ido-use-virtual-buffers 'auto)
-  (ido-default-buffer-method 'selected-window)
-  (ido-auto-merge-work-directories-length -1)
-  :init
+  :config
   (ido-mode 1)
-  (ido-everywhere t)
+  (setq ido-everywhere t
+	ido-enable-prefix         nil
+	ido-enable-flex-matching t
+	ido-auto-merge-work-directories-length nil
+	ido-max-prospects         10
+	ido-create-new-buffer     'always
+	ido-virtual-buffers t
+	ido-use-virtual-buffers 'auto
+	ido-default-buffer-method 'selected-window
+	ido-default-file-method   'selected-window
+	ido-use-faces t)
+  (setq ido-file-extensions-order     '(".cc" ".h" ".tex" ".sh" ".org"
+					".el" ".tex" ".png"))
+  (setq completion-ignored-extensions '(".o" ".elc" "~" ".bin" ".bak"
+					".obj" ".map" ".a" ".so"
+					".mod" ".aux" ".out" ".pyg"))
+  (setq ido-ignore-extensions t)
+  (setq ido-ignore-buffers (list (rx (or (and bos  " ")
+                                       (and bos
+                                            (or "*Completions*"
+                                                "*Shell Command Output*"
+                                                "*vc-diff*")
+                                            eos)))))
   (ido-ubiquitous-mode 1))
 
 (use-package ido-vertical-mode
@@ -223,7 +232,16 @@
   :init
   (smex-initialize)
   :bind
-  (("M-x" . smex)))
+  (("M-x" . smex)
+   ("M-X" . smex-major-mode-commands)))
+
+(use-package browse-kill-ring
+  :config
+  (setq browse-kill-ring-highlight-current-entry t
+	browse-kill-ring-highlight-inserted-item t
+	browse-kill-ring-display-duplicates      nil)
+  :bind
+  (("M-y" . browse-kill-ring)))
 
 (use-package magit
   :bind (("C-x g" . magit-status)))
@@ -256,10 +274,14 @@
   (company-idle-delay 0)
   (company-minimum-prefix-length 1)
   (company-selection-wrap-around t)
+  (debug-on-error nil)
+  (global-company-mode t)
   :config
-  (setq company-backends '((company-capf :with company-yasnippet)))
-  :init
-  (global-company-mode))
+  (setq company-backends '((company-capf :with company-yasnippet))))
+
+(use-package company-box
+  :diminish company-box-mode
+  :hook (company-mode . company-box-mode))
 
 (use-package treemacs
   :init
@@ -352,17 +374,12 @@
   :hook ((ruby-mode		.	lsp-deferred)
 	 (c-mode		.	lsp-deferred)
 	 (c++-mode		.	lsp-deferred)
-	 (go-ts-mode		.	lsp-deferred)
 	 (java-mode		.	lsp-deferred)
 	 (elm-mode		.	lsp-deferred)
-	 (typescript-ts-mode	.	lsp-deferred)
-	 ;; (sql-mode . lsp-deferred)
+	 (typescript-mode	.	lsp-deferred)
+	 (js2-mode		.	lsp-deferred)
          (lsp-mode		.	lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))
-
-(use-package company-box
-  :diminish company-box-mode
-  :hook (company-mode . company-box-mode))
 
 (use-package lsp-ui
   :config
@@ -425,17 +442,6 @@
   :init
   (indent-guide-global-mode))
 
-;; (use-package highlight-thing
-;;   :diminish highlight-thing-mode
-;;   :custom
-;;   (highlight-thing-exclude-thing-under-point t)
-;;   (highlight-thing-ignore-list '("False" "True"))
-;;   (highlight-thing-limit-to-region-in-large-buffers-p nil)
-;;   (highlight-thing-narrow-region-lines 15)
-;;   (highlight-thing-large-buffer-limit 5000)
-;;   :init
-;;   (global-highlight-thing-mode))
-
 (use-package multiple-cursors
   :bind
   (("C-S-c C-S-c" . mc/edit-lines)
@@ -494,12 +500,18 @@
   (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"	.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.erb\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache\\'"	.	web-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'"	.	web-mode)))
 
 (use-package js2-mode
+  :mode "\\.js\\'")
+
+(use-package js2-refactor
+  :diminish js2-refactor-mode
   :hook
-  ((javascript-mode-hook . js2-mode)))
+  ((js2-mode . js2-refactor-mode)))
+
+(use-package typescript-mode)
 
 (use-package tide
   :after (flycheck)
@@ -536,7 +548,15 @@
 (use-package haskell-mode)
 
 ;;; SWIFT - TODO
-(use-package swift-mode)
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable
+	(string-trim (shell-command-to-string
+		      "xcrun --find sourcekit-lsp"))))
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
+
 
 ;;; R - TODO
 (use-package ess)
