@@ -31,7 +31,6 @@
         use-package-expand-minimally t
 	package-check-signature nil))
 
-
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
@@ -39,7 +38,7 @@
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
-  (menu-bar-mode 0)
+  (menu-bar-mode 1)
   (setq inhibit-startup-message t))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
@@ -67,6 +66,11 @@
 (setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
 
 (electric-pair-mode)
+
+
+;;; GUARDAMI
+(setq c-basic-offset 2)
+(setq js-indent-level 2)
 
 ;; (when (member "Iosevka" (font-family-list))
 ;;   (set-face-attribute 'default nil
@@ -113,8 +117,6 @@
         "*Buffer List*"
         "*Ibuffer*"
         "*esh command on file*"))
-
-;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
@@ -265,10 +267,14 @@
   (company-idle-delay 0)
   (company-minimum-prefix-length 1)
   (company-selection-wrap-around t)
+  (debug-on-error nil)
+  (global-company-mode t)
   :config
-  (setq company-backends '((company-capf :with company-yasnippet)))
-  :init
-  (global-company-mode))
+  (setq company-backends '((company-capf :with company-yasnippet))))
+
+(use-package company-box
+  :diminish company-box-mode
+  :hook (company-mode . company-box-mode))
 
 (use-package treemacs
   :init
@@ -361,17 +367,12 @@
   :hook ((ruby-mode		.	lsp-deferred)
 	 (c-mode		.	lsp-deferred)
 	 (c++-mode		.	lsp-deferred)
-	 (go-ts-mode		.	lsp-deferred)
 	 (java-mode		.	lsp-deferred)
 	 (elm-mode		.	lsp-deferred)
-	 (typescript-ts-mode	.	lsp-deferred)
-	 ;; (sql-mode . lsp-deferred)
+	 (typescript-mode	.	lsp-deferred)
+	 (js2-mode		.	lsp-deferred)
          (lsp-mode		.	lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))
-
-(use-package company-box
-  :diminish company-box-mode
-  :hook (company-mode . company-box-mode))
 
 (use-package lsp-ui
   :config
@@ -434,17 +435,6 @@
   :init
   (indent-guide-global-mode))
 
-;; (use-package highlight-thing
-;;   :diminish highlight-thing-mode
-;;   :custom
-;;   (highlight-thing-exclude-thing-under-point t)
-;;   (highlight-thing-ignore-list '("False" "True"))
-;;   (highlight-thing-limit-to-region-in-large-buffers-p nil)
-;;   (highlight-thing-narrow-region-lines 15)
-;;   (highlight-thing-large-buffer-limit 5000)
-;;   :init
-;;   (global-highlight-thing-mode))
-
 (use-package multiple-cursors
   :bind
   (("C-S-c C-S-c" . mc/edit-lines)
@@ -503,12 +493,18 @@
   (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"	.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.erb\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache\\'"	.	web-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'"		.	web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'"	.	web-mode)))
 
 (use-package js2-mode
+  :mode "\\.js\\'")
+
+(use-package js2-refactor
+  :diminish js2-refactor-mode
   :hook
-  ((javascript-mode-hook . js2-mode)))
+  ((js2-mode . js2-refactor-mode)))
+
+(use-package typescript-mode)
 
 (use-package tide
   :after (flycheck)
@@ -545,7 +541,15 @@
 (use-package haskell-mode)
 
 ;;; SWIFT - TODO
-(use-package swift-mode)
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable
+	(string-trim (shell-command-to-string
+		      "xcrun --find sourcekit-lsp"))))
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
+
 
 ;;; R - TODO
 (use-package ess)
