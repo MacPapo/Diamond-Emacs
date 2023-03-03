@@ -606,6 +606,12 @@
   :init (setq quelpa-update-melpa-p nil)
   :config (quelpa-use-package-activate-advice))
 
+(use-package emacs-nodejs-utils
+  :ensure t
+  :quelpa (emacs-nodejs-utils
+           :fetcher github
+           :repo "visco01/emacs-nodejs-utils"))
+
 ;; (use-package package-name
 ;;   :ensure t
 ;;   :quelpa (repo-name
