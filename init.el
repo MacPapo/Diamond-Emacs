@@ -10,16 +10,29 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+(unless (eq window-system nil)
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (tooltip-mode 0))
+
+;; Probably Linux
+(unless *is-a-mac*
+  (setq x-super-keysym 'meta)
+  (menu-bar-mode 0))
+
+;; Is a Mac
 (when *is-a-mac*
   (unless (package-installed-p 'exec-path-from-shell)
-    (package-install 'exec-path-from-shell)
-    (setq mac-command-modifier 'meta)
-    (setq mac-option-modifier 'none))
-  (exec-path-from-shell-initialize))
+    (package-install 'exec-path-from-shell))
+  (exec-path-from-shell-initialize)
+  (display-battery-mode 1)
+  (setq mac-command-modifier 'meta
+	mac-option-modifier  'none)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
 ;; install use-package
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
   (package-install 'use-package))
 
 (eval-when-compile
@@ -30,16 +43,6 @@
   (setq use-package-always-ensure t
         use-package-expand-minimally t
 	package-check-signature nil))
-
-(setq ls-lisp-use-insert-directory-program nil)
-(require 'ls-lisp)
-
-(unless (eq window-system nil)
-  (scroll-bar-mode 0)
-  (tool-bar-mode 0)
-  (tooltip-mode 0)
-  (menu-bar-mode 1)
-  (setq inhibit-startup-message t))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
@@ -67,7 +70,6 @@
 
 (electric-pair-mode)
 
-
 ;;; GUARDAMI
 (setq c-basic-offset 2)
 (setq js-indent-level 2)
@@ -81,14 +83,12 @@
 
 (setq display-time-default-load-average nil)
 (setq use-short-answers t)
-(setq new-line-add-newlines t)
 
 (column-number-mode)
 (delete-selection-mode 1)
 (global-subword-mode 1)
 
 (display-time-mode 1)
-(display-battery-mode 1)
 (size-indication-mode 1)
 
 (setq recentf-max-menu-items 100)
@@ -192,6 +192,11 @@
   (beacon-blink-delay               .5)
   (beacon-size                      20))
 
+;;; IDO bindings
+;;; C-x C-f -> ido find file standard
+;;; C-x b
+;;; C-x 4 f -> ido find file other window
+;;; C-x 5 f -> ido find file other frame
 (use-package ido-completing-read+
   :config
   (ido-mode 1)
@@ -227,9 +232,14 @@
   :init
   (ido-vertical-mode 1))
 
+;; Using SMEX
+;; C-h f -> describe-function
+;; M-.   -> jumps to the definition of the selected command
+;; C-h w -> shows the key bindings for the selected command
 (use-package smex
   :requires ido
-  :init
+  :config
+  (setq smex-prompt-string "Kept you waiting huh?: ")
   (smex-initialize)
   :bind
   (("M-x" . smex)
@@ -256,10 +266,6 @@
   :diminish which-key-mode
   :init
   (which-key-mode))
-
-(use-package flycheck
-  :hook
-  ((flycheck-mode . flycheck-elm-setup)))
 
 (use-package yasnippet
   :init
@@ -340,7 +346,6 @@
 	  treemacs-width-increment                 1
 	  treemacs-width-is-initially-locked       t
 	  treemacs-workspace-switch-cleanup        nil)
-
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-fringe-indicator-mode 'always))
@@ -511,14 +516,33 @@
   :hook
   ((js2-mode . js2-refactor-mode)))
 
-(use-package typescript-mode)
+(use-package typescript-mode
+  :mode "\\.ts\\'")
 
 (use-package tide
   :after (flycheck)
-  :hook ((typescript-ts-mode	.	tide-setup)
-         (tsx-ts-mode		.	tide-setup)
-         (typescript-ts-mode	.	tide-hl-identifier-mode)
+  :hook ((typescript-mode	.	tide-setup)
+         (typescript-mode	.	tide-hl-identifier-mode)
          (before-save		.	tide-format-before-save)))
+
+;;; REST API
+
+;; https://github.com/pashky/restclient.el
+(use-package restclient)
+
+;; https://github.com/gregsexton/httprepl.el
+(use-package httprepl)
+
+;; https://github.com/rspivak/httpcode.el
+(use-package httpcode)
+
+(use-package simple-httpd)
+
+(use-package skewer-mode
+  :diminish skewer-mode
+  :hook
+  ((js2-mode . skewer-mode)
+   (web-mode . skewer-mode)))
 
 ;;; RUBY - TODO
 (use-package bundler)
@@ -557,7 +581,6 @@
 (use-package swift-mode
   :hook (swift-mode . (lambda () (lsp))))
 
-
 ;;; R - TODO
 (use-package ess)
 
@@ -572,8 +595,19 @@
 (use-package csv-mode)
 
 ;;; ELM
-
 (use-package elm-mode
   :diminish elm-indent-mode)
 
 (use-package flycheck-elm)
+
+;;; TODO
+;;; Install quelpa itself:
+(use-package quelpa-use-package
+  :init (setq quelpa-update-melpa-p nil)
+  :config (quelpa-use-package-activate-advice))
+
+;; (use-package package-name
+;;   :ensure t
+;;   :quelpa (repo-name
+;;            :fetcher github
+;;            :repo "username/reponame"))
