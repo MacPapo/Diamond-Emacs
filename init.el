@@ -238,6 +238,25 @@
   (("M-x" . smex)
    ("M-X" . smex-major-mode-commands)))
 
+(use-package icomplete
+  :config
+  (setq icomplete-delay-completions-threshold 0
+	icomplete-max-delay-chars 0
+	icomplete-compute-delay 0
+	icomplete-show-matches-on-no-input t
+	icomplete-hide-common-prefix nil
+	icomplete-prospects-height 1
+	icomplete-separator " | "
+	icomplete-with-completion-tables t
+	icomplete-in-buffer t)
+  (fido-mode -1)
+  (icomplete-mode 1)
+  :bind (:map icomplete-minibuffer-map
+              ("C-s" . icomplete-forward-completions)
+              ("<right>" . icomplete-forward-completions)
+              ("C-r" . icomplete-backward-completions)
+              ("<left>" . icomplete-backward-completions)))
+
 (use-package browse-kill-ring
   :config
   (setq browse-kill-ring-highlight-current-entry t
