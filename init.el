@@ -27,7 +27,8 @@
   (exec-path-from-shell-initialize)
   (display-battery-mode 1)
   (setq mac-command-modifier 'meta
-	mac-option-modifier  'none)
+	mac-option-modifier  'none
+	mac-right-option-modifier 'super)
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil))
 
@@ -53,6 +54,12 @@
 (global-auto-revert-mode 1)  ;; auto revert/refresh file when change detected
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
+;;; TODO - Bindings
+(global-set-key (kbd "s-w") 'mark-word)
+(global-set-key (kbd "s-s") 'mark-sexp)
+(global-set-key (kbd "s-d") 'mark-defun)
+(global-set-key (kbd "s-e") 'eshell)
+
 (setq user-full-name "Jacopo Costantini")
 (setq user-mail-address "891938@stud.unive.it")
 
@@ -73,13 +80,6 @@
 ;;; GUARDAMI
 (setq c-basic-offset 2)
 (setq js-indent-level 2)
-
-;; (when (member "Iosevka" (font-family-list))
-;;   (set-face-attribute 'default nil
-;; 		      :family "Iosevka"
-;; 		      :height 150
-;; 		      :weight 'normal
-;; 		      :width 'normal))
 
 (setq display-time-default-load-average nil)
 (setq use-short-answers t)
