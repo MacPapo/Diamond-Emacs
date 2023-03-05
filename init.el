@@ -192,6 +192,8 @@
   (beacon-blink-delay               .5)
   (beacon-size                      20))
 
+(use-package sudo-edit)
+
 ;;; IDO bindings
 ;;; C-x C-f -> ido find file standard
 ;;; C-x b
@@ -223,7 +225,9 @@
                                                 "*Shell Command Output*"
                                                 "*vc-diff*")
                                             eos)))))
-  (ido-ubiquitous-mode 1))
+  (ido-ubiquitous-mode 1)
+  :bind
+  (("C-x M-f" . sudo-edit-find-file)))
 
 ;; Using SMEX
 ;; C-h f -> describe-function
