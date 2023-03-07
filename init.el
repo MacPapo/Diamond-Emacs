@@ -629,7 +629,13 @@
   :ensure t
   :quelpa (emacs-nodejs-utils
            :fetcher github
-           :repo "visco01/emacs-nodejs-utils"))
+           :repo "visco01/emacs-nodejs-utils")
+  :bind
+  (:map nodejs-mode-map
+	("C-c o" . nodejs-open)
+	("C-c k" . nodejs-kill))
+  :hook
+  ((js2-mode . nodejs-mode)))
 
 ;; (use-package package-name
 ;;   :ensure t
