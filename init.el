@@ -124,7 +124,9 @@
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
-(add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
+(add-hook 'prog-mode-hook (lambda ()
+			    (setq display-line-numbers-type 'relative)
+			    (display-line-numbers-mode 1)))
 
 (use-package use-package-ensure-system-package)
 
@@ -158,6 +160,15 @@
 
 (with-eval-after-load 'ispell
   (setq ispell-dictionary "italian"))
+
+(use-package evil
+  :config
+  (require 'evil)
+  (evil-mode 1))
+
+(use-package powerline-evil
+  :config
+  (powerline-evil-vim-color-theme))
 
 (with-eval-after-load 'org
   (org-babel-do-load-languages
