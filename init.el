@@ -630,12 +630,12 @@
   :quelpa (emacs-nodejs-utils
            :fetcher github
            :repo "visco01/emacs-nodejs-utils")
+  :init
+  (require 'emacs-nodejs-utils)
   :bind
   (:map nodejs-mode-map
 	("C-c o" . nodejs-open)
-	("C-c k" . nodejs-kill))
-  :hook
-  ((js2-mode . nodejs-mode)))
+	("C-c k" . nodejs-kill)))
 
 ;; (use-package package-name
 ;;   :ensure t
