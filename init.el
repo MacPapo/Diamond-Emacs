@@ -27,8 +27,7 @@
   (exec-path-from-shell-initialize)
   (display-battery-mode 1)
   (setq mac-command-modifier 'meta
-	mac-option-modifier  'none
-	mac-right-option-modifier 'super)
+	mac-option-modifier  'none)
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil))
 
