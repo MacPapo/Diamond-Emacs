@@ -11,6 +11,10 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+;; Prefer g-prefixed coreutils version of standard utilities when available
+(let ((gls (executable-find "gls")))
+  (when gls (setq insert-directory-program gls)))
+
 ;; Is a Mac
 (when *is-a-mac*
   (unless (package-installed-p 'exec-path-from-shell)
@@ -18,9 +22,7 @@
   (exec-path-from-shell-initialize)
   (display-battery-mode 1)
   (setq mac-command-modifier 'meta
-	       mac-option-modifier  'none)
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
+	       mac-option-modifier  'none))
 
 ;; install use-package
 (unless (package-installed-p 'use-package)
@@ -50,15 +52,20 @@
 (set-default-coding-systems 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
-(set-face-attribute 'region nil :background "#9aff9a")
 (setq default-frame-alist
       (if (display-graphic-p)
           '((tool-bar-lines . 0)
-            (background-color . "honeydew")
             (width . 80)
             (height . 46))
         '((tool-bar-lines . 0))))
 
+(setq-default delete-by-moving-to-trash t
+              display-time-default-load-average nil
+              display-time-format "%H:%M"
+              fill-column 80)
+(display-time-mode 1)
+(fringe-mode '(8 . 0))
+(scroll-bar-mode 0)
 ;; ssss---------------------------------------------------
 ;; backup and file related
 
@@ -195,7 +202,7 @@ Version 2019-02-22 2021-11-13"
 ;; indentation, end of line
 
 (electric-indent-mode t)
-
+(setq read-process-output-max (* 1024 1024)) ; 1MB
 (set-default 'tab-always-indent 'complete)
 
 ;; no mixed tab space
@@ -263,13 +270,10 @@ Version 2017-11-10"
 ;; 2021-12-21. fuck Alan Mackenzie
 ;; Emacs Lisp Doc String Curly Quote Controversy
 ;; http://xahlee.info/emacs/misc/emacs_lisp_curly_quote_controversy.html
-(setq text-quoting-style 'straight)
-
-(setq mouse-highlight nil)
-
-(setq line-move-visual t)
-
-(setq byte-compile-docstring-max-column 999)
+(setq text-quoting-style 'straight
+      mouse-highlight nil
+      line-move-visual t
+      byte-compile-docstring-max-column 999)
 
 (if (version< emacs-version "28.1")
     nil
@@ -324,3 +328,111 @@ Version 2017-11-10"
   :init
   (dimmer-configure-which-key)
   (dimmer-mode t))
+
+(use-package yasnippet
+  :defer 10
+  :init
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+(use-package company
+  :demand t
+  :diminish company-mode
+  :custom
+  (company-idle-delay 0)
+  (company-minimum-prefix-length 1)
+  (company-selection-wrap-around t)
+  (debug-on-error nil)
+  (global-company-mode t)
+  :config
+  (setq company-backends '((company-capf :with company-yasnippet))))
+
+;; (use-package company-box
+;;   :diminish company-box-mode
+;;   :hook (company-mode . company-box-mode))
+(use-package lsp-mode
+  :custom
+  (lsp-idle-delay 0.0)
+  (lsp-log-io nil)	  ; if set to true can cause a performance hit
+  :init
+  ;; (setq lsp-keymap-prefix "C-c l")
+  :hook ((ruby-mode		.	lsp-deferred)
+	        (c-mode		.	lsp-deferred)
+	        (c++-mode		.	lsp-deferred)
+	        (java-mode		.	lsp-deferred)
+	        ;; (elm-mode		.	lsp-deferred)
+	        (typescript-mode	.	lsp-deferred)
+	        (js2-mode		.	lsp-deferred)
+         (lsp-mode		.	lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred))
+(use-package lsp-java)
+(use-package dap-mode
+  :after lsp-mode
+  :config
+  (require 'dap-ruby)
+  (require 'dap-cpptools)
+  (require 'dap-java)
+  (require 'dap-node))
+
+(use-package js2-mode
+  :mode "\\.js\\'")
+
+(use-package js2-refactor
+  :after js2-mode
+  :diminish js2-refactor-mode
+  :hook
+  ((js2-mode . js2-refactor-mode)))
+
+(use-package typescript-mode
+  :mode "\\.ts\\'")
+
+(use-package tide
+  :after typescript-mode
+  :hook ((typescript-mode	.	tide-setup)
+         (typescript-mode	.	tide-hl-identifier-mode)
+         (before-save		.	tide-format-before-save)))
+
+;;; REST API
+
+;; https://github.com/pashky/restclient.el
+(use-package restclient
+  :defer 10)
+
+;; https://github.com/gregsexton/httprepl.el
+(use-package httprepl
+  :defer 10)
+
+;; https://github.com/rspivak/httpcode.el
+(use-package httpcode
+  :defer 10)
+
+(use-package simple-httpd
+  :defer 10)
+
+;;; Ruby
+(use-package bundler
+  :defer 10)
+(use-package yari
+  :defer 10)
+(use-package rspec-mode
+  :after ruby-mode)
+(use-package ruby-electric
+  :diminish ruby-electric-mode
+  :hook
+  ((ruby-mode . ruby-electric-mode)))
+
+;;; SWIFT - TODO
+(when *is-a-mac*
+  (use-package lsp-sourcekit
+    :after lsp-mode
+    :config
+    (setq lsp-sourcekit-executable
+	         (string-trim (shell-command-to-string
+			                     "xcrun --find sourcekit-lsp"))))
+    (use-package swift-mode
+      :mode "\\.swift\\'"))
+
+;;; DOCKER - TODO
+(use-package docker)
