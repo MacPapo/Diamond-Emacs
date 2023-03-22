@@ -53,12 +53,6 @@
 (global-auto-revert-mode 1)  ;; auto revert/refresh file when change detected
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
-;;; TODO - Bindings
-(global-set-key (kbd "s-w") 'mark-word)
-(global-set-key (kbd "s-s") 'mark-sexp)
-(global-set-key (kbd "s-d") 'mark-defun)
-(global-set-key (kbd "s-e") 'eshell)
-
 (setq user-full-name "Jacopo Costantini")
 (setq user-mail-address "891938@stud.unive.it")
 
@@ -160,14 +154,156 @@
 (with-eval-after-load 'ispell
   (setq ispell-dictionary "italian"))
 
+;; --------------------------------
+
+(use-package swiper
+  :init
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t))
+
+(use-package counsel)
+
+;; --------------------------------
 (use-package evil
-  :config
-  (require 'evil)
-  (evil-mode 1))
+  :init
+  (setq evil-want-C-u-scroll t
+	evil-search-module 'evil-search
+	evil-ex-complete-emacs-commands nil
+	evil-vsplit-window-right t
+	evil-split-window-below t
+	evil-shift-round nil
+	evil-want-Y-yank-to-eol t
+	evil-want-keybinding nil)
+
+  (use-package evil-collection
+    :config
+    (setq evil-collection-company-use-tng nil)
+    (evil-collection-init))
+
+  (use-package evil-easymotion) 
+
+  (use-package evil-leader
+    :init
+    (global-evil-leader-mode)
+    :config
+    (setq evil-leader/in-all-states t)
+    (evil-leader/set-leader "<SPC>")
+    (evil-leader/set-key
+      ;; git prefix
+      "g s" 'magit-status
+      "g g" 'magit-status
+      "g b" 'magit-blame
+      "g f" 'magit-log-buffer-file
+
+      ;; buffer prefix
+      "b b" 'counsel-switch-buffer 
+      ;; "b s" 'switch-to-scratch-buffer
+      "b k" 'kill-buffer
+      "b s" 'save-buffer
+
+      ;; files prefix
+      "f f" 'counsel-find-file
+      "."   'counsel-find-file
+      "f l" 'counsel-find-library
+      "f j" 'dired-jump
+      "f d" 'dired
+      ;; "f r" 'ranger
+
+      ;; help prefix
+      "h k" 'describe-key
+      "h f" 'counsel-describe-function
+      "h v" 'counsel-describe-variable
+      "h i" 'info
+      "h b" 'counsel-describe-bindings
+      "h a" 'counsel-apropos
+      "h m" 'describe-mode
+
+      "c d" 'lsp-find-definition
+      "c r" 'lsp-find-references
+      "c i" 'lsp-find-implementation
+      "c D" 'lsp-find-declaration
+
+      ;; comment/code/compile prefix
+      ;; "c l" 'evil-commentary-line
+      "z d" 'comment-dwim
+
+      "! n" 'next-error
+      "! p" 'previous-error
+
+      ;; jump prefix
+      "j j" 'avy-goto-char
+      "j t" 'avy-goto-char-timer
+
+      ;; lisp prefix
+      "l f" 'load-file
+      "l s" 'eval-last-sexp
+      "l e" 'eval-expression
+      "l d" 'eval-defun
+      "l b" 'eval-buffer
+
+      ;; global org prefix (capture and friends)
+      "o c" 'org-capture
+      "o a" 'org-agenda
+      "o s" 'org-schedule
+
+      ;; projectile prefix
+      "p f" 'projectile-find-file
+      "p p" 'projectile-switch-project
+      "p i" 'projectile-invalidate-cache
+
+      ;; search prefix
+      "s f" 'swiper
+      ;; "s f" 'helm-do-ag
+      ;; "s p" 'helm-do-ag-project-root
+      ;; "s b" 'helm-do-ag-buffers
+      ;; "s s" 'helm-swoop
+      ;; "s m" 'helm-multi-swoop-projectile
+      ;; "s a" 'mine-do-ag-in-project
+
+      ;; bookmark prefix
+      "i p" 'counsel-bookmark
+      "i m" 'bookmark-set
+      
+      ;; general toggles
+      "t t" 'counsel-load-theme
+      "t n" 'global-linum-mode
+      "t g" 'golden-ratio
+      "t e" 'eshell
+      "t s" 'shell
+
+      ;; variable prefix
+      "v k" 'string-inflection-kebab-case
+      "v j" 'string-inflection-camelcase
+      "v c" 'string-inflection-lower-camelcase
+      "v p" 'string-inflection-underscore
+
+      ;; window prefix
+      "w l" 'evil-window-right
+      "w L" 'evil-window-move-far-right
+      "w h" 'evil-window-left
+      "w H" 'evil-window-move-far-left
+      "w s" 'evil-split-buffer
+      "w v" 'evil-window-vsplit
+      "w q" 'delete-window 
+      "w Q" 'delete-other-windows
+      "w r" 'winner-redo
+      "w u" 'winner-undo
+      "w w" 'other-window
+
+      ;; general prefix
+      "SPC" 'counsel-M-x
+      ":" 'eval-expression
+      ))
+
+  :hook
+  (after-init . evil-mode))
 
 (use-package powerline-evil
   :config
   (powerline-evil-vim-color-theme))
+
+;; -------------------------------
 
 (with-eval-after-load 'org
   (org-babel-do-load-languages
@@ -203,81 +339,6 @@
   (beacon-size                      20))
 
 (use-package sudo-edit)
-
-;;; IDO bindings
-;;; C-x C-f -> ido find file standard
-;;; C-x b
-;;; C-x 4 f -> ido find file other window
-;;; C-x 5 f -> ido find file other frame
-(use-package ido-completing-read+
-  :config
-  (ido-mode 1)
-  (setq ido-everywhere t
-	ido-enable-prefix         nil
-	ido-enable-flex-matching t
-	ido-auto-merge-work-directories-length nil
-	ido-max-prospects         10
-	ido-create-new-buffer     'always
-	ido-virtual-buffers t
-	ido-use-virtual-buffers 'auto
-	ido-default-buffer-method 'selected-window
-	ido-default-file-method   'selected-window
-	ido-use-faces t)
-  (setq ido-file-extensions-order     '(".cc" ".h" ".tex" ".sh" ".org"
-					".el" ".tex" ".png"))
-  (setq completion-ignored-extensions '(".o" ".elc" "~" ".bin" ".bak"
-					".obj" ".map" ".a" ".so"
-					".mod" ".aux" ".out" ".pyg"))
-  (setq ido-ignore-extensions t)
-  (setq ido-ignore-buffers (list (rx (or (and bos  " ")
-                                       (and bos
-                                            (or "*Completions*"
-                                                "*Shell Command Output*"
-                                                "*vc-diff*")
-                                            eos)))))
-  (ido-ubiquitous-mode 1)
-  :bind
-  (("C-x M-f" . sudo-edit-find-file)))
-
-;; Using SMEX
-;; C-h f -> describe-function
-;; M-.   -> jumps to the definition of the selected command
-;; C-h w -> shows the key bindings for the selected command
-(use-package smex
-  :requires ido
-  :config
-  (setq smex-prompt-string "Kept you waiting huh?: ")
-  (smex-initialize)
-  :bind
-  (("M-x" . smex)
-   ("M-X" . smex-major-mode-commands)))
-
-(use-package icomplete
-  :config
-  (setq icomplete-delay-completions-threshold 0
-	icomplete-max-delay-chars 0
-	icomplete-compute-delay 0
-	icomplete-show-matches-on-no-input t
-	icomplete-hide-common-prefix nil
-	icomplete-prospects-height 1
-	icomplete-separator " | "
-	icomplete-with-completion-tables t
-	icomplete-in-buffer t)
-  (fido-mode -1)
-  (icomplete-mode 1)
-  :bind (:map icomplete-minibuffer-map
-              ("C-s" . icomplete-forward-completions)
-              ("<right>" . icomplete-forward-completions)
-              ("C-r" . icomplete-backward-completions)
-              ("<left>" . icomplete-backward-completions)))
-
-(use-package browse-kill-ring
-  :config
-  (setq browse-kill-ring-highlight-current-entry t
-	browse-kill-ring-highlight-inserted-item t
-	browse-kill-ring-display-duplicates      nil)
-  :bind
-  (("M-y" . browse-kill-ring)))
 
 (use-package magit
   :bind (("C-x g" . magit-status)))
@@ -391,17 +452,15 @@
 (use-package treemacs-magit
   :after (treemacs magit))
 
-(use-package lsp-java)
 (use-package lsp-mode
-  :requires lsp-java
   :config
-  (require 'lsp-ido)
   (setq read-process-output-max (* 3 1024 1024)) ; 3MB
   :custom
   (lsp-idle-delay 0.0)
   (lsp-log-io nil)	  ; if set to true can cause a performance hit
   :init
-  (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-keymap-prefix "<f1>")
+  (use-package lsp-java)
   :hook ((ruby-mode		.	lsp-deferred)
 	 (c-mode		.	lsp-deferred)
 	 (c++-mode		.	lsp-deferred)
@@ -457,10 +516,6 @@
    ("M-<left>"  . buf-move-left)
    ("M-<right>" . buf-move-right)))
 
-(use-package ctrlf
-  :init
-  (ctrlf-mode +1))
-
 (use-package dimmer
   :init
   (dimmer-configure-which-key)
@@ -472,17 +527,6 @@
   (indent-guide-delay 0.2)
   :init
   (indent-guide-global-mode))
-
-(use-package multiple-cursors
-  :bind
-  (("C-S-c C-S-c" . mc/edit-lines)
-   ("C-S-c C-S-a" . mc/edit-beginnings-of-lines)
-   ("C-S-c C-S-e" . mc/edit-ends-of-lines)
-   ("C-S-c C-S-w" . mc/mark-all-words-like-this)
-   ("C-S-c C-S-q" . mc/mark-all-words-like-this-in-defun)
-   ("C->"         . mc/mark-next-like-this)
-   ("C-<"         . mc/mark-previous-like-this)
-   ("C-c C-<"     . mc/mark-all-like-this)))
 
 (use-package phi-search
   :after multiple-cursors
@@ -503,7 +547,6 @@
   (projectile-generic-command "rg --files --hidden")
   (projectile-indexing-method 'alien)
   (projectile-enable-caching t)
-  (projectile-completion-systemp 'ido)
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
@@ -573,10 +616,6 @@
 ;;; RUBY - TODO
 (use-package bundler)
 (use-package yari)
-
-;; (use-package robe
-;;   :defer 7)
-
 (use-package rspec-mode)
 
 (use-package ruby-electric
@@ -584,18 +623,8 @@
   :hook
   ((ruby-mode . ruby-electric-mode)))
 
-;;; LISP - TODO
-;; (use-package lispy
-;;   :diminish lispy-mode
-;;   :hook
-;;   ((emacs-lisp-mode . lispy-mode)
-;;    (lisp-mode       . lispy-mode)))
-
 (use-package sly)
 (use-package suggest)
-
-;;; HASKELL - TODO
-(use-package haskell-mode)
 
 ;;; SWIFT - TODO
 (when *is-a-mac*
@@ -609,9 +638,6 @@
     (use-package swift-mode
       :hook (swift-mode . (lambda () (lsp))))))
 
-;;; R - TODO
-(use-package ess)
-
 ;;; MARKDOWN - TODO
 (use-package markdown-mode)
 (use-package grip-mode
@@ -621,21 +647,3 @@
 (use-package docker)
 
 (use-package csv-mode)
-
-;;; ELM
-(use-package elm-mode
-  :diminish elm-indent-mode)
-
-(use-package flycheck-elm)
-
-;;; TODO
-;;; Install quelpa itself:
-(use-package quelpa-use-package
-  :init (setq quelpa-update-melpa-p nil)
-  :config (quelpa-use-package-activate-advice))
-
-;; (use-package package-name
-;;   :ensure t
-;;   :quelpa (repo-name
-;;            :fetcher github
-;;            :repo "username/reponame"))
