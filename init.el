@@ -271,6 +271,7 @@
       "t g" 'golden-ratio
       "t e" 'eshell
       "t s" 'shell
+      "t v" 'vterm
 
       ;; variable prefix
       "v k" 'string-inflection-kebab-case
@@ -521,6 +522,8 @@
   (dimmer-configure-which-key)
   (dimmer-mode t))
 
+(use-package vterm)
+
 (use-package indent-guide
   :diminish indent-guide-mode
   :custom
@@ -647,3 +650,4 @@
 (use-package docker)
 
 (use-package csv-mode)
+(put 'upcase-region 'disabled nil)
