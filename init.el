@@ -10,6 +10,10 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+;; Prefer g-prefixed coreutils version of standard utilities when available
+(let ((gls (executable-find "gls")))
+  (when gls (setq insert-directory-program gls)))
+
 (unless (eq window-system nil)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
