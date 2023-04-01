@@ -1,6 +1,7 @@
 ;;   -*- lexical-binding: t; -*-
 
 (defconst *is-a-mac* (eq system-type 'darwin))
+(defconst *en-keyboard* t)
 
 (require 'package)
 (setq package-archives '(("elpa"  . "https://elpa.gnu.org/packages/")
@@ -15,15 +16,6 @@
 (let ((gls (executable-find "gls")))
   (when gls (setq insert-directory-program gls)))
 
-;; Is a Mac
-(when *is-a-mac*
-  (unless (package-installed-p 'exec-path-from-shell)
-    (package-install 'exec-path-from-shell))
-  (exec-path-from-shell-initialize)
-  (display-battery-mode 1)
-  (setq mac-command-modifier 'meta
-	       mac-option-modifier  'none))
-
 ;; install use-package
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
@@ -35,11 +27,40 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t
         use-package-expand-minimally t
+        use-package-compute-statistics t
 	       package-check-signature nil))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+;; Using Xah Fly Keys
+(use-package xah-fly-keys
+  :demand t
+  :init   (xah-fly-keys 1)
+  :config (xah-fly-keys-set-layout "qwerty")
+  :bind (:map xah-fly-command-map
+              ("SPC v v" . (lambda ()
+                             (interactive)
+                             (xah-fly-keys -1)
+                             (magit)))))
+
+(defun papo-toggle-input-src ()
+  "Change input src from the previous state."
+  (interactive)
+  (setq *en-keyboard* (not *en-keyboard*))
+  (define-key xah-fly-command-map (kbd "ò") 'xah-end-of-line-or-block *en-keyboard*)
+  (define-key xah-fly-command-map (kbd "SPC .") 'save-buffer *en-keyboard*))
+
+;; Is a Mac
+(when *is-a-mac*
+;;  (unless (package-installed-p 'exec-path-from-shell)
+;;    (package-install 'exec-path-from-shell))
+;;  (exec-path-from-shell-initialize)
+  (papo-toggle-input-src)
+  (display-battery-mode 1)
+  (setq mac-command-modifier 'meta
+	       mac-option-modifier  'none))
 
 (setq user-full-name "Jacopo Costantini")
 (setq user-mail-address "891938@stud.unive.it")
@@ -52,11 +73,20 @@
 (set-default-coding-systems 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
+(defun my/apply-theme (appearance)
+  "Load theme, taking current system APPEARANCE into consideration."
+  (mapc #'disable-theme custom-enabled-themes)
+  (pcase appearance
+    ('light (load-theme 'modus-operandi t))
+    ('dark (load-theme 'modus-vivendi t))))
+
+(add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+
 (setq default-frame-alist
       (if (display-graphic-p)
           '((tool-bar-lines . 0)
-            (width . 80)
-            (height . 46))
+            (width . 90)
+            (height . 50))
         '((tool-bar-lines . 0))))
 
 (setq-default delete-by-moving-to-trash t
@@ -75,15 +105,12 @@ Version 2019-11-05"
   (interactive)
   (save-some-buffers t ))
 
-(if (version< emacs-version "27")
-    (add-hook 'focus-out-hook 'xah-save-all-unsaved)
-  (setq after-focus-change-function 'xah-save-all-unsaved))
-
+(setq after-focus-change-function 'xah-save-all-unsaved)
 (setq make-backup-files nil)
 (setq backup-by-copying t)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
-(setq select-enable-clipboard t)                   ; merge system's and emacs' clipboard
+(setq select-enable-clipboard t) ; merge system's and emacs' clipboard
 
 (require 'recentf)
 (recentf-mode 1)
@@ -101,8 +128,7 @@ Version 2019-11-05"
 ;; ssss---------------------------------------------------
 ;; user interface
 
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
+(global-display-line-numbers-mode)
 
 (column-number-mode 1)
 (blink-cursor-mode 0)
@@ -116,8 +142,7 @@ Version 2019-11-05"
   (put 'downcase-region 'disabled nil)
   (put 'erase-buffer 'disabled nil)
   (put 'scroll-left 'disabled nil)
-  (put 'dired-find-alternate-file 'disabled nil)
-)
+  (put 'dired-find-alternate-file 'disabled nil))
 
 ;; ssss---------------------------------------------------
 
@@ -146,16 +171,6 @@ Version 2019-11-05"
 (fido-vertical-mode 1)
 
 ;; ssss---------------------------------------------------
-
-;; remember cursor position
-(if (version< emacs-version "25.0")
-    (progn
-      (require 'saveplace)
-      (setq-default save-place t))
-  (save-place-mode 1))
-
-;; ssss---------------------------------------------------
-;;; editing related
 
 ;; make typing delete/overwrites selected text
 (delete-selection-mode 1)
@@ -212,7 +227,7 @@ Version 2019-02-22 2021-11-13"
 ;; 4 is more popular than 8.
 (setq-default tab-width 1)
 
-(setq sentence-end-double-space nil )
+(setq sentence-end-double-space nil)
 
 ;; ssss---------------------------------------------------
 
@@ -248,9 +263,7 @@ Version 2019-02-22 2021-11-13"
 
 ;; ssss---------------------------------------------------
 
-(if (version< emacs-version "28.1")
-    (defalias 'yes-or-no-p 'y-or-n-p)
-  (setq use-short-answers t))
+(setq use-short-answers t)
 
 ;; ssss---------------------------------------------------
 
@@ -275,10 +288,7 @@ Version 2017-11-10"
       line-move-visual t
       byte-compile-docstring-max-column 999)
 
-(if (version< emacs-version "28.1")
-    nil
-  (setq mode-line-compact t))
-
+(setq mode-line-compact t)
 (setq c-basic-offset 4)
 (setq js-indent-level 4)
 
@@ -297,7 +307,7 @@ Version 2017-11-10"
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
-(use-package use-package-ensure-system-package)
+;; (use-package use-package-ensure-system-package)
 (use-package diminish)
 (diminish 'subword-mode)
 (diminish 'eldoc-mode)
@@ -307,74 +317,49 @@ Version 2017-11-10"
   :init
   (gcmh-mode 1))
 
-(use-package xah-fly-keys
-  :demand t
-  :init
-  (xah-fly-keys 1)
-  :config
-  ;; specify a layout
-  (xah-fly-keys-set-layout "qwerty")
-  :bind (:map xah-fly-command-map
-	             ("C-SPC" . xah-fly-command-mode-activate)))
-
-(use-package sudo-edit)
+(use-package magit
+  :defer 10
+  :bind (:map magit-mode-map
+              ("q" . (lambda ()
+                       (interactive)
+                       (xah-fly-keys 1)
+                       (magit-mode-bury-buffer)))))
 
 (use-package which-key
   :diminish which-key-mode
   :init
   (which-key-mode))
 
-(use-package dimmer
-  :init
-  (dimmer-configure-which-key)
-  (dimmer-mode t))
-
 (use-package yasnippet
   :defer 10
-  :init
+  :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
   :after yasnippet)
 
-(use-package company
-  :demand t
-  :diminish company-mode
+(use-package orderless
+  :ensure t
   :custom
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 1)
-  (company-selection-wrap-around t)
-  (debug-on-error nil)
-  (global-company-mode t)
-  :config
-  (setq company-backends '((company-capf :with company-yasnippet))))
-
-;; (use-package company-box
-;;   :diminish company-box-mode
-;;   :hook (company-mode . company-box-mode))
-(use-package lsp-mode
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+(use-package corfu
+  ;; Optional customizations
   :custom
-  (lsp-idle-delay 0.0)
-  (lsp-log-io nil)	  ; if set to true can cause a performance hit
+  (corfu-auto t)
+  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 1)
+  (completion-styles '(orderless))
+  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
   :init
-  ;; (setq lsp-keymap-prefix "C-c l")
-  :hook ((ruby-mode		.	lsp-deferred)
-	        (c-mode		.	lsp-deferred)
-	        (c++-mode		.	lsp-deferred)
-	        (java-mode		.	lsp-deferred)
-	        ;; (elm-mode		.	lsp-deferred)
-	        (typescript-mode	.	lsp-deferred)
-	        (js2-mode		.	lsp-deferred)
-         (lsp-mode		.	lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred))
-(use-package lsp-java)
-(use-package dap-mode
-  :after lsp-mode
-  :config
-  (require 'dap-ruby)
-  (require 'dap-cpptools)
-  (require 'dap-java)
-  (require 'dap-node))
+  (global-corfu-mode))
+
+(add-hook 'ruby-mode-hook 'eglot-ensure)
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'java-mode-hook 'eglot-ensure)
+(add-hook 'js2-mode-hook 'eglot-ensure)
+(add-hook 'typescript-mode-hook 'eglot-ensure)
+(add-hook 'python-mode-hook 'eglot-ensure)
 
 (use-package js2-mode
   :mode "\\.js\\'")
@@ -433,6 +418,3 @@ Version 2017-11-10"
 			                     "xcrun --find sourcekit-lsp"))))
     (use-package swift-mode
       :mode "\\.swift\\'"))
-
-;;; DOCKER - TODO
-(use-package docker)
