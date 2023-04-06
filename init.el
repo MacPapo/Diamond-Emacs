@@ -78,7 +78,7 @@
 (electric-pair-mode)
 
 ;;; GUARDAMI
-(setq c-basic-offset 2)
+(setq c-basic-offset 8)
 (setq js-indent-level 2)
 
 (setq display-time-default-load-average nil)
@@ -384,7 +384,13 @@
 (use-package treemacs-magit
   :after (treemacs magit))
 
-(use-package lsp-java)
+(use-package lsp-java
+  :init (require 'lsp-java-boot))
+
+;; to enable the lenses
+(add-hook 'lsp-mode-hook #'lsp-lens-mode)
+(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
 (use-package lsp-mode
   :requires lsp-java
   :config
