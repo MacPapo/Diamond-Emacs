@@ -242,6 +242,8 @@
    truncate-lines nil
    visible-bell t
    use-short-answers t
+   kill-do-not-save-duplicates t
+   echo-keystrokes 0.02
    truncate-partial-width-windows nil)
 
   (add-hook 'after-init-hook 'delete-selection-mode)
