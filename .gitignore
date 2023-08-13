@@ -1,0 +1,16 @@
+/.bookmarks.el
+/.mc-lists.el
+/auto-save-list/
+/dired-history
+/eln-cache/
+/elpa/
+/forge-database.sqlite
+/history
+/projectile-bookmarks.eld
+/projectile.cache
+/projects
+/quelpa/
+/recentf
+/request/
+/transient/
+/lisp/init-local.el

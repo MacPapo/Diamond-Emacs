@@ -1,0 +1,1140 @@
+#+title: MacPapo's Config
+#+author: Jacopo Costantini
+
+
+* General Settings
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  ;; init.el --- Load the full configuration -*- lexical-binding: t -*-
+
+  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+  (defconst *is-a-mac* (eq system-type 'darwin))
+
+  (setq custom-file (locate-user-emacs-file "custom.el"))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
+  (setq use-file-dialog nil)
+  (setq use-dialog-box nil)
+  (setq inhibit-startup-screen t)
+
+  (setq-default
+   window-resize-pixelwise t
+   frame-resize-pixelwise t)
+
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'set-scroll-bar-mode)
+    (set-scroll-bar-mode nil))
+
+  (menu-bar-mode 1)
+
+  ;; TODO: sposta da qui
+  (setq-default history-length 1000)
+  (add-hook 'after-init-hook 'savehist-mode)
+
+#+end_src
+
+** GC Optimizations
+
+#+begin_src elisp :tangle ~/.emacs.d/early-init.el
+  ;; -*- lexical-binding: t; -*
+  (setq package-enable-at-startup nil)
+
+  (let ((normal-gc-cons-threshold (* 20 1024 1024))
+        (init-gc-cons-threshold (* 128 1024 1024)))
+    (setq gc-cons-threshold init-gc-cons-threshold)
+    (add-hook 'emacs-startup-hook
+              (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+#+end_src
+
+** Package manager configuration
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-pkgmanager.el
+  ;; -*- lexical-binding: t; -*-
+  
+  (require 'package)
+  (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (provide 'init-pkgmanager)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-pkgmanager)
+#+end_src
+
+** User local preferences
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-local nil t) 
+#+end_src
+
+** Appearance
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-theme.el
+  ;; -*- lexical-binding: t; -*-
+  
+  (setq custom-safe-themes t)
+
+  (use-package diminish
+    :ensure t)
+
+  (use-package zenburn-theme
+    :ensure t
+    :init
+    (load-theme 'zenburn t))
+
+  (use-package pulsar
+    :ensure t
+    :config
+    (setq pulsar-pulse t
+          pulsar-face 'pulsar-blue
+          pulsar-highlight-face 'pulsar-yellow
+          pulsar-delay 0.055)
+    (add-to-list 'pulsar-pulse-functions 'ace-window)
+    :init
+    (pulsar-global-mode 1))
+
+  (let ((no-border '(internal-border-width . 0)))
+    (add-to-list 'default-frame-alist no-border)
+    (add-to-list 'initial-frame-alist no-border))
+
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+
+  (provide 'init-theme)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-theme)
+#+end_src
+
+
+** Keybindings
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-macos.el
+  ;; -*- lexical-binding: t; -*-
+
+  (when *is-a-mac*
+    (setq mac-command-modifier 'meta)
+    (setq mac-option-modifier 'none)
+
+
+    (use-package helm-osx-app
+      :bind (("C-c SPC" . helm-osx-app))
+      :ensure t)
+
+    (use-package osx-trash
+      :ensure t
+      :init
+      (osx-trash-setup)
+      (setq delete-by-moving-to-trash t))
+
+    (use-package reveal-in-osx-finder
+      :ensure t
+      :bind ("C-c z" . reveal-in-osx-finder))
+
+    ;; (global-set-key (kbd "M-`") 'ns-next-frame)
+    ;; (global-set-key (kbd "M-h") 'ns-do-hide-emacs)
+    ;; (global-set-key (kbd "M-˙") 'ns-do-hide-others)
+    ;; (global-set-key (kbd "M-ˍ") 'ns-do-hide-others) ;; what describe-key reports for cmd-option-h
+    )
+
+  (provide 'init-macos)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-macos)
+#+end_src
+
+** Uniquify Names
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-uniquify.el
+  ;; -*- lexical-binding: t; -*-
+
+  ;; Nicer naming of buffers for files with identical names
+  (require 'uniquify)
+
+  (setq uniquify-buffer-name-style 'reverse)
+  (setq uniquify-separator " • ")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*")
+
+  (provide 'init-uniquify)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-uniquify)
+#+end_src
+
+** Recentf
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-recentf.el
+  ;; -*- lexical-binding: t; -*-
+
+  (add-hook 'after-init-hook 'recentf-mode)
+  (setq-default
+   recentf-max-saved-items 1000
+   recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'")))
+
+  (provide 'init-recentf)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-recentf)
+#+end_src
+
+** Hippie Expand
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-hippie-expand.el
+  ;; -*- lexical-binding: t; -*-
+
+  (global-set-key (kbd "M-/") 'hippie-expand)
+
+  (setq hippie-expand-try-functions-list
+        '(try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill))
+
+  (provide 'init-hippie-expand)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-hippie-expand)
+#+end_src
+
+** Editing Utils
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-editing-utils.el
+  ;; -*- lexical-binding: t; -*-
+
+  (when (fboundp 'electric-pair-mode)
+    (add-hook 'after-init-hook 'electric-pair-mode))
+  (add-hook 'after-init-hook 'electric-indent-mode)
+
+  (setq-default
+   blink-cursor-interval 0.4
+   bookmark-default-file (locate-user-emacs-file ".bookmarks.el")
+   buffers-menu-max-size 30
+   case-fold-search t
+   column-number-mode t
+   ediff-split-window-function 'split-window-horizontally
+   ediff-window-setup-function 'ediff-setup-windows-plain
+   indent-tabs-mode nil
+   create-lockfiles nil
+   auto-save-default nil
+   make-backup-files nil
+   mouse-yank-at-point t
+   save-interprogram-paste-before-kill t
+   scroll-preserve-screen-position 'always
+   set-mark-command-repeat-pop t
+   tooltip-delay 1.5
+   truncate-lines nil
+   visible-bell t
+   use-short-answers t
+   truncate-partial-width-windows nil)
+
+  (add-hook 'after-init-hook 'delete-selection-mode)
+
+  (add-hook 'after-init-hook 'global-auto-revert-mode)
+  (setq global-auto-revert-non-file-buffers t
+        auto-revert-verbose nil)
+  (with-eval-after-load 'autorevert
+    (diminish 'auto-revert-mode))
+
+  (add-hook 'after-init-hook 'transient-mark-mode)
+
+  (with-eval-after-load 'subword
+    (diminish 'subword-mode))
+
+  (when (fboundp 'display-line-numbers-mode)
+    (setq-default display-line-numbers-width 3)
+    (add-hook 'prog-mode-hook 'display-line-numbers-mode))
+
+  (when (boundp 'display-fill-column-indicator)
+    (setq-default indicate-buffer-boundaries 'left)
+    (setq-default display-fill-column-indicator-character ?\u254e)
+    (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
+
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'narrow-to-defun 'disabled nil)
+
+  (put 'upcase-region 'disabled nil)
+  (put 'downcase-region 'disabled nil)
+
+  (add-hook 'after-init-hook 'show-paren-mode)
+
+  (use-package avy
+    :ensure t
+    :bind (("C-:" . avy-goto-char)
+           ("C-'" . avy-goto-char-2)
+           ("M-g f" . avy-goto-line)
+           ("M-g w" . avy-goto-word-1)
+           ("M-g e" . avy-goto-word-0))
+    :config
+    (setq avy-background t)
+    (setq avy-style 'at-full))
+
+  (use-package multiple-cursors
+    :ensure t
+    :bind (("C-S-c C-S-c" . mc/edit-lines)
+           ("C->" . mc/mark-next-like-this)
+           ("C-<" . mc/mark-previous-like-this)
+           ("C-c C-<" . mc/mark-all-like-this)))
+
+  (use-package ace-mc
+    :ensure t
+    :bind (("C-c M-j" . ace-mc-add-multiple-cursors)
+           ("C-c M-k" . ace-mc-add-single-cursor)))
+
+  (global-unset-key [M-left])
+  (global-unset-key [M-right])
+
+  (use-package whole-line-or-region
+    :ensure t
+    :diminish whole-line-or-region-local-mode
+    :init
+    (add-hook 'after-init-hook 'whole-line-or-region-global-mode))
+
+  (global-set-key (kbd "M-j") 'join-line)
+
+  (use-package highlight-escape-sequences
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'hes-mode))
+
+  (provide 'init-editing-utils)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-editing-utils)
+#+end_src
+
+** Treesitter
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-treesitter.el
+  ;; -*- lexical-binding: t; -*-
+
+  (setq treesit-load-name-override-list nil
+        major-mode-remap-alist nil
+        treesit-font-lock-level 4)
+
+  (use-package treesit-auto
+    :ensure t
+    :config
+    (global-treesit-auto-mode))
+
+  (provide 'init-treesitter)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-treesitter)
+#+end_src
+
+** Flymake Flycheck
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-flymake.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package flymake-flycheck
+    :ensure t
+    :init
+    (with-eval-after-load 'flycheck
+      (setq-default flycheck-disabled-checkers
+                    (append (default-value 'flycheck-disabled-checkers)
+                            '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package))))
+    (defun my/enable-flymake-flycheck ()
+      (setq-local flymake-diagnostic-functions
+                  (append flymake-diagnostic-functions
+                          (flymake-flycheck-all-chained-diagnostic-functions))))
+
+    (add-hook 'flymake-mode-hook 'my/enable-flymake-flycheck)
+    (add-hook 'prog-mode-hook    'flymake-mode)
+    (add-hook 'text-mode-hook    'flymake-mode))
+
+  (with-eval-after-load 'flymake
+    ;; Provide some flycheck-like bindings in flymake mode to ease transition
+    (define-key flymake-mode-map (kbd "C-c ! l") 'flymake-show-buffer-diagnostics)
+    (define-key flymake-mode-map (kbd "C-c ! n") 'flymake-goto-next-error)
+    (define-key flymake-mode-map (kbd "C-c ! p") 'flymake-goto-prev-error)
+    (define-key flymake-mode-map (kbd "C-c ! c") 'flymake-start))
+
+  (setq eldoc-documentation-function 'eldoc-documentation-compose)
+
+  (add-hook 'flymake-mode-hook
+            (lambda ()
+              (setq eldoc-documentation-functions
+                    (cons 'flymake-eldoc-function
+                          (delq 'flymake-eldoc-function eldoc-documentation-functions)))))
+
+  (when (fboundp 'global-eldoc-mode)
+    (add-hook 'after-init-hook 'global-eldoc-mode))
+
+  (provide 'init-flymake)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-flymake)
+#+end_src
+
+** Miscelaneous
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-misc.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package info-colors
+    :ensure t
+    :init
+    (with-eval-after-load 'info
+      (add-hook 'Info-selection-hook 'info-colors-fontify-node)))
+
+  (use-package shfmt
+    :ensure t)
+
+  (use-package dotenv-mode
+    :ensure t)
+
+  (use-package crux
+    :ensure t
+    :bind
+    ([remap move-beginning-of-line] . crux-move-beginning-of-line)
+    ([remap kill-whole-line]        . crux-kill-whole-line)
+    ("C-<backspace>"                . crux-kill-line-backwards)
+    ("C-S-o"                        . crux-smart-open-line-above)
+    ("C-o"                          . crux-smart-open-line)
+    ("C-c n"                        . crux-cleanup-buffer-or-region)
+    ("C-c d"                        . crux-duplicate-current-line-or-region)
+    ("C-c M-d"                      . crux-duplicate-and-comment-current-line-or-region)
+    ("C-c r"                        . crux-rename-file-and-buffer)
+    ("C-^"                          . crux-top-join-line)
+    ("C-x C-u"                      . crux-upcase-region)
+    ("C-x C-l"                      . crux-downcase-region)
+    ("C-x M-c"                      . crux-capitalize-region))
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  (provide 'init-misc)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-misc)
+#+end_src
+
+** Shell
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-shell.el
+  ;; -*- lexical-binding: t; -*-
+
+  ;;(global-set-key (kbd "C-c e") 'eshell)
+
+  (use-package eshell-prompt-extras
+    :ensure t
+    :init
+    (with-eval-after-load "esh-opt"
+      (autoload 'epe-theme-lambda "eshell-prompt-extras")
+      (setq eshell-highlight-prompt nil
+            eshell-prompt-function 'epe-theme-lambda)))
+
+  (use-package eshell-syntax-highlighting
+    :ensure t
+    :config
+    (eshell-syntax-highlighting-global-mode +1))
+
+  (provide 'init-shell)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-shell)
+#+end_src
+
+** Folding
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-folding.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package origami
+    :ensure t
+    :bind (("C-c f" . origami-recursively-toggle-node)
+           ("C-c F" . origami-toggle-all-nodes))
+    :hook (prog-mode . origami-mode))
+
+  (provide 'init-folding)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-folding)
+#+end_src
+
+* Packages
+
+** Dired
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-dired.el
+  ;; -*- lexical-binding: t; -*-
+
+  (require 'dired)
+  (setq-default dired-dwim-target t)
+
+  ;; Prefer g-prefixed coreutils version of standard utilities when available
+  (let ((gls (executable-find "gls")))
+    (when gls (setq insert-directory-program gls)))
+
+  (use-package diredfl
+    :ensure t
+    :config
+    (diredfl-global-mode 1))
+
+  (use-package dired-recent
+    :ensure t
+    :init
+    (dired-recent-mode 1))
+
+  (use-package dired-hacks-utils
+    :ensure t
+    :bind (:map dired-mode-map
+                ("M-n" . dired-hacks-next-file)
+                ("M-p" . dired-hacks-previous-file)))
+
+  (use-package dired-filter
+    :ensure t
+    :config
+    :bind (:map dired-mode-map
+                ("/" . dired-filter-mode)))
+
+  (use-package dired-subtree
+    :ensure t
+    :bind (:map dired-mode-map
+                ("i" . dired-subtree-insert)
+                (";" . dired-subtree-remove)))
+
+  (use-package dired-narrow
+    :ensure t
+    :bind (:map dired-mode-map
+                ("s" . dired-narrow))
+    :config
+    (setq dired-narrow-exit-when-1-left nil))
+
+  (provide 'init-dired)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-dired)
+#+end_src
+
+** Isearch
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-isearch.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package anzu
+    :ensure t
+    :init (global-anzu-mode +1)
+    :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
+           ([remap query-replace]        . anzu-query-replace)
+           ("C-c a r"                    . anzu-query-replace-at-cursor))
+    :config
+    (setq anzu-mode-lighter ""))
+
+  (with-eval-after-load 'isearch
+    ;; DEL during isearch should edit the search string, not jump back to the previous result
+    (define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char))
+
+  (provide 'init-isearch)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-isearch)
+#+end_src
+
+** Helm Completion
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-helm.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package helm
+    :ensure t
+    :diminish helm-mode
+    :init
+    (setq helm-M-x-fuzzy-match                  t
+          helm-buffers-fuzzy-matching           t
+          helm-recentf-fuzzy-match              t
+          helm-locate-fuzzy-match               t
+          helm-candidate-number-limit           200
+          helm-split-window-inside-p            t
+          helm-always-two-windows               nil
+          helm-display-buffer-default-height    15
+          helm-move-to-line-cycle-in-source     t
+          helm-autoresize-max-height            40
+          helm-autoresize-min-height            20
+          helm-M-x-show-short-doc               t
+          helm-default-display-buffer-functions '(display-buffer-in-side-window))
+    :bind (("C-x b"   . helm-mini)
+           ("M-x"     . helm-M-x)
+           ("C-x C-f" . helm-find-files)
+           ("M-y"     . helm-show-kill-ring)
+           ("<f1> f"  . helm-apropos)
+           ("C-c o"   . helm-imenu)
+           ("C-c b"   . helm-bookmarks)
+           ("C-c t"   . helm-themes)
+           ("<f1> l"  . helm-locate-library))
+    :bind (:map helm-find-files-map
+                ("C-c C-i" . helm-ff-properties-persistent))
+    :config
+    (helm-mode 1)
+    (helm-autoresize-mode 1))
+
+  (use-package helm-projectile
+    :ensure t
+    :after (helm projectile)
+    :config
+    (helm-projectile-on)
+    :bind (("C-c p h" . helm-projectile)
+           ("C-c p p" . helm-projectile-switch-project)
+           ("C-c p f" . helm-projectile-find-file)
+           ("C-c p g" . helm-projectile-grep)))
+
+  (use-package helm-git-grep
+    :ensure t
+    :after helm
+    :bind (("C-c g" . helm-git-grep)
+           ("C-c G" . helm-git-grep-at-point))
+    :config
+    (setq helm-git-grep-include-submodules t)
+    (setq helm-git-grep-use-iomenu-last-pattern t))
+
+  (use-package helm-ls-git
+    :ensure t
+    :bind (("M-g G" . helm-browse-project)
+           ("M-g H" . helm-projects-history)))
+
+  (use-package helm-gitignore
+    :ensure t
+    :after helm)
+
+  (use-package helm-themes
+    :ensure t)
+
+  (use-package helm-swoop
+    :ensure t
+    :after helm
+    :bind (("M-i"     . helm-swoop)
+           ("M-I"     . helm-swoop-back-to-last-point)
+           ("C-c M-i" . helm-multi-swoop)
+           ("C-x M-i" . helm-multi-swoop-all))
+    :config
+    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
+    (define-key helm-swoop-map (kbd "M-m") 'helm-multi-swoop-current-mode-from-helm-swoop)
+    (define-key helm-swoop-map (kbd "C-r") 'helm-previous-line)
+    (define-key helm-swoop-map (kbd "C-s") 'helm-next-line)
+    (define-key helm-multi-swoop-map (kbd "C-r") 'helm-previous-line)
+    (define-key helm-multi-swoop-map (kbd "C-s") 'helm-next-line)
+
+    (setq helm-multi-swoop-edit-save t)
+    (setq helm-swoop-split-with-multiple-windows nil)
+    (setq helm-swoop-split-direction 'split-window-vertically)
+    (setq helm-swoop-speed-or-color nil)
+    (setq helm-swoop-move-to-line-cycle t)
+    (setq helm-swoop-use-line-number-face t)
+    (setq helm-swoop-use-fuzzy-match t))
+
+  (use-package helm-rg
+    :ensure t
+    :after helm
+    :bind ("C-c k" . helm-rg))
+
+  (use-package helm-mt
+    :ensure t
+    :after helm
+    :bind (("C-x T" . helm-mt))
+    :config
+    (helm-mt/reroute-terminal-functions t))
+
+  (use-package helm-tramp
+    :ensure t
+    :after helm
+    :bind (("C-c s" . helm-tramp))
+    :config
+    (setq tramp-default-method "ssh")
+    (setq make-backup-files nil)
+    (setq create-lockfiles nil)
+    (add-hook 'helm-tramp-pre-command-hook '(lambda () (global-aggressive-indent-mode 0)
+                                              (projectile-mode 0)
+                                              (editorconfig-mode 0)))
+    (add-hook 'helm-tramp-quit-hook '(lambda () (global-aggressive-indent-mode 1)
+                                       (projectile-mode 1)
+                                       (editorconfig-mode 1))))
+
+  (use-package helm-make
+    :ensure t
+    :after helm
+    :bind ("C-c c" . helm-make-projectile))
+
+  (use-package helm-descbinds
+    :ensure t
+    :after helm
+    :bind ("<f2> D" . helm-descbinds))
+
+  (provide 'init-helm)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-helm)
+#+end_src
+
+** Ivy Completion
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-ivy.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package ivy
+    :ensure t
+    :diminish ivy-mode
+    :bind (("C-x b" . ivy-switch-buffer)
+           ("C-c v" . ivy-push-view)
+           ("C-c V" . ivy-pop-view))
+    :config
+    (setq ivy-use-virtual-buffers        t
+          ivy-count-format               "(%d/%d) "
+          ivy-display-style              'fancy
+          ivy-initial-inputs-alist       nil
+          enable-recursive-minibuffers   t
+          ivy-wrap t)
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :ensure t
+    :config
+    (ivy-rich-modify-column
+     'ivy-switch-buffer
+     'ivy-rich-switch-buffer-major-mode
+     '(:width 20 :face error))
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :ensure t
+    :bind (("M-x"     . counsel-M-x)
+           ("C-x C-f" . counsel-find-file)
+           ("M-y"     . counsel-yank-pop)
+           ("<f1> f"  . counsel-describe-function)
+           ("<f1> v"  . counsel-describe-variable)
+           ("<f1> l"  . counsel-find-library)
+           ("<f2> i"  . counsel-info-lookup-symbol)
+           ("<f2> u"  . counsel-unicode-char)
+           ("<f2> j"  . counsel-set-variable)
+
+           ;; Ivy-based interface to shell and system tools
+           ("C-c c"   . counsel-compile)
+           ("C-c g"   . counsel-git)
+           ("C-c j"   . counsel-git-grep)
+           ("C-c L"   . counsel-git-log)
+           ("C-c k"   . counsel-rg)
+           ("C-x l"   . counsel-locate)
+           ("C-c J"   . counsel-file-jump)
+
+           ;; Ivy-resume and other commands
+           ("C-c C-r" . ivy-resume)
+           ("C-c b"   . counsel-bookmark)
+           ("C-c D"   . counsel-descbinds)
+           ("C-c o"   . counsel-outline)
+           ("C-c t"   . counsel-load-theme)
+           ("C-c F"   . counsel-org-file)))
+
+  (use-package marginalia
+    :ensure t
+    :bind (:map minibuffer-local-map
+                ("M-A" . marginalia-cycle))
+    :init
+    (marginalia-mode))
+
+  (provide 'init-ivy)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  ;;(require 'init-ivy)
+#+end_src
+
+** Which Key
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-which-key.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package which-key
+    :diminish which-key-mode
+    :ensure t
+    :config
+    (which-key-mode))
+
+  (provide 'init-which-key)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-which-key)
+#+end_src
+
+** Projectile
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-projectile.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-mode +1)
+    :bind (:map projectile-mode-map
+                ("C-c p" . projectile-command-map))
+    :config
+    (setq projectile-indexing-method                'alien
+          projectile-sort-order                     'modification-time
+          projectile-enable-caching                 t
+          projectile-completion-system              'ivy
+          projectile-per-project-compilation-buffer t
+          projectile-mode-line-function             '(lambda ()
+                                                       (format " Proj[%s]"
+                                                               (projectile-project-name)))))
+
+  (use-package counsel-projectile
+    :after (projectile ivy)
+    :ensure t
+    :config
+    (counsel-projectile-mode 1))
+
+  (use-package projectile-git-autofetch
+    :diminish projectile-git-autofetch-mode
+    :ensure t
+    :init
+    (projectile-git-autofetch-mode 1))
+
+  (provide 'init-projectile)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-projectile)
+#+end_src
+
+** Grep
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-grep.el
+  ;; -*- lexical-binding: t; -*-
+
+  (setq-default grep-highlight-matches t
+                grep-scroll-output t)
+
+  (when *is-a-mac*
+    (setq-default locate-command "mdfind"))
+
+  (use-package wgrep
+    :ensure t
+    :config
+    (define-key grep-mode-map (kbd "C-c C-q") 'wgrep-change-to-wgrep-mode)
+    (define-key grep-mode-map (kbd "w")       'wgrep-change-to-wgrep-mode))
+
+  (use-package deadgrep
+    :ensure t
+    :bind ("<f5>" . deadgrep))
+
+  (provide 'init-grep)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-grep)
+#+end_src
+
+** Corfu
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-corfu.el
+    ;; -*- lexical-binding: t; -*-
+
+    (use-package corfu
+      :ensure t
+      :hook
+      ((shell-mode  . (lambda () (setq-local corfu-auto nil)))
+       (eshell-mode . (lambda () (setq-local corfu-auto nil)))
+       (term-mode   . (lambda () (setq-local corfu-auto nil))))
+      :custom
+      (corfu-cycle t)
+      (corfu-auto t) 
+      (corfu-commit-predicate nil)
+      (corfu-quit-no-match t)
+      (corfu-auto-delay 0)
+      (corfu-auto-prefix 1)
+      :bind (:map corfu-map
+                  ("TAB" . corfu-next)
+                  ([tab] . corfu-next)
+                  ("S-TAB" . corfu-previous)
+                  ([backtab] . corfu-previous)
+                  ("RET" . corfu-insert)
+                  ([return] . corfu-insert))
+      :init
+      (add-hook 'after-init-hook 'global-corfu-mode)
+      (corfu-popupinfo-mode 1))
+
+    (provide 'init-corfu)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-corfu)
+#+end_src
+
+** Embark
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-embark.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package embark
+    :ensure t
+    :bind (("C-." . embark-act)
+           ("C-;" . embark-dwim)
+           ("C-h B" . embark-bindings)))
+
+  (provide 'init-embark)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-embark)
+#+end_src
+
+** Eglot
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-eglot.el
+  ;; -*- lexical-binding: t; -*-
+
+  (require 'eglot)
+
+  (setq read-process-output-max (* 1024 1024))
+
+  (use-package consult-eglot
+    :ensure t)
+
+  (provide 'init-eglot)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-eglot)
+#+end_src
+
+** Windows
+
+Ace Window Config
+Remember:
+x - delete window
+m - swap windows
+M - move window
+c - copy window
+j - select buffer
+n - select the previous window
+u - select buffer in the other window
+c - split window fairly, either vertically or horizontally
+v - split window vertically
+b - split window horizontally
+o - maximize current window
+? - show these command bindings
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-windows.el
+  ;; -*- lexical-binding: t; -*-
+
+  (add-hook 'after-init-hook 'winner-mode)
+
+  (use-package ace-window
+    :ensure t
+    :bind ("M-o" . ace-window)
+    :config
+    ;; Visualizza il numero della finestra nel centro
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+  (provide 'init-windows)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-windows)
+#+end_src
+
+** Git
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-git.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package git-blamed
+    :ensure t)
+
+  (use-package git-modes
+    :ensure t)
+
+  (use-package git-timemachine
+    :ensure t
+    :bind ("C-x v t" . git-timemachine-toggle))
+
+  (use-package magit
+    :ensure t
+    :bind
+    (([(meta f12)] . magit-status)
+     ("C-x g"      . magit-status)
+     ("C-x M-g"    . magit-dispatch))
+    :config
+    (setq-default magit-diff-refine-hunk 'all)
+    :init
+    (when *is-a-mac*
+      (with-eval-after-load 'magit
+        (add-hook 'magit-mode-hook
+                  (lambda () (local-unset-key [(meta h)]))))))
+
+  (use-package forge
+    :after magit
+    :ensure t)
+
+  (use-package diff-hl
+    :ensure t
+    :init
+    (with-eval-after-load 'dired
+      (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+    (add-hook 'after-init-hook 'global-diff-hl-mode)
+    (with-eval-after-load 'diff-hl
+      (define-key diff-hl-mode-map
+                  (kbd "<left-fringe> <mouse-1>")
+                  'diff-hl-diff-goto-hunk)))
+
+  (provide 'init-git)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-git)
+#+end_src
+
+** ORG MODE
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-org.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package org-modern
+    :ensure t
+    :config
+    (setq
+     ;; Edit settings
+     org-auto-align-tags nil
+     org-tags-column 0
+     org-catch-invisible-edits 'show-and-error
+     org-special-ctrl-a/e t
+     org-insert-heading-respect-content t
+
+     ;; Org styling, hide markup etc.
+     org-hide-emphasis-markers t
+     org-pretty-entities t
+     org-ellipsis "…"
+
+     ;; Agenda styling
+     org-agenda-tags-column 0
+     org-agenda-block-separator ?─
+     org-agenda-time-grid
+     '((daily today require-timed)
+       (800 1000 1200 1400 1600 1800 2000)
+       " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+     org-agenda-current-time-string
+     "⭠ now ─────────────────────────────────────────────────")
+
+    (global-org-modern-mode))
+
+  (use-package org-wc
+    :ensure t
+    :after org)
+
+  (use-package org-pomodoro
+    :ensure t
+    :after org)
+
+  (use-package org-zettelkasten
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook #'org-zettelkasten-mode))
+
+  (provide 'init-org)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-org)
+#+end_src
+
+** Yasnippet
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-yasnippet.el
+  (use-package yasnippet
+    :ensure t
+    :defer 5
+    :diminish yasnippet
+    :init
+    (yas-global-mode 1)
+    :config
+    ;; Directory per i tuoi snippet personali, se desideri
+    ;; (setq yas-snippet-dirs '("~/.emacs.d/mysnippets"))
+    (define-key yas-minor-mode-map (kbd "<backtab>") #'yas-expand))
+
+  (use-package yasnippet-snippets
+    :ensure t
+    :defer 5)
+
+  (use-package helm-c-yasnippet
+    :ensure t
+    :defer 5
+    :bind (("C-c Y" . helm-yas-complete)
+           ("<f6>" . helm-yas-visit-snippet-file))
+    :config
+    (setq helm-yas-space-match-any-greedy t))
+
+
+  (provide 'init-yasnippet)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-yasnippet)
+#+end_src
+
+** Copilot
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-copilot.el
+  (provide 'init-copilot)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-copilot)
+#+end_src
+
+* Languages
+
+** Dart
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-dart.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package dart-mode
+    :ensure t
+    :bind (:map dart-mode-map
+                ("C-M-x" . flutter-run-or-hot-reload)))
+
+  (use-package flutter
+    :ensure t
+    :config
+    (setq dart-sdk-path (concat (getenv "HOME") "FlutterDev/flutter/bin/cache/dark-sdk/")
+          dart-server-sdk-path (concat (getenv "HOME") "FlutterDev/flutter/bin/cache/dark-sdk/")
+          dart-format-on-save t
+          flutter-sdk-path "~/FlutterDev/flutter/"
+          dart-server-enable-analysis-server t))
+
+  (provide 'init-dart)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-dart)
+#+end_src
