@@ -4,19 +4,19 @@
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier 'none)
 
+  (use-package exec-path-from-shell
+    :config
+    (exec-path-from-shell-initialize))
 
   (use-package helm-osx-app
-    :bind (("C-c SPC" . helm-osx-app))
-    :ensure t)
+    :bind (("C-c SPC" . helm-osx-app)))
 
   (use-package osx-trash
-    :ensure t
-    :init
-    (osx-trash-setup)
-    (setq delete-by-moving-to-trash t))
+    :config
+    (setq delete-by-moving-to-trash t)
+    (osx-trash-setup))
 
   (use-package reveal-in-osx-finder
-    :ensure t
     :bind ("C-c z" . reveal-in-osx-finder))
 
   ;; (global-set-key (kbd "M-`") 'ns-next-frame)

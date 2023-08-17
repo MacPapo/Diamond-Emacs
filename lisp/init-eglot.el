@@ -2,9 +2,11 @@
 
 (require 'eglot)
 
-(setq read-process-output-max (* 1024 1024))
+(setq read-process-output-max (* 3 1024 1024))
 
-(use-package consult-eglot
-  :ensure t)
+;; Default of 800 was too low.
+;; Avoid Lisp nesting exceeding in swift-mode.
+(setq max-lisp-eval-depth 10000)
+(setq max-specpdl-size 10000)
 
 (provide 'init-eglot)

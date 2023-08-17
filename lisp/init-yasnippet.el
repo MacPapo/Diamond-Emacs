@@ -1,23 +1,18 @@
 (use-package yasnippet
-  :ensure t
-  :defer 5
   :diminish yasnippet
-  :init
-  (yas-global-mode 1)
+  :bind (:map  yas-minor-mode-map
+               ("<backtab>" . yas-expand))
   :config
-  ;; Directory per i tuoi snippet personali, se desideri
-  ;; (setq yas-snippet-dirs '("~/.emacs.d/mysnippets"))
-  (define-key yas-minor-mode-map (kbd "<backtab>") #'yas-expand))
+  ;;(setq yas-snippet-dirs '("~/.emacs.d/personal-snippets"))
+  (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :ensure t
-  :defer 5)
+  :after yasnippet)
 
 (use-package helm-c-yasnippet
-  :ensure t
-  :defer 5
+  :after (yasnippet helm)
   :bind (("C-c Y" . helm-yas-complete)
-         ("<f6>" . helm-yas-visit-snippet-file))
+         ("<f6>"  . helm-yas-visit-snippet-file))
   :config
   (setq helm-yas-space-match-any-greedy t))
 

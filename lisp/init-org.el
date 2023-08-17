@@ -1,7 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(use-package org)
+
 (use-package org-modern
-  :ensure t
   :config
   (setq
    ;; Edit settings
@@ -10,12 +11,12 @@
    org-catch-invisible-edits 'show-and-error
    org-special-ctrl-a/e t
    org-insert-heading-respect-content t
-
+   
    ;; Org styling, hide markup etc.
    org-hide-emphasis-markers t
    org-pretty-entities t
    org-ellipsis "…"
-
+   
    ;; Agenda styling
    org-agenda-tags-column 0
    org-agenda-block-separator ?─
@@ -25,20 +26,29 @@
      " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
    org-agenda-current-time-string
    "⭠ now ─────────────────────────────────────────────────")
-
+  
   (global-org-modern-mode))
 
 (use-package org-wc
-  :ensure t
   :after org)
 
 (use-package org-pomodoro
-  :ensure t
   :after org)
 
 (use-package org-zettelkasten
-  :ensure t
+  :hook org-mode)
+
+(use-package org-super-agenda
+  :after org-agenda
   :config
-  (add-hook 'org-mode-hook #'org-zettelkasten-mode))
+  (setq org-agenda-files '("~/org/agenda/agenda.org"
+                           "~/org/agenda/sessione.org"))
+  (setq org-super-agenda-groups
+        '((:name "Oggi"
+                 :time-grid t
+                 :scheduled today)
+          (:name "Importante"
+                 :priority "A")))
+  (org-super-agenda-mode))
 
 (provide 'init-org)

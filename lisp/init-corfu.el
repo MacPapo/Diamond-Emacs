@@ -1,11 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package corfu
-  :ensure t
   :hook
   ((shell-mode  . (lambda () (setq-local corfu-auto nil)))
    (eshell-mode . (lambda () (setq-local corfu-auto nil)))
-   (term-mode   . (lambda () (setq-local corfu-auto nil))))
+   (term-mode   . (lambda () (setq-local corfu-auto nil)))
+   (after-init  . global-corfu-mode))
   :custom
   (corfu-cycle t)
   (corfu-auto t) 
@@ -19,9 +19,6 @@
               ("S-TAB" . corfu-previous)
               ([backtab] . corfu-previous)
               ("RET" . corfu-insert)
-              ([return] . corfu-insert))
-  :init
-  (add-hook 'after-init-hook 'global-corfu-mode)
-  (corfu-popupinfo-mode 1))
+              ([return] . corfu-insert)))
 
 (provide 'init-corfu)

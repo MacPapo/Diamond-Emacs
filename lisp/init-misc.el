@@ -1,19 +1,13 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package info-colors
-  :ensure t
-  :init
-  (with-eval-after-load 'info
-    (add-hook 'Info-selection-hook 'info-colors-fontify-node)))
+  :hook (Info-selection . info-colors-fontify-node))
 
-(use-package shfmt
-  :ensure t)
+(use-package shfmt)
 
-(use-package dotenv-mode
-  :ensure t)
+(use-package dotenv-mode)
 
 (use-package crux
-  :ensure t
   :bind
   ([remap move-beginning-of-line] . crux-move-beginning-of-line)
   ([remap kill-whole-line]        . crux-kill-whole-line)
@@ -30,7 +24,6 @@
   ("C-x M-c"                      . crux-capitalize-region))
 
 (use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook prog-mode)
 
 (provide 'init-misc)

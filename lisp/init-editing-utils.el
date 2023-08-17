@@ -24,6 +24,8 @@
  truncate-lines nil
  visible-bell t
  use-short-answers t
+ kill-do-not-save-duplicates t
+ echo-keystrokes 0.02
  truncate-partial-width-windows nil)
 
 (add-hook 'after-init-hook 'delete-selection-mode)
@@ -58,7 +60,6 @@
 (add-hook 'after-init-hook 'show-paren-mode)
 
 (use-package avy
-  :ensure t
   :bind (("C-:" . avy-goto-char)
          ("C-'" . avy-goto-char-2)
          ("M-g f" . avy-goto-line)
@@ -69,14 +70,12 @@
   (setq avy-style 'at-full))
 
 (use-package multiple-cursors
-  :ensure t
   :bind (("C-S-c C-S-c" . mc/edit-lines)
          ("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-<" . mc/mark-all-like-this)))
 
 (use-package ace-mc
-  :ensure t
   :bind (("C-c M-j" . ace-mc-add-multiple-cursors)
          ("C-c M-k" . ace-mc-add-single-cursor)))
 
@@ -84,15 +83,12 @@
 (global-unset-key [M-right])
 
 (use-package whole-line-or-region
-  :ensure t
-  :diminish whole-line-or-region-local-mode
-  :init
-  (add-hook 'after-init-hook 'whole-line-or-region-global-mode))
+  :demand t
+  :diminish whole-line-or-region-local-mode)
 
 (global-set-key (kbd "M-j") 'join-line)
 
 (use-package highlight-escape-sequences
-  :ensure t
   :init
   (add-hook 'after-init-hook 'hes-mode))
 

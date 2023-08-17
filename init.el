@@ -1,7 +1,6 @@
 ;; init.el --- Load the full configuration -*- lexical-binding: t -*-
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(defconst *is-a-mac* (eq system-type 'darwin))
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
@@ -20,7 +19,16 @@
 (when (fboundp 'set-scroll-bar-mode)
   (set-scroll-bar-mode nil))
 
-(menu-bar-mode 1)
+(menu-bar-mode -1)
+
+(let ((no-border '(internal-border-width . 0)))
+  (add-to-list 'default-frame-alist no-border)
+  (add-to-list 'initial-frame-alist no-border))
+
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
 
 ;; TODO: sposta da qui
 (setq-default history-length 1000)
@@ -47,6 +55,8 @@
 (require 'init-flymake)
 
 (require 'init-misc)
+
+(require 'init-tramp)
 
 (require 'init-shell)
 
@@ -80,6 +90,6 @@
 
 (require 'init-yasnippet)
 
-(require 'init-copilot)
-
 (require 'init-dart)
+
+(require 'init-cxx)

@@ -8,35 +8,28 @@
   (when gls (setq insert-directory-program gls)))
 
 (use-package diredfl
-  :ensure t
   :config
   (diredfl-global-mode 1))
 
 (use-package dired-recent
-  :ensure t
   :init
   (dired-recent-mode 1))
 
 (use-package dired-hacks-utils
-  :ensure t
   :bind (:map dired-mode-map
               ("M-n" . dired-hacks-next-file)
               ("M-p" . dired-hacks-previous-file)))
 
 (use-package dired-filter
-  :ensure t
-  :config
   :bind (:map dired-mode-map
               ("/" . dired-filter-mode)))
 
 (use-package dired-subtree
-  :ensure t
   :bind (:map dired-mode-map
               ("i" . dired-subtree-insert)
               (";" . dired-subtree-remove)))
 
 (use-package dired-narrow
-  :ensure t
   :bind (:map dired-mode-map
               ("s" . dired-narrow))
   :config

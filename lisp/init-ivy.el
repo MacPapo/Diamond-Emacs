@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package ivy
-  :ensure t
   :diminish ivy-mode
   :bind (("C-x b" . ivy-switch-buffer)
          ("C-c v" . ivy-push-view)
@@ -16,7 +15,6 @@
   (ivy-mode 1))
 
 (use-package ivy-rich
-  :ensure t
   :config
   (ivy-rich-modify-column
    'ivy-switch-buffer
@@ -25,7 +23,6 @@
   (ivy-rich-mode 1))
 
 (use-package counsel
-  :ensure t
   :bind (("M-x"     . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
          ("M-y"     . counsel-yank-pop)
@@ -54,7 +51,6 @@
          ("C-c F"   . counsel-org-file)))
 
 (use-package marginalia
-  :ensure t
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
   :init
