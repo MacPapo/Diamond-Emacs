@@ -238,7 +238,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-macos)
+ ;; (require 'init-macos)
 #+end_src
 
 ** Uniquify Names
@@ -302,101 +302,102 @@
 ** Editing Utils
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-editing-utils.el
-  ;; -*- lexical-binding: t; -*-
+    ;; -*- lexical-binding: t; -*-
 
-  (when (fboundp 'electric-pair-mode)
-    (add-hook 'after-init-hook 'electric-pair-mode))
-  (add-hook 'after-init-hook 'electric-indent-mode)
+    (when (fboundp 'electric-pair-mode)
+      (add-hook 'after-init-hook 'electric-pair-mode))
+    (add-hook 'after-init-hook 'electric-indent-mode)
 
-  (setq-default
-   blink-cursor-interval 0.4
-   bookmark-default-file (locate-user-emacs-file ".bookmarks.el")
-   buffers-menu-max-size 30
-   case-fold-search t
-   column-number-mode t
-   ediff-split-window-function 'split-window-horizontally
-   ediff-window-setup-function 'ediff-setup-windows-plain
-   indent-tabs-mode nil
-   create-lockfiles nil
-   auto-save-default nil
-   make-backup-files nil
-   mouse-yank-at-point t
-   save-interprogram-paste-before-kill t
-   scroll-preserve-screen-position 'always
-   set-mark-command-repeat-pop t
-   tooltip-delay 1.5
-   truncate-lines nil
-   visible-bell t
-   use-short-answers t
-   kill-do-not-save-duplicates t
-   echo-keystrokes 0.02
-   truncate-partial-width-windows nil)
+    (setq-default
+     blink-cursor-interval 0.4
+     bookmark-default-file (locate-user-emacs-file ".bookmarks.el")
+     buffers-menu-max-size 30
+     case-fold-search t
+     column-number-mode t
+     ediff-split-window-function 'split-window-horizontally
+     ediff-window-setup-function 'ediff-setup-windows-plain
+     indent-tabs-mode nil
+     create-lockfiles nil
+     auto-save-default nil
+     make-backup-files nil
+     mouse-yank-at-point t
+     save-interprogram-paste-before-kill t
+     scroll-preserve-screen-position 'always
+     set-mark-command-repeat-pop t
+     tooltip-delay 1.5
+     truncate-lines nil
+     visible-bell t
+     use-short-answers t
+     kill-do-not-save-duplicates t
+     echo-keystrokes 0.02
+     truncate-partial-width-windows nil)
 
-  (add-hook 'after-init-hook 'delete-selection-mode)
+    (add-hook 'after-init-hook 'delete-selection-mode)
 
-  (add-hook 'after-init-hook 'global-auto-revert-mode)
-  (setq global-auto-revert-non-file-buffers t
-        auto-revert-verbose nil)
-  (with-eval-after-load 'autorevert
-    (diminish 'auto-revert-mode))
+    (add-hook 'after-init-hook 'global-auto-revert-mode)
+    (setq global-auto-revert-non-file-buffers t
+          auto-revert-verbose nil)
+    (with-eval-after-load 'autorevert
+      (diminish 'auto-revert-mode))
 
-  (add-hook 'after-init-hook 'transient-mark-mode)
+    (add-hook 'after-init-hook 'transient-mark-mode)
 
-  (with-eval-after-load 'subword
-    (diminish 'subword-mode))
+    (with-eval-after-load 'subword
+      (diminish 'subword-mode))
 
-  (when (fboundp 'display-line-numbers-mode)
-    (setq-default display-line-numbers-width 3)
-    (add-hook 'prog-mode-hook 'display-line-numbers-mode))
+    (when (fboundp 'display-line-numbers-mode)
+      (setq-default display-line-numbers-width 3)
+      (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
-  (when (boundp 'display-fill-column-indicator)
-    (setq-default indicate-buffer-boundaries 'left)
-    (setq-default display-fill-column-indicator-character ?\u254e)
-    (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
+    (when (boundp 'display-fill-column-indicator)
+      (setq-default indicate-buffer-boundaries 'left)
+      (setq-default display-fill-column-indicator-character ?\u254e)
+      (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
 
-  (put 'narrow-to-region 'disabled nil)
-  (put 'narrow-to-page 'disabled nil)
-  (put 'narrow-to-defun 'disabled nil)
+    (put 'narrow-to-region 'disabled nil)
+    (put 'narrow-to-page 'disabled nil)
+    (put 'narrow-to-defun 'disabled nil)
 
-  (put 'upcase-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
+    (put 'upcase-region 'disabled nil)
+    (put 'downcase-region 'disabled nil)
 
-  (add-hook 'after-init-hook 'show-paren-mode)
+    (add-hook 'after-init-hook 'show-paren-mode)
 
-  (use-package avy
-    :bind (("C-:" . avy-goto-char)
-           ("C-'" . avy-goto-char-2)
-           ("M-g f" . avy-goto-line)
-           ("M-g w" . avy-goto-word-1)
-           ("M-g e" . avy-goto-word-0))
-    :config
-    (setq avy-background t)
-    (setq avy-style 'at-full))
+    (use-package avy
+      :bind (("C-:"   . avy-goto-char)
+             ("C-'"   . avy-goto-char-2)
+             ("M-g f" . avy-goto-line)
+             ("M-g w" . avy-goto-word-1)
+             ("M-g e" . avy-goto-word-0)
+             ("M-Z"   . zap-up-to-char))
+      :config
+      (setq avy-background t)
+      (setq avy-style 'at-full))
 
-  (use-package multiple-cursors
-    :bind (("C-S-c C-S-c" . mc/edit-lines)
-           ("C->" . mc/mark-next-like-this)
-           ("C-<" . mc/mark-previous-like-this)
-           ("C-c C-<" . mc/mark-all-like-this)))
+    (use-package multiple-cursors
+      :bind (("C-S-c C-S-c" . mc/edit-lines)
+             ("C->" . mc/mark-next-like-this)
+             ("C-<" . mc/mark-previous-like-this)
+             ("C-c C-<" . mc/mark-all-like-this)))
 
-  (use-package ace-mc
-    :bind (("C-c M-j" . ace-mc-add-multiple-cursors)
-           ("C-c M-k" . ace-mc-add-single-cursor)))
+    (use-package ace-mc
+      :bind (("C-c M-j" . ace-mc-add-multiple-cursors)
+             ("C-c M-k" . ace-mc-add-single-cursor)))
 
-  (global-unset-key [M-left])
-  (global-unset-key [M-right])
+    (global-unset-key [M-left])
+    (global-unset-key [M-right])
 
-  (use-package whole-line-or-region
-    :demand t
-    :diminish whole-line-or-region-local-mode)
+    (use-package whole-line-or-region
+      :demand t
+      :diminish whole-line-or-region-local-mode)
 
-  (global-set-key (kbd "M-j") 'join-line)
+    (global-set-key (kbd "M-j") 'join-line)
 
-  (use-package highlight-escape-sequences
-    :init
-    (add-hook 'after-init-hook 'hes-mode))
+    (use-package highlight-escape-sequences
+      :init
+      (add-hook 'after-init-hook 'hes-mode))
 
-  (provide 'init-editing-utils)
+    (provide 'init-editing-utils)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -519,14 +520,6 @@
 ** Tramp
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-tramp.el
-  (use-package ssh-deploy
-    :after helm-tramp
-    :hook ((after-save . ssh-deploy-after-save)
-           (find-file . ssh-deploy-find-file))
-    :config
-    (ssh-deploy-line-mode)
-    (ssh-deploy-add-menu))
-
   (setq remote-file-name-inhibit-cache nil)
   (setq tramp-verbose 6)
   (setq tramp-inline-compress-start-size 1000000)
@@ -777,7 +770,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-helm)
+ ;; (require 'init-helm)
 #+end_src
 
 ** Ivy Completion
@@ -846,6 +839,48 @@
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   ;;(require 'init-ivy)
+#+end_src
+
+** Ido
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-ido.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package ido
+    :config
+    (setq ido-enable-prefix nil
+	  ido-case-fold t
+	  ido-auto-merge-work-directories-length -1
+	  ido-create-new-buffer 'always
+	  ido-use-filename-at-point nil
+	  ido-use-virtual-buffers 'auto
+	  ido-virtual-buffers t
+	  ido-file-extensions-order '(".org" ".el" ".c" ".cpp" ".rb" ".java" ".lisp" ".md" ".dart")
+	  ido-use-faces t
+	  ido-max-prospects 10)
+    (add-to-list 'ido-ignore-directories "target")
+    (add-to-list 'ido-ignore-directories "node_modules")
+    (ido-mode 1)
+    (ido-everywhere 1))
+
+  (use-package ido-completing-read+
+    :config
+    (ido-ubiquitous-mode 1))
+
+  (use-package smex
+    :bind (("M-x" . smex)
+	   ("M-X" . smex-major-mode-commands))
+    :config
+    (smex-initialize))
+
+  (require 'icomplete)
+  (icomplete-mode 1)
+
+  (provide 'init-ido)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-ido)
 #+end_src
 
 ** Which Key

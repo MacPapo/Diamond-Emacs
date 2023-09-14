@@ -40,7 +40,7 @@
 
 (require 'init-theme)
 
-(require 'init-macos)
+;; (require 'init-macos)
 
 (require 'init-uniquify)
 
@@ -66,9 +66,11 @@
 
 (require 'init-isearch)
 
-(require 'init-helm)
+;; (require 'init-helm)
 
 ;;(require 'init-ivy)
+
+(require 'init-ido)
 
 (require 'init-which-key)
 

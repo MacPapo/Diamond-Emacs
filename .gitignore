@@ -17,3 +17,5 @@
 /lisp/init-local.el
 /straight/
 /tramp
+/ido.last
+/smex-items

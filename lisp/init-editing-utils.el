@@ -60,11 +60,12 @@
 (add-hook 'after-init-hook 'show-paren-mode)
 
 (use-package avy
-  :bind (("C-:" . avy-goto-char)
-         ("C-'" . avy-goto-char-2)
+  :bind (("C-:"   . avy-goto-char)
+         ("C-'"   . avy-goto-char-2)
          ("M-g f" . avy-goto-line)
          ("M-g w" . avy-goto-word-1)
-         ("M-g e" . avy-goto-word-0))
+         ("M-g e" . avy-goto-word-0)
+         ("M-Z"   . zap-up-to-char))
   :config
   (setq avy-background t)
   (setq avy-style 'at-full))
