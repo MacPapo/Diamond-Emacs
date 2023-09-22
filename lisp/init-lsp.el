@@ -2,11 +2,43 @@
 
 (use-package lsp-mode
   :commands lsp
-  :hook ((c-ts-mode . lsp))
+  :hook ((c-ts-mode . lsp)
+         (lsp-mode  . lsp-enable-which-key-integration))
   :config
-  (require 'lsp-clients)
   (setq lsp-log-io nil)
   (setq lsp-idle-delay 0.500)
   (setq lsp-auto-guess-root t))
+
+(use-package lsp-dart
+  :hook (dart-mode . lsp)
+  :config
+  (setq lsp-dart-sdk-dir "~/FlutterDev/flutter/")
+  (dap-register-debug-template "Flutter :: Custom debug"
+                               (list :flutterPlatform "x86_64"
+                                     :program "lib/main.dart"
+                                     :args '("--flavor" "customer_a"))))
+
+(use-package lsp-treemacs
+  :after lsp-mode treemacs
+  :config
+  (lsp-treemacs-sync-mode 1))
+
+(use-package treemacs
+  :defer t
+  :bind (([f8] . treemacs)
+         ([f9] . treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-is-never-other-window t)
+    (setq treemacs-git-mode 'extended)))
+
+(use-package treemacs-projectile
+  :after treemacs projectile)
+
+(use-package treemacs-magit
+  :after treemacs magit)
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode))
 
 (provide 'init-lsp)
