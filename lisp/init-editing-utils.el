@@ -1,8 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 
-(when (fboundp 'electric-pair-mode)
-  (add-hook 'after-init-hook 'electric-pair-mode))
-(add-hook 'after-init-hook 'electric-indent-mode)
+(use-package electric-pair
+  :straight nil
+  :hook after-init)
+
+(use-package electric-indent
+  :straight nil
+  :hook after-init)
 
 (setq-default
  blink-cursor-interval 0.4
@@ -28,27 +32,62 @@
  echo-keystrokes 0.02
  truncate-partial-width-windows nil)
 
-(add-hook 'after-init-hook 'delete-selection-mode)
+(use-package delete-selection
+  :straight nil
+  :hook after-init)
 
-(add-hook 'after-init-hook 'global-auto-revert-mode)
-(setq global-auto-revert-non-file-buffers t
-      auto-revert-verbose nil)
-(with-eval-after-load 'autorevert
-  (diminish 'auto-revert-mode))
+(use-package hippie-expand
+  :straight nil
+  :bind ("M-/" . hippie-expand)
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill)))
 
-(add-hook 'after-init-hook 'transient-mark-mode)
+(use-package global-auto-revert
+  :diminish auto-revert
+  :straight nil
+  :hook after-init
+  :config
+  (setq global-auto-revert-non-file-buffers t
+        auto-revert-verbose nil))
 
-(with-eval-after-load 'subword
-  (diminish 'subword-mode))
+(use-package uniquify
+  :straight nil
+  :config
+  (setq uniquify-buffer-name-style 'reverse
+        uniquify-separator " • "
+        uniquify-after-kill-buffer-p t
+        uniquify-ignore-buffers-re "^\\*"))
 
-(when (fboundp 'display-line-numbers-mode)
-  (setq-default display-line-numbers-width 3)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode))
+(use-package transient-mark
+  :straight nil
+  :hook after-init)
 
-(when (boundp 'display-fill-column-indicator)
-  (setq-default indicate-buffer-boundaries 'left)
-  (setq-default display-fill-column-indicator-character ?\u254e)
-  (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
+(use-package subword
+  :diminish subword
+  :straight nil
+  :hook after-init)
+
+(use-package display-line-numbers
+  :straight nil
+  :hook prog-mode
+  :config
+  (setq-default display-line-numbers-width 3))
+
+(use-package display-fill-column-indicator
+  :straight nil
+  :hook prog-mode
+  :config
+  (setq-default indicate-buffer-boundaries 'left
+                display-fill-column-indicator-character ?\u254e))
+
+(use-package show-paren
+  :straight nil
+  :hook after-init)
 
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
@@ -56,8 +95,6 @@
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
-(add-hook 'after-init-hook 'show-paren-mode)
 
 (use-package avy
   :bind (("C-:"   . avy-goto-char)
@@ -69,6 +106,11 @@
   :config
   (setq avy-background t)
   (setq avy-style 'at-full))
+
+(use-package origami
+  :hook prog-mode
+  :bind (("C-c f" . origami-recursively-toggle-node)
+         ("C-c F" . origami-toggle-all-nodes)))
 
 (use-package multiple-cursors
   :bind (("C-S-c C-S-c" . mc/edit-lines)
@@ -89,8 +131,62 @@
 
 (global-set-key (kbd "M-j") 'join-line)
 
+(use-package anzu
+  :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
+         ([remap query-replace]        . anzu-query-replace)
+         ("C-c a r"                    . anzu-query-replace-at-cursor)
+         :map isearch-mode-map
+         ([remap isearch-delete-char]  . isearch-del-char))
+  :config
+  (setq anzu-mode-lighter "")
+  (global-anzu-mode +1))
+
 (use-package highlight-escape-sequences
   :init
   (add-hook 'after-init-hook 'hes-mode))
+
+(use-package recentf
+  :straight nil
+  :hook after-init
+  :config
+  (setq-default
+   recentf-max-saved-items 1000
+   recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'"))))
+
+(use-package info-colors
+  :hook (Info-selection . info-colors-fontify-node))
+
+(use-package shfmt)
+
+(use-package dotenv-mode)
+
+(use-package crux
+  :bind
+  ([remap move-beginning-of-line] . crux-move-beginning-of-line)
+  ([remap kill-whole-line]        . crux-kill-whole-line)
+  ("C-<backspace>"                . crux-kill-line-backwards)
+  ("C-S-o"                        . crux-smart-open-line-above)
+  ("C-o"                          . crux-smart-open-line)
+  ("C-c n"                        . crux-cleanup-buffer-or-region)
+  ("C-c d"                        . crux-duplicate-current-line-or-region)
+  ("C-c M-d"                      . crux-duplicate-and-comment-current-line-or-region)
+  ("C-c r"                        . crux-rename-file-and-buffer)
+  ("C-x C-u"                      . crux-upcase-region)
+  ("C-x C-l"                      . crux-downcase-region)
+  ("C-x M-c"                      . crux-capitalize-region)
+  ("M-j"                          . crux-top-join-line))
+
+(use-package rainbow-delimiters
+  :hook prog-mode)
+
+(use-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode))
+
+(use-package embark
+  :bind (("C-." . embark-act)
+         ("C-;" . embark-dwim)
+         ("C-h B" . embark-bindings)))
 
 (provide 'init-editing-utils)

@@ -27,7 +27,9 @@
   :config
   (smex-initialize))
 
-(require 'icomplete)
-(icomplete-mode 1)
+(use-package icomplete
+  :straight nil
+  :config
+  (icomplete-mode 1))
 
 (provide 'init-ido)

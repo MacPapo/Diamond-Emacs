@@ -8,9 +8,6 @@
     :config
     (exec-path-from-shell-initialize))
 
-  (use-package helm-osx-app
-    :bind (("C-c SPC" . helm-osx-app)))
-
   (use-package osx-trash
     :config
     (setq delete-by-moving-to-trash t)

@@ -25,7 +25,7 @@
 ;; More performant rapid scrolling over unfontified regions. May cause brief
 ;; spells of inaccurate syntax highlighting right after scrolling, which should
 ;; quickly self-correct.
-(setq fast-but-imprecise-scrolling t)
+;; (setq fast-but-imprecise-scrolling t)
 
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)

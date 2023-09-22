@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package projectile
+  :defer 5
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map))
   :config

@@ -1,11 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
-(setq custom-safe-themes t)
-
-(use-package diminish)
-
 (use-package zenburn-theme
   :init
+  (setq custom-safe-themes t)
   (load-theme 'zenburn t))
 
 (use-package pulsar

@@ -7,6 +7,5 @@
 ;; Default of 800 was too low.
 ;; Avoid Lisp nesting exceeding in swift-mode.
 (setq max-lisp-eval-depth 10000)
-(setq max-specpdl-size 10000)
 
 (provide 'init-eglot)

@@ -14,11 +14,7 @@
   (corfu-auto-delay 0)
   (corfu-auto-prefix 1)
   :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ([tab] . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ([backtab] . corfu-previous)
-              ("RET" . corfu-insert)
-              ([return] . corfu-insert)))
+              ("TAB" . corfu-insert)
+              ([tab] . corfu-insert))
 
 (provide 'init-corfu)

@@ -17,4 +17,6 @@
   (require 'straight)
   (setq straight-use-package-by-default t))
 
+(use-package diminish)
+
 (provide 'init-pkgmanager)

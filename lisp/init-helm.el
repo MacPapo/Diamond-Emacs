@@ -115,4 +115,14 @@
   :after helm
   :bind ("<f2> D" . helm-descbinds))
 
+(use-package helm-osx-app
+  :bind (("C-c SPC" . helm-osx-app)))
+
+(use-package helm-c-yasnippet
+  :after (yasnippet helm)
+  :bind (("C-c Y" . helm-yas-complete)
+         ("<f6>"  . helm-yas-visit-snippet-file))
+  :config
+  (setq helm-yas-space-match-any-greedy t))
+
 (provide 'init-helm)

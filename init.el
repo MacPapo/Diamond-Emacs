@@ -14,13 +14,6 @@
  window-resize-pixelwise t
  frame-resize-pixelwise t)
 
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'set-scroll-bar-mode)
-  (set-scroll-bar-mode nil))
-
-(menu-bar-mode -1)
-
 (let ((no-border '(internal-border-width . 0)))
   (add-to-list 'default-frame-alist no-border)
   (add-to-list 'initial-frame-alist no-border))
@@ -40,13 +33,7 @@
 
 (require 'init-theme)
 
-;; (require 'init-macos)
-
-(require 'init-uniquify)
-
-(require 'init-recentf)
-
-(require 'init-hippie-expand)
+(require 'init-macos)
 
 (require 'init-editing-utils)
 
@@ -54,17 +41,11 @@
 
 (require 'init-flymake)
 
-(require 'init-misc)
-
 (require 'init-tramp)
 
 (require 'init-shell)
 
-(require 'init-folding)
-
 (require 'init-dired)
-
-(require 'init-isearch)
 
 ;; (require 'init-helm)
 
@@ -72,17 +53,17 @@
 
 (require 'init-ido)
 
-(require 'init-which-key)
-
 (require 'init-projectile)
 
 (require 'init-grep)
 
-(require 'init-corfu)
+;;(require 'init-corfu)
 
-(require 'init-embark)
+(require 'init-company)
 
-(require 'init-eglot)
+;;(require 'init-eglot)
+
+(require 'init-lsp)
 
 (require 'init-windows)
 

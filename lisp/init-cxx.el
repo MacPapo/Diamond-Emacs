@@ -19,7 +19,6 @@ compilation database is present in the project.")
 (use-package cmake-mode)
 
 (use-package flycheck-clang-analyzer
-  :after flycheck
   :hook (c++-ts-mode . (lambda () (setq flycheck-clang-language-standard "c++17")))
   :config (flycheck-clang-analyzer-setup))
 
