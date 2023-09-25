@@ -76,3 +76,5 @@
 (require 'init-dart)
 
 (require 'init-cxx)
+
+(require 'init-java)

@@ -21,22 +21,7 @@
 
 (use-package ibuffer
   :straight nil
-  :bind (("C-x C-b" . ibuffer))
-  :config
-  (setq ibuffer-saved-filter-groups
-        (quote (("default"
-                 ("Dired" (mode . dired-mode))
-                 ("Markdown" (mode . markdown-mode))
-                 ("Org" (mode . org-mode))
-                 ("Magit" (name . "^\\*Magit"))
-                 ("Programming" (or
-                                 (mode . c-mode)
-                                 (mode . python-mode)
-                                 (mode . java-mode)
-                                 (mode . js-mode)))
-                 ("Emacs" (or
-                           (name . "^\\*scratch\\*$")
-                           (name . "^\\*Messages\\*$"))))))))
+  :bind (("C-x C-b" . ibuffer)))
 
 (use-package ibuffer-projectile)
 

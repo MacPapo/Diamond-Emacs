@@ -22,3 +22,5 @@
 /eshell/
 /.lsp-session-v1
 /.cache/
+/eclipse.jdt.ls/
+/workspace/
