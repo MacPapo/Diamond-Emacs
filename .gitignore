@@ -24,3 +24,8 @@
 /.cache/
 /eclipse.jdt.ls/
 /workspace/
+/amx-items
+/org-persist/
+/.dap-breakpoints
+/tree-sitter/
+/url/

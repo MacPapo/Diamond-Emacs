@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
-;;(global-set-key (kbd "C-c e") 'eshell)
+(use-package eshell
+  :straight nil
+  :bind ("C-x M-e" . eshell))
 
 (use-package eshell-prompt-extras
   :init

@@ -1,5 +1,52 @@
 ;; -*- lexical-binding: t; -*-
 
+;; NEW
+(use-package siege-mode
+  :ensure straight
+  :straight (:host github :repo "tslilc/siege-mode" :branch "master")
+  :hook ((programming-mode . siege-mode)))
+
+(use-package popwin
+  :config (popwin-mode t))
+
+(use-package frog-jump-buffer
+  :bind ("C-;" . frog-jump-buffer)
+  :config
+  (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                    "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+    (push regexp frog-jump-buffer-ignore-buffers)))
+
+(use-package eros
+  :config (eros-mode t))
+
+(use-package markdown-mode)
+
+(use-package minions
+  :config (minions-mode 1))
+
+(use-package doom-modeline
+  :ensure t
+  :config (doom-modeline-mode 1)
+  :custom
+  ((doom-modeline-buffer-encoding nil)
+   (doom-modeline-minor-modes t)
+   (doom-modeline-gnus-timer nil)
+   (doom-modeline-bar-width 3)
+   (doom-modeline-icon (unless (daemonp) t))))
+
+(use-package company-quickhelp
+  :ensure t
+  :hook (company-mode . company-quickhelp-mode))
+
+(use-package company-box
+  :ensure t
+  :hook (company-mode . company-box-mode))
+
+(use-package nerd-icons
+  :custom
+  (nerd-icons-font-family "Symbols Nerd Font Mono"))
+;; END NEW
+
 (use-package electric-pair
   :straight nil
   :hook after-init)

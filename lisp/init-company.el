@@ -15,7 +15,7 @@
         company-selection-wrap-around t
         company-lighter-base "©"
         company-tooltip-limit 10
-        company-idle-delay 0.0
+        company-idle-delay 0.1
         company-minimum-prefix-length 1
         company-require-match nil
         company-format-margin-function 'company-text-icons-margin

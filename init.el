@@ -49,13 +49,15 @@
 
 ;; (require 'init-helm)
 
-;;(require 'init-ivy)
+(require 'init-ivy)
 
 (require 'init-ido)
 
 (require 'init-projectile)
 
 (require 'init-grep)
+
+(require 'init-copilot)
 
 ;;(require 'init-corfu)
 
@@ -71,6 +73,8 @@
 
 (require 'init-org)
 
+(require 'init-docker)
+
 (require 'init-yasnippet)
 
 (require 'init-dart)
@@ -78,3 +82,7 @@
 (require 'init-cxx)
 
 (require 'init-java)
+
+(require 'init-ruby)
+
+(require 'init-clisp)

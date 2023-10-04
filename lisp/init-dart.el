@@ -6,6 +6,6 @@
 
 (use-package flutter
   :config
-  (setq flutter-sdk-path "~/FlutterDev/flutter/"))
+  (setq flutter-sdk-path "/opt/homebrew/Caskroom/flutter/3.13.6/flutter/"))
 
 (provide 'init-dart)

@@ -2,12 +2,13 @@
 
   (use-package lsp-mode
     :commands lsp
-    :hook ((c-ts-mode . lsp)
+    :hook ((c-ts-mode    . lsp)
            (c++-ts-mode  . lsp)
+           (ruby-ts-mode . lsp)
            (lsp-mode  . lsp-enable-which-key-integration))
     :config
     (setq lsp-log-io nil
-          lsp-idle-delay 0.250))
+          lsp-idle-delay 0.1))
 
 (use-package lsp-java
   :hook ((java-ts-mode . lsp)))
@@ -15,9 +16,9 @@
 (use-package lsp-dart
     :hook (dart-mode . lsp)
     :config
-    (setq lsp-dart-sdk-dir "~/FlutterDev/flutter/")
+    (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
     (dap-register-debug-template "Flutter :: Custom debug"
-                                 (list :flutterPlatform "x86_64"
+                                 (list :flutterPlatform "arm64"
                                        :program "lib/main.dart"
                                        :args '("--flavor" "customer_a"))))
 
