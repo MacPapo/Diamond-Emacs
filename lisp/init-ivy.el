@@ -77,18 +77,4 @@
 ;;          ("C-c o"   . counsel-outline)
 ;;          ("C-c t"   . counsel-load-theme)
 ;;          ("C-c F"   . counsel-org-file)))
-
-;; (use-package marginalia
-;;   :bind (:map minibuffer-local-map
-;;               ("M-A" . marginalia-cycle))
-;;   :init
-;;   (marginalia-mode))
-
-;; show function docstrings in the minibuffer
-(use-package marginalia
-  :bind (("M-A" . marginalia-cycle)
-         :map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
-  :init (marginalia-mode))
-
 (provide 'init-ivy)

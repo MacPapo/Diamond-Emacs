@@ -17,4 +17,4 @@
               ("TAB" . corfu-insert)
               ([tab] . corfu-insert))
 
-(provide 'init-corfu)
+  (provide 'init-corfu)

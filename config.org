@@ -51,7 +51,7 @@
   ;;   I've set this to `nil' in the past, but the `bidi-display-reordering's docs
   ;;   say that is an undefined state and suggest this to be just as good:
   (setq-default bidi-display-reordering 'left-to-right
-        	bidi-paragraph-direction 'left-to-right)
+        	      bidi-paragraph-direction 'left-to-right)
 
   ;; PERF: Disabling BPA makes redisplay faster, but might produce incorrect
   ;;   reordering of bidirectional text with embedded parentheses (and other
@@ -174,10 +174,18 @@
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-theme.el
   ;; -*- lexical-binding: t; -*-
 
-  (use-package zenburn-theme
-    :init
-    (setq custom-safe-themes t)
-    (load-theme 'zenburn t))
+  (setq custom-safe-themes t)
+
+  (use-package autothemer)
+
+  (use-package zenburn-theme)
+
+  (use-package kanagawa-theme
+    :straight (:host github :repo "Meritamen/kanagawa-theme" :branch "master"))
+
+  (use-package timu-macos-theme)
+
+  (load-theme 'timu-macos t)
 
   (use-package pulsar
     :config
@@ -237,19 +245,18 @@
 
   ;; NEW
   (use-package siege-mode
-    :ensure straight
     :straight (:host github :repo "tslilc/siege-mode" :branch "master")
     :hook ((programming-mode . siege-mode)))
 
   (use-package popwin
     :config (popwin-mode t))
 
-  (use-package frog-jump-buffer
-    :bind ("C-;" . frog-jump-buffer)
-    :config
-    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
-                      "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
-      (push regexp frog-jump-buffer-ignore-buffers)))
+;;  (use-package frog-jump-buffer
+;;    :bind ("C-;" . frog-jump-buffer)
+;;    :config
+;;    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+;;                      "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+;;      (push regexp frog-jump-buffer-ignore-buffers)))
 
   (use-package eros
     :config (eros-mode t))
@@ -268,14 +275,6 @@
      (doom-modeline-gnus-timer nil)
      (doom-modeline-bar-width 3)
      (doom-modeline-icon (unless (daemonp) t))))
-
-  (use-package company-quickhelp
-    :ensure t
-    :hook (company-mode . company-quickhelp-mode))
-
-  (use-package company-box
-    :ensure t
-    :hook (company-mode . company-box-mode))
 
   (use-package nerd-icons
     :custom
@@ -465,12 +464,7 @@
     :diminish which-key-mode
     :config
     (which-key-mode))
-
-  (use-package embark
-    :bind (("C-." . embark-act)
-           ("C-;" . embark-dwim)
-           ("C-h B" . embark-bindings)))
-
+  
   (provide 'init-editing-utils)
 #+end_src
 
@@ -527,7 +521,7 @@
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-flymake.el
   ;; -*- lexical-binding: t; -*-
-  
+
   (use-package flymake-flycheck
     :bind (:map flymake-mode-map
                 ("C-c ! l" . flymake-show-buffer-diagnostics)
@@ -648,6 +642,113 @@
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-dired)
+#+end_src
+
+** Vertico Completion
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-vertico.el
+  ;; -*- lexical-binding: t; -*-
+  (use-package vertico
+    :hook ((after-init . vertico-mode)
+           (rfn-eshadow-update-overlay . vertico-directory-tidy)
+           (minibuffer-setup . vertico-repeat-save)
+           (minibuffer-setup . cursor-intangible-mode))
+    :bind (:map vertico-map
+                ("DEL" . vertico-directory-delete-char)
+                ("?"   . minibuffer-completion-help))
+    :init
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (setq enable-recursive-minibuffers t)
+    :config
+    (setq vertico-resize nil
+          vertico-count 17
+          vertico-cycle t)
+    (setq-default completion-in-region-function
+                  (lambda (&rest args)
+                    (apply (if vertico-mode
+                               #'consult-completion-in-region
+                             #'completion--in-region)
+                           args))))
+  (use-package orderless
+    :init
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
+
+  (use-package savehist
+    :straight nil
+    :init
+    (savehist-mode))
+
+  (use-package consult
+    :defer t
+    :bind
+    (([remap bookmark-jump] . consult-bookmark)
+     ([remap goto-line] . consult-goto-line)
+     ([remap imenu] . consult-imenu)
+     ([remap Info-search] . consult-info)
+     ([remap locate] . consult-locate)
+     ([remap load-theme] . consult-theme)
+     ([remap man] . consult-man)
+     ([remap recentf-open-files] . consult-recent-file)
+     ([remap switch-to-buffer] . consult-buffer)
+     ([remap yank-pop] . consult-yank-pop))
+    :config
+    (setq consult-line-numbers-widen t
+          consult-async-min-input 2
+          consult-async-refresh-delay  0.15
+          consult-async-input-throttle 0.2
+          consult-async-input-debounce 0.1)
+    )
+
+  (use-package consult-dir
+    :bind (([remap list-directory] . consult-dir)
+           :map vertico-map
+           ("C-x C-d" . consult-dir)
+           ("C-x C-j" . consult-dir-jump-file)))
+
+  (use-package consult-flycheck
+    :after (consult flycheck))
+
+  (use-package embark
+    :defer t
+    :init
+    (setq which-key-use-C-h-commands nil
+          prefix-help-command #'embark-prefix-help-command)
+    :bind (
+           ([remap describe-bindings] . embark-bindings)
+           ("C-;" . embark-act)
+           :map minibuffer-local-map
+           ("C-;" . embark-act)
+           ("C-c C-;" . embark-export)
+           ("C-c C-l" . embark-collect)))
+
+  (use-package embark-consult
+    :after (embark consult))
+
+  (use-package marginalia
+    :init
+    (marginalia-mode)
+    :bind (:map minibuffer-local-map
+                ("M-A" . marginalia-cycle)))
+
+  (provide 'init-vertico)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-vertico)
 #+end_src
 
 ** Helm Completion
@@ -784,7 +885,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
- ;; (require 'init-helm)
+  ;; (require 'init-helm)
 #+end_src
 
 ** Ivy Completion
@@ -869,25 +970,11 @@
   ;;          ("C-c o"   . counsel-outline)
   ;;          ("C-c t"   . counsel-load-theme)
   ;;          ("C-c F"   . counsel-org-file)))
-
-  ;; (use-package marginalia
-  ;;   :bind (:map minibuffer-local-map
-  ;;               ("M-A" . marginalia-cycle))
-  ;;   :init
-  ;;   (marginalia-mode))
-
-  ;; show function docstrings in the minibuffer
-  (use-package marginalia
-    :bind (("M-A" . marginalia-cycle)
-           :map minibuffer-local-map
-           ("M-A" . marginalia-cycle))
-    :init (marginalia-mode))
-
   (provide 'init-ivy)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-ivy)
+  ;;(require 'init-ivy)
 #+end_src
 
 ** Ido
@@ -934,7 +1021,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-ido)
+  ;;(require 'init-ido)
 #+end_src
 
 ** Projectile
@@ -986,11 +1073,8 @@
     (setq-default locate-command "mdfind"))
 
   (use-package wgrep
-    :bind (:map grep-mode-map
-           ("C-c C-q" . wgrep-change-to-wgrep-mode)))
-
-  (use-package deadgrep
-    :bind ("<f5>" . deadgrep))
+    :commands wgrep-change-to-wgrep-mode
+    :config (setq wgrep-auto-save-buffer t))
 
   (provide 'init-grep)
 #+end_src
@@ -1002,15 +1086,15 @@
 ** Copilot
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-copilot.el
-    (use-package copilot
-      :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-      :hook prog-mode
-      :bind (("C-TAB"    . copilot-accept-completion)
-             ("C-<tab>"  . copilot-accept-completion))
-      :config
-      (setq copilot-idle-delay 1))
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :hook prog-mode
+    :bind (("C-TAB"    . copilot-accept-completion)
+           ("C-<tab>"  . copilot-accept-completion))
+    :config
+    (setq copilot-idle-delay 1))
 
-    (provide 'init-copilot)
+  (provide 'init-copilot)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1040,7 +1124,7 @@
                 ("TAB" . corfu-insert)
                 ([tab] . corfu-insert))
 
-  (provide 'init-corfu)
+    (provide 'init-corfu)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1066,22 +1150,37 @@
     (setq company-tooltip-align-annotations t
           company-selection-wrap-around t
           company-lighter-base "©"
-          company-tooltip-limit 10
-          company-idle-delay 0.1
-          company-minimum-prefix-length 1
-          company-require-match nil
-          company-format-margin-function 'company-text-icons-margin
+          company-tooltip-limit 14
+          company-idle-delay 0.05 ;; correggimi
+          company-minimum-prefix-length 2
+          company-require-match 'never
+          ;; company-format-margin-function 'company-text-icons-margin
           company-tooltip-minimum 4
-          company-text-face-extra-attributes '(:weight bold :slant italic)
-          company-text-icons-add-background t
+          ;; company-text-face-extra-attributes '(:weight bold :slant italic)
+          ;; company-text-icons-add-background t
+          company-auto-commit nil
+          company-dabbrev-other-buffers nil
+          company-dabbrev-ignore-case nil
+          company-dabbrev-downcase nil
           company-tooltip-flip-when-above t
           company-show-quick-access 'left
+          company-backends '(company-capf)
+          company-frontends '(company-pseudo-tooltip-frontend
+                              company-echo-metadata-frontend)
           company-files-exclusions '(".git/" ".DS_Store")
           company-transformers '(delete-consecutive-dups
-                             company-sort-by-occurrence)
-          company-global-modes '(not erc-mode message-mode eshell-mode))
+                                 company-sort-by-occurrence)
+          company-global-modes '(not erc-mode message-mode help-mode eshell-mode))
     :bind (:map company-active-map
                 ("<tab>" . company-complete-selection)))
+
+  (use-package company-box
+    :hook company-mode
+    :config
+    (setq company-box-show-single-candidate t
+          company-box-backends-colors nil
+          company-box-tooltip-limit 50))
+
 
   (provide 'init-company)
 #+end_src
@@ -1099,7 +1198,7 @@
   (require 'eglot)
 
   (setq read-process-output-max (* 3 1024 1024))
-  
+
   ;; Default of 800 was too low.
   ;; Avoid Lisp nesting exceeding in swift-mode.
   (setq max-lisp-eval-depth 10000)
@@ -1114,54 +1213,54 @@
 ** LSP Mode
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-lsp.el
-    ;; -*- lexical-binding: t; -*-
+  ;; -*- lexical-binding: t; -*-
 
-    (use-package lsp-mode
-      :commands lsp
-      :hook ((c-ts-mode    . lsp)
-             (c++-ts-mode  . lsp)
-             (ruby-ts-mode . lsp)
-             (lsp-mode  . lsp-enable-which-key-integration))
-      :config
-      (setq lsp-log-io nil
-            lsp-idle-delay 0.1))
+  (use-package lsp-mode
+    :commands lsp
+    :hook ((c-ts-mode    . lsp)
+           (c++-ts-mode  . lsp)
+           (ruby-ts-mode . lsp)
+           (lsp-mode  . lsp-enable-which-key-integration))
+    :config
+    (setq lsp-log-io nil
+          lsp-idle-delay 0.1))
 
   (use-package lsp-java
     :hook ((java-ts-mode . lsp)))
 
   (use-package lsp-dart
-      :hook (dart-mode . lsp)
-      :config
-      (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
-      (dap-register-debug-template "Flutter :: Custom debug"
-                                   (list :flutterPlatform "arm64"
-                                         :program "lib/main.dart"
-                                         :args '("--flavor" "customer_a"))))
+    :hook (dart-mode . lsp)
+    :config
+    (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+    (dap-register-debug-template "Flutter :: Custom debug"
+                                 (list :flutterPlatform "arm64"
+                                       :program "lib/main.dart"
+                                       :args '("--flavor" "customer_a"))))
 
-    (use-package lsp-treemacs
-      :after lsp-mode treemacs
-      :config
-      (lsp-treemacs-sync-mode 1))
+  (use-package lsp-treemacs
+    :after lsp-mode treemacs
+    :config
+    (lsp-treemacs-sync-mode 1))
 
-    (use-package treemacs
-      :defer t
-      :bind (([f8] . treemacs)
-             ([f9] . treemacs-select-window))
-      :config
-      (progn
-        (setq treemacs-is-never-other-window t)
-        (setq treemacs-git-mode 'extended)))
+  (use-package treemacs
+    :defer t
+    :bind (([f8] . treemacs)
+           ([f9] . treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-is-never-other-window t)
+      (setq treemacs-git-mode 'extended)))
 
-    (use-package treemacs-projectile
-      :after treemacs projectile)
+  (use-package treemacs-projectile
+    :after treemacs projectile)
 
-    (use-package treemacs-magit
-      :after treemacs magit)
-    
-    (use-package lsp-ui
-      :hook (lsp-mode . lsp-ui-mode))
+  (use-package treemacs-magit
+    :after treemacs magit)
 
-    (provide 'init-lsp)
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (provide 'init-lsp)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1343,7 +1442,7 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-cxx.el
 
   (setq c-ts-mode-indent-offset 4)
-  
+
   (use-package modern-cpp-font-lock
     :hook (c++-mode . modern-c++-font-lock-mode))
 

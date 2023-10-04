@@ -7,10 +7,7 @@
   (setq-default locate-command "mdfind"))
 
 (use-package wgrep
-  :bind (:map grep-mode-map
-         ("C-c C-q" . wgrep-change-to-wgrep-mode)))
-
-(use-package deadgrep
-  :bind ("<f5>" . deadgrep))
+  :commands wgrep-change-to-wgrep-mode
+  :config (setq wgrep-auto-save-buffer t))
 
 (provide 'init-grep)

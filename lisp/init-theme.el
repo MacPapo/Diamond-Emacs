@@ -1,9 +1,17 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package zenburn-theme
-  :init
-  (setq custom-safe-themes t)
-  (load-theme 'zenburn t))
+(setq custom-safe-themes t)
+
+(use-package autothemer)
+
+(use-package zenburn-theme)
+
+(use-package kanagawa-theme
+  :straight (:host github :repo "Meritamen/kanagawa-theme" :branch "master"))
+
+(use-package timu-macos-theme)
+
+(load-theme 'timu-macos t)
 
 (use-package pulsar
   :config
