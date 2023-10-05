@@ -45,5 +45,4 @@
         company-box-backends-colors nil
         company-box-tooltip-limit 50))
 
-
 (provide 'init-company)

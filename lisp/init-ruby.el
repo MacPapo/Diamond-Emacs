@@ -1,6 +1,6 @@
-(use-package rbenv
-  :config
-  (global-rbenv-mode))
+;; (use-package rbenv
+;;   :config
+;;   (global-rbenv-mode))
 
 (use-package inf-ruby
   :hook (ruby-ts-mode . inf-ruby-minor-mode))

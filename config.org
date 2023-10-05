@@ -244,37 +244,43 @@
   ;; -*- lexical-binding: t; -*-
 
   ;; NEW
-  (use-package siege-mode
-    :straight (:host github :repo "tslilc/siege-mode" :branch "master")
-    :hook ((programming-mode . siege-mode)))
-
   (use-package popwin
     :config (popwin-mode t))
 
-;;  (use-package frog-jump-buffer
-;;    :bind ("C-;" . frog-jump-buffer)
-;;    :config
-;;    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
-;;                      "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
-;;      (push regexp frog-jump-buffer-ignore-buffers)))
+  ;; (use-package eros
+  ;;   :config (eros-mode t))
 
-  (use-package eros
-    :config (eros-mode t))
+  (use-package markdown-mode
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "multimarkdown"))
 
-  (use-package markdown-mode)
+  (use-package vundo)
 
   (use-package minions
     :config (minions-mode 1))
 
-  (use-package doom-modeline
-    :ensure t
-    :config (doom-modeline-mode 1)
-    :custom
-    ((doom-modeline-buffer-encoding nil)
-     (doom-modeline-minor-modes t)
-     (doom-modeline-gnus-timer nil)
-     (doom-modeline-bar-width 3)
-     (doom-modeline-icon (unless (daemonp) t))))
+  (use-package back-button
+    :init (back-button-mode 1))
+
+  (use-package move-dup
+    :bind (("M-<up>"     . move-dup-move-lines-up)
+           ("M-<down>"   . move-dup-move-lines-down)
+           ("C-M-<up>"   . move-dup-duplicate-up)
+           ("C-M-<down>" . move-dup-duplicate-down)))
+
+  (use-package emacs-surround
+    :straight (:host github :repo "ganmacs/emacs-surround" :branch "master")
+    :bind ("C-q" . emacs-surround))
+
+  ;; (use-package doom-modeline
+  ;;   :ensure t
+  ;;   :config (doom-modeline-mode 1)
+  ;;   :custom
+  ;;   ((doom-modeline-buffer-encoding nil)
+  ;;    (doom-modeline-minor-modes t)
+  ;;    (doom-modeline-gnus-timer nil)
+  ;;    (doom-modeline-bar-width 3)
+  ;;    (doom-modeline-icon (unless (daemonp) t))))
 
   (use-package nerd-icons
     :custom
@@ -364,7 +370,7 @@
     :hook prog-mode
     :config
     (setq-default indicate-buffer-boundaries 'left
-                  display-fill-column-indicator-character ?\u254e))
+        	  display-fill-column-indicator-character ?\u254e))
 
   (use-package show-paren
     :straight nil
@@ -418,8 +424,7 @@
            ("C-c a r"                    . anzu-query-replace-at-cursor)
            :map isearch-mode-map
            ([remap isearch-delete-char]  . isearch-del-char))
-    :config
-    (setq anzu-mode-lighter "")
+    :init
     (global-anzu-mode +1))
 
   (use-package highlight-escape-sequences
@@ -440,6 +445,10 @@
   (use-package shfmt)
 
   (use-package dotenv-mode)
+
+  (use-package solaire-mode
+    :config
+    (solaire-global-mode +1))
 
   (use-package crux
     :bind
@@ -464,7 +473,11 @@
     :diminish which-key-mode
     :config
     (which-key-mode))
-  
+
+  ;; Default of 800 was too low.
+  ;; Avoid Lisp nesting exceeding in swift-mode.
+  (setq max-lisp-eval-depth 10000)
+
   (provide 'init-editing-utils)
 #+end_src
 
@@ -1181,7 +1194,6 @@
           company-box-backends-colors nil
           company-box-tooltip-limit 50))
 
-
   (provide 'init-company)
 #+end_src
 
@@ -1198,11 +1210,7 @@
   (require 'eglot)
 
   (setq read-process-output-max (* 3 1024 1024))
-
-  ;; Default of 800 was too low.
-  ;; Avoid Lisp nesting exceeding in swift-mode.
-  (setq max-lisp-eval-depth 10000)
-
+  
   (provide 'init-eglot)
 #+end_src
 
@@ -1344,7 +1352,16 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-org.el
   ;; -*- lexical-binding: t; -*-
 
-  (use-package org)
+  (use-package org
+    :config
+    (setq org-latex-listings 'minted)
+
+    (add-to-list 'org-latex-packages-alist '("" "minted"))
+
+    (setq org-latex-pdf-process
+          '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")))
 
   (use-package org-wc
     :after org)
@@ -1477,9 +1494,9 @@ o - maximize current window
 ** Ruby
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-ruby.el
-  (use-package rbenv
-    :config
-    (global-rbenv-mode))
+  ;; (use-package rbenv
+  ;;   :config
+  ;;   (global-rbenv-mode))
 
   (use-package inf-ruby
     :hook (ruby-ts-mode . inf-ruby-minor-mode))

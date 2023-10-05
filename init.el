@@ -65,9 +65,9 @@
 
 (require 'init-company)
 
-;;(require 'init-eglot)
+(require 'init-eglot)
 
-(require 'init-lsp)
+;;(require 'init-lsp)
 
 (require 'init-windows)
 
