@@ -10,7 +10,7 @@
 ;;   I've set this to `nil' in the past, but the `bidi-display-reordering's docs
 ;;   say that is an undefined state and suggest this to be just as good:
 (setq-default bidi-display-reordering 'left-to-right
-      	      bidi-paragraph-direction 'left-to-right)
+              bidi-paragraph-direction 'left-to-right)
 
 ;; PERF: Disabling BPA makes redisplay faster, but might produce incorrect
 ;;   reordering of bidirectional text with embedded parentheses (and other

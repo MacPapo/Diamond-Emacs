@@ -4,7 +4,7 @@
   :commands lsp
   :hook ((c-ts-mode    . lsp)
          (c++-ts-mode  . lsp)
-         (ruby-ts-mode . lsp)
+         (ruby-mode . lsp)
          (lsp-mode  . lsp-enable-which-key-integration))
   :config
   (setq lsp-log-io nil

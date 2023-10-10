@@ -1,6 +1,6 @@
 (use-package copilot
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :hook prog-mode
+  :defer 15
   :bind (("C-TAB"    . copilot-accept-completion)
          ("C-<tab>"  . copilot-accept-completion))
   :config

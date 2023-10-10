@@ -40,8 +40,7 @@
 
 (use-package savehist
   :straight nil
-  :init
-  (savehist-mode))
+  :hook after-init)
 
 (use-package consult
   :defer t

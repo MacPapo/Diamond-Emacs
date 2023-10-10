@@ -30,10 +30,7 @@
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
 
-  ;; TODO: sposta da qui
-  (setq-default history-length 1000)
-  (add-hook 'after-init-hook 'savehist-mode)
-
+  (setq initial-major-mode 'text-mode)
 #+end_src
 
 ** GC Optimizations
@@ -51,7 +48,7 @@
   ;;   I've set this to `nil' in the past, but the `bidi-display-reordering's docs
   ;;   say that is an undefined state and suggest this to be just as good:
   (setq-default bidi-display-reordering 'left-to-right
-        	      bidi-paragraph-direction 'left-to-right)
+                bidi-paragraph-direction 'left-to-right)
 
   ;; PERF: Disabling BPA makes redisplay faster, but might produce incorrect
   ;;   reordering of bidirectional text with embedded parentheses (and other
@@ -179,22 +176,28 @@
   (use-package autothemer)
 
   (use-package zenburn-theme)
+  
+  (use-package sublime-themes)
 
-  (use-package kanagawa-theme
-    :straight (:host github :repo "Meritamen/kanagawa-theme" :branch "master"))
-
-  (use-package timu-macos-theme)
-
-  (load-theme 'timu-macos t)
+  ;; (load-theme 'spolsky t)
+  (load-theme 'modus-vivendi t)
 
   (use-package pulsar
     :config
     (setq pulsar-pulse t
-          pulsar-face 'pulsar-yellow
-          pulsar-highlight-face 'pulsar-yellow
+          ;; pulsar-face 'pulsar-yellow
+          ;; pulsar-highlight-face 'pulsar-purple
           pulsar-delay 0.055)
     (add-to-list 'pulsar-pulse-functions 'ace-window)
     (pulsar-global-mode 1))
+
+  (use-package display-time
+    :straight nil
+    :hook after-init
+    :init
+    (setq display-time-day-and-date t
+          display-time-24hr-format  t
+          display-time-default-load-average nil))
 
   (provide 'init-theme)
 #+end_src
@@ -527,7 +530,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-treesitter)
+ ;; (require 'init-treesitter)
 #+end_src
 
 ** Flymake Flycheck
@@ -702,8 +705,7 @@
 
   (use-package savehist
     :straight nil
-    :init
-    (savehist-mode))
+    :hook after-init)
 
   (use-package consult
     :defer t
@@ -1101,7 +1103,7 @@
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-copilot.el
   (use-package copilot
     :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-    :hook prog-mode
+    :defer 15
     :bind (("C-TAB"    . copilot-accept-completion)
            ("C-<tab>"  . copilot-accept-completion))
     :config
@@ -1221,54 +1223,54 @@
 ** LSP Mode
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-lsp.el
-  ;; -*- lexical-binding: t; -*-
+      ;; -*- lexical-binding: t; -*-
 
-  (use-package lsp-mode
-    :commands lsp
-    :hook ((c-ts-mode    . lsp)
-           (c++-ts-mode  . lsp)
-           (ruby-ts-mode . lsp)
-           (lsp-mode  . lsp-enable-which-key-integration))
-    :config
-    (setq lsp-log-io nil
-          lsp-idle-delay 0.1))
+      (use-package lsp-mode
+        :commands lsp
+        :hook ((c-ts-mode    . lsp)
+               (c++-ts-mode  . lsp)
+               (ruby-mode . lsp)
+               (lsp-mode  . lsp-enable-which-key-integration))
+        :config
+        (setq lsp-log-io nil
+              lsp-idle-delay 0.1))
 
-  (use-package lsp-java
-    :hook ((java-ts-mode . lsp)))
+      (use-package lsp-java
+        :hook ((java-ts-mode . lsp)))
 
-  (use-package lsp-dart
-    :hook (dart-mode . lsp)
-    :config
-    (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
-    (dap-register-debug-template "Flutter :: Custom debug"
-                                 (list :flutterPlatform "arm64"
-                                       :program "lib/main.dart"
-                                       :args '("--flavor" "customer_a"))))
+      (use-package lsp-dart
+        :hook (dart-mode . lsp)
+        :config
+        (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+        (dap-register-debug-template "Flutter :: Custom debug"
+                                     (list :flutterPlatform "arm64"
+                                           :program "lib/main.dart"
+                                           :args '("--flavor" "customer_a"))))
 
-  (use-package lsp-treemacs
-    :after lsp-mode treemacs
-    :config
-    (lsp-treemacs-sync-mode 1))
+      (use-package lsp-treemacs
+        :after lsp-mode treemacs
+        :config
+        (lsp-treemacs-sync-mode 1))
 
-  (use-package treemacs
-    :defer t
-    :bind (([f8] . treemacs)
-           ([f9] . treemacs-select-window))
-    :config
-    (progn
-      (setq treemacs-is-never-other-window t)
-      (setq treemacs-git-mode 'extended)))
+      (use-package treemacs
+        :defer t
+        :bind (([f8] . treemacs)
+               ([f9] . treemacs-select-window))
+        :config
+        (progn
+          (setq treemacs-is-never-other-window t)
+          (setq treemacs-git-mode 'extended)))
 
-  (use-package treemacs-projectile
-    :after treemacs projectile)
+      (use-package treemacs-projectile
+        :after treemacs projectile)
 
-  (use-package treemacs-magit
-    :after treemacs magit)
+      (use-package treemacs-magit
+        :after treemacs magit)
 
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode))
+      (use-package lsp-ui
+        :hook (lsp-mode . lsp-ui-mode))
 
-  (provide 'init-lsp)
+      (provide 'init-lsp)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1491,31 +1493,56 @@ o - maximize current window
   (require 'init-java)
 #+end_src
 
+** Go
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-go.el
+  (use-package go-mode
+    :mode ("\\.go\\'" . go-mode))
+
+  (provide 'init-go)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-go)
+#+end_src
+
 ** Ruby
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-ruby.el
-  ;; (use-package rbenv
-  ;;   :config
-  ;;   (global-rbenv-mode))
+    ;; (use-package rbenv
+    ;;   :config
+    ;;   (setq rbenv-executable "/opt/local/bin/rbenv"
+    ;;         rbenv-binary-paths '((shims-path . "/Users/macpapo/.rbenv/shims")
+    ;;                             (bin-path . "/opt/local/bin/rbenv")))
+    ;;   (global-rbenv-mode))
 
-  (use-package inf-ruby
-    :hook (ruby-ts-mode . inf-ruby-minor-mode))
+    (use-package rvm
+      :config
+      (rvm-use-default))
 
-  (use-package robe
-    :hook ruby-ts-mode
-    :config
-    (eval-after-load 'company
-      '(push 'company-robe company-backends)))
+    (use-package inf-ruby
+      :hook (ruby-mode . inf-ruby-minor-mode))
 
-  (use-package rspec-mode
-    :hook ruby-ts-mode
-    :config
-    (setq rspec-use-rake-when-possible nil))
+    (use-package robe
+      :hook ruby-mode
+      :config
+      (eval-after-load 'company
+        '(push 'company-robe company-backends)))
 
-  (use-package yari
-    :after ruby-ts-mode)
+    (use-package bundler
+      :after ruby-mode)
 
-  (provide 'init-ruby)
+    (use-package rspec-mode
+      :hook ruby-mode
+      :config
+      (setq rspec-use-rake-when-possible nil))
+
+    (use-package yari
+      :bind (:map ruby-mode-map
+                  ("C-c k" . yari))
+      :after ruby-mode)
+
+    (provide 'init-ruby)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el

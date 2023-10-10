@@ -23,9 +23,7 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-;; TODO: sposta da qui
-(setq-default history-length 1000)
-(add-hook 'after-init-hook 'savehist-mode)
+(setq initial-major-mode 'text-mode)
 
 (require 'init-pkgmanager)
 
@@ -37,7 +35,7 @@
 
 (require 'init-editing-utils)
 
-(require 'init-treesitter)
+;; (require 'init-treesitter)
 
 (require 'init-flymake)
 
@@ -65,9 +63,9 @@
 
 (require 'init-company)
 
-(require 'init-eglot)
+;;(require 'init-eglot)
 
-;;(require 'init-lsp)
+(require 'init-lsp)
 
 (require 'init-windows)
 
@@ -84,6 +82,8 @@
 (require 'init-cxx)
 
 (require 'init-java)
+
+(require 'init-go)
 
 (require 'init-ruby)
 

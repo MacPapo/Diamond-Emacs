@@ -1,22 +1,34 @@
 ;; (use-package rbenv
 ;;   :config
+;;   (setq rbenv-executable "/opt/local/bin/rbenv"
+;;         rbenv-binary-paths '((shims-path . "/Users/macpapo/.rbenv/shims")
+;;                             (bin-path . "/opt/local/bin/rbenv")))
 ;;   (global-rbenv-mode))
 
+(use-package rvm
+  :config
+  (rvm-use-default))
+
 (use-package inf-ruby
-  :hook (ruby-ts-mode . inf-ruby-minor-mode))
+  :hook (ruby-mode . inf-ruby-minor-mode))
 
 (use-package robe
-  :hook ruby-ts-mode
+  :hook ruby-mode
   :config
   (eval-after-load 'company
     '(push 'company-robe company-backends)))
 
+(use-package bundler
+  :after ruby-mode)
+
 (use-package rspec-mode
-  :hook ruby-ts-mode
+  :hook ruby-mode
   :config
   (setq rspec-use-rake-when-possible nil))
 
 (use-package yari
-  :after ruby-ts-mode)
+  :bind (:map ruby-mode-map
+              ("C-c k" . yari))
+  :after ruby-mode)
 
 (provide 'init-ruby)
