@@ -14,12 +14,6 @@
     (osx-trash-setup))
 
   (use-package reveal-in-osx-finder
-    :bind ("C-c z" . reveal-in-osx-finder))
-
-  ;; (global-set-key (kbd "M-`") 'ns-next-frame)
-  ;; (global-set-key (kbd "M-h") 'ns-do-hide-emacs)
-  ;; (global-set-key (kbd "M-˙") 'ns-do-hide-others)
-  ;; (global-set-key (kbd "M-ˍ") 'ns-do-hide-others) ;; what describe-key reports for cmd-option-h
-  )
+    :bind ("C-c z" . reveal-in-osx-finder)))
 
 (provide 'init-macos)

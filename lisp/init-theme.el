@@ -12,8 +12,8 @@
 
 ;; (load-theme 'spolsky t)
 ;; (load-theme 'modus-vivendi t)
-;; (load-theme 'plan9 t)
-(load-theme 'subatomic t)
+(load-theme 'plan9 t)
+;; (load-theme 'subatomic t)
 
 (use-package pulsar
   :config
