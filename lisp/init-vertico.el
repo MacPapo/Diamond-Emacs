@@ -54,7 +54,16 @@
    ([remap man] . consult-man)
    ([remap recentf-open-files] . consult-recent-file)
    ([remap switch-to-buffer] . consult-buffer)
-   ([remap yank-pop] . consult-yank-pop))
+   ([remap yank-pop] . consult-yank-pop)
+   ("C-h D t" . consult-theme)
+   ("M-g M-g" . consult-line)
+   ("M-g M-m" . consult-line-multi)
+   ("C-x M-f" . consult-fd)
+   ("C-c ! j" . consult-flymake)
+   ("C-c o"   . consult-outline)
+   ("C-c M-r" . consult-ripgrep)
+   :map org-mode-map
+   ("C-c o" . consult-org-heading))
   :config
   (setq consult-line-numbers-widen t
         consult-async-min-input 2

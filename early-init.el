@@ -2,7 +2,7 @@
 (defconst *is-a-mac* (eq system-type 'darwin))
 (setq package-enable-at-startup nil)
 
-    ;;; Runtime optimizations
+        ;;; Runtime optimizations
 ;; PERF: A second, case-insensitive pass over `auto-mode-alist' is time wasted.
 (setq auto-mode-case-fold nil)
 
@@ -41,13 +41,14 @@
 
 ;; Increase how much is read from processes in a single chunk (default is 4kb).
 ;; This is further increased elsewhere, where needed (like our LSP module).
-(setq read-process-output-max (* 64 1024))  ; 64kb
+(setq read-process-output-max (* 3 1024 1024)) ; 3 MiB
+
 
 ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
 ;; receiving input, which should help a little with scrolling performance.
 (setq redisplay-skip-fontification-on-input t)
 
-    ;;; Disable UI elements early
+        ;;; Disable UI elements early
 ;; PERF,UI: Doom strives to be keyboard-centric, so I consider these UI elements
 ;;   clutter. Initializing them also costs a morsel of startup time. Whats more,
 ;;   the menu bar exposes functionality that Doom doesn't endorse. Perhaps one
@@ -77,15 +78,16 @@
       (when (display-graphic-p use-frame)
         (set-frame-parameter use-frame 'menu-bar-lines 1)))))
 
-;;; Encodings
+    ;;; Encodings
 ;; Contrary to what many Emacs users have in their configs, you don't need more
 ;; than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
 
 (setq default-input-method nil)
 
-(let ((normal-gc-cons-threshold (* 20 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
+(setq garbage-collection-messages t)
+(let ((normal-gc-cons-threshold (* 100 1024 1024))  ; Set to 100MB
+      (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
   (setq gc-cons-threshold init-gc-cons-threshold)
   (add-hook 'emacs-startup-hook
             (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))

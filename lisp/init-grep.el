@@ -6,6 +6,8 @@
 (when *is-a-mac*
   (setq-default locate-command "mdfind"))
 
+(use-package ripgrep)
+
 (use-package wgrep
   :commands wgrep-change-to-wgrep-mode
   :config (setq wgrep-auto-save-buffer t))

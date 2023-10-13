@@ -7,9 +7,13 @@
 (use-package zenburn-theme)
 
 (use-package sublime-themes)
+(use-package subatomic-theme)
+(use-package plan9-theme)
 
 ;; (load-theme 'spolsky t)
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
+;; (load-theme 'plan9 t)
+(load-theme 'subatomic t)
 
 (use-package pulsar
   :config

@@ -1,4 +1,4 @@
-#+title: MacPapo's Config
+#+title: Diamong Config
 #+author: Jacopo Costantini
 
 
@@ -40,7 +40,7 @@
   (defconst *is-a-mac* (eq system-type 'darwin))
   (setq package-enable-at-startup nil)
 
-      ;;; Runtime optimizations
+          ;;; Runtime optimizations
   ;; PERF: A second, case-insensitive pass over `auto-mode-alist' is time wasted.
   (setq auto-mode-case-fold nil)
 
@@ -79,13 +79,14 @@
 
   ;; Increase how much is read from processes in a single chunk (default is 4kb).
   ;; This is further increased elsewhere, where needed (like our LSP module).
-  (setq read-process-output-max (* 64 1024))  ; 64kb
+  (setq read-process-output-max (* 3 1024 1024)) ; 3 MiB
+
 
   ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
   ;; receiving input, which should help a little with scrolling performance.
   (setq redisplay-skip-fontification-on-input t)
 
-      ;;; Disable UI elements early
+          ;;; Disable UI elements early
   ;; PERF,UI: Doom strives to be keyboard-centric, so I consider these UI elements
   ;;   clutter. Initializing them also costs a morsel of startup time. Whats more,
   ;;   the menu bar exposes functionality that Doom doesn't endorse. Perhaps one
@@ -115,15 +116,16 @@
         (when (display-graphic-p use-frame)
           (set-frame-parameter use-frame 'menu-bar-lines 1)))))
 
-  ;;; Encodings
+      ;;; Encodings
   ;; Contrary to what many Emacs users have in their configs, you don't need more
   ;; than this to make UTF-8 the default coding system:
   (set-language-environment "UTF-8")
 
   (setq default-input-method nil)
 
-  (let ((normal-gc-cons-threshold (* 20 1024 1024))
-        (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq garbage-collection-messages t)
+  (let ((normal-gc-cons-threshold (* 100 1024 1024))  ; Set to 100MB
+        (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
     (setq gc-cons-threshold init-gc-cons-threshold)
     (add-hook 'emacs-startup-hook
               (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
@@ -160,54 +162,7 @@
   (require 'init-pkgmanager)
 #+end_src
 
-** User local preferences
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-local nil t) 
-#+end_src
-
-** Appearance
-
-#+begin_src elisp :tangle ~/.emacs.d/lisp/init-theme.el
-  ;; -*- lexical-binding: t; -*-
-
-  (setq custom-safe-themes t)
-
-  (use-package autothemer)
-
-  (use-package zenburn-theme)
-  
-  (use-package sublime-themes)
-
-  ;; (load-theme 'spolsky t)
-  (load-theme 'modus-vivendi t)
-
-  (use-package pulsar
-    :config
-    (setq pulsar-pulse t
-          ;; pulsar-face 'pulsar-yellow
-          ;; pulsar-highlight-face 'pulsar-purple
-          pulsar-delay 0.055)
-    (add-to-list 'pulsar-pulse-functions 'ace-window)
-    (pulsar-global-mode 1))
-
-  (use-package display-time
-    :straight nil
-    :hook after-init
-    :init
-    (setq display-time-day-and-date t
-          display-time-24hr-format  t
-          display-time-default-load-average nil))
-
-  (provide 'init-theme)
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-theme)
-#+end_src
-
-
-** Keybindings
+** macOS
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-macos.el
   ;; -*- lexical-binding: t; -*-
@@ -238,7 +193,58 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-macos)
+  (when *is-a-mac*
+    (require 'init-macos))
+#+end_src
+
+** User local preferences
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-local nil t)
+#+end_src
+
+** Appearance
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-theme.el
+  ;; -*- lexical-binding: t; -*-
+
+  (setq custom-safe-themes t)
+
+  (use-package autothemer)
+
+  (use-package zenburn-theme)
+
+  (use-package sublime-themes)
+  (use-package subatomic-theme)
+  (use-package plan9-theme)
+
+  ;; (load-theme 'spolsky t)
+  ;; (load-theme 'modus-vivendi t)
+  ;; (load-theme 'plan9 t)
+  (load-theme 'subatomic t)
+
+  (use-package pulsar
+    :config
+    (setq pulsar-pulse t
+          ;; pulsar-face 'pulsar-yellow
+          ;; pulsar-highlight-face 'pulsar-purple
+          pulsar-delay 0.055)
+    (add-to-list 'pulsar-pulse-functions 'ace-window)
+    (pulsar-global-mode 1))
+
+  (use-package display-time
+    :straight nil
+    :hook after-init
+    :init
+    (setq display-time-day-and-date t
+          display-time-24hr-format  t
+          display-time-default-load-average nil))
+
+  (provide 'init-theme)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-theme)
 #+end_src
 
 ** Editing Utils
@@ -247,8 +253,25 @@
   ;; -*- lexical-binding: t; -*-
 
   ;; NEW
+  ;; | Key    | Command                               |
+  ;; |--------+---------------------------------------|
+  ;; | b      | popwin:popup-buffer                   |
+  ;; | l      | popwin:popup-last-buffer              |
+  ;; | o      | popwin:display-buffer                 |
+  ;; | C-b    | popwin:switch-to-last-buffer          |
+  ;; | C-p    | popwin:original-pop-to-last-buffer    |
+  ;; | C-o    | popwin:original-display-last-buffer   |
+  ;; | SPC    | popwin:select-popup-window            |
+  ;; | s      | popwin:stick-popup-window             |
+  ;; | 0      | popwin:close-popup-window             |
+  ;; | f, C-f | popwin:find-file                      |
+  ;; | e      | popwin:messages                       |
+  ;; | C-u    | popwin:universal-display              |
+  ;; | 1      | popwin:one-window                     |
   (use-package popwin
-    :config (popwin-mode t))
+    :config
+    (global-set-key (kbd "C-z") popwin:keymap)
+    (popwin-mode t))
 
   ;; (use-package eros
   ;;   :config (eros-mode t))
@@ -261,9 +284,6 @@
 
   (use-package minions
     :config (minions-mode 1))
-
-  (use-package back-button
-    :init (back-button-mode 1))
 
   (use-package move-dup
     :bind (("M-<up>"     . move-dup-move-lines-up)
@@ -373,7 +393,7 @@
     :hook prog-mode
     :config
     (setq-default indicate-buffer-boundaries 'left
-        	  display-fill-column-indicator-character ?\u254e))
+                  display-fill-column-indicator-character ?\u254e))
 
   (use-package show-paren
     :straight nil
@@ -477,6 +497,42 @@
     :config
     (which-key-mode))
 
+  ;; (use-package whitespace
+  ;;   :straight nil  ; Non è necessario assicurarsi che sia installato perché fa parte di Emacs
+  ;;   :hook ((prog-mode . whitespace-mode)  ; Attiva whitespace-mode per i file di codice sorgente
+  ;;          (text-mode . whitespace-mode))  ; e per i file di testo
+  ;;   :config
+  ;;   ;; Definisci i tipi di spazi bianchi da evidenziare
+  ;;   (setq whitespace-style '(face
+  ;;                            tabs
+  ;;                            spaces
+  ;;                            trailing
+  ;;                            lines
+  ;;                            space-before-tab
+  ;;                            newline
+  ;;                            indentation
+  ;;                            empty
+  ;;                            space-after-tab
+  ;;                            space-mark
+  ;;                            tab-mark
+  ;;                            newline-mark))
+
+  ;;   ;; Puoi personalizzare ulteriormente l'aspetto degli spazi bianchi qui (se necessario)
+  ;;   (setq whitespace-display-mappings
+  ;;         ;; all numbers are Unicode codepoint in decimal. try (insert-char 182 ) to see it
+  ;;         '((space-mark 32 [183] [46]) ; 32 SPACE, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
+  ;;           (newline-mark 10 [182 10]) ; 10 LINE FEED
+  ;;           (tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
+  ;;           ))
+  ;;   ;; Configura i colori degli spazi bianchi
+  ;;   (set-face-attribute 'whitespace-space nil :foreground "gray80")
+  ;;   (set-face-attribute 'whitespace-tab nil :foreground "gray80")
+  ;;   (set-face-attribute 'whitespace-newline nil :foreground "gray80")
+
+  ;;   ;; Personalizza la lunghezza massima della riga (se desideri che `whitespace-mode` ti avvisi riguardo righe troppo lunghe)
+  ;;   (setq whitespace-line-column 80))
+
+
   ;; Default of 800 was too low.
   ;; Avoid Lisp nesting exceeding in swift-mode.
   (setq max-lisp-eval-depth 10000)
@@ -567,6 +623,7 @@
 ** Tramp
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-tramp.el
+  ;; -*- lexical-binding: t; -*-
 
   (use-package tramp
     :straight nil
@@ -589,9 +646,18 @@
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-shell.el
   ;; -*- lexical-binding: t; -*-
 
+  (use-package vterm
+    :bind ("C-c t V" . vterm))
+
+  (use-package vterm-toggle
+    :bind ("C-c t v" . vterm-toggle))
+
   (use-package eshell
     :straight nil
-    :bind ("C-x M-e" . eshell))
+    :bind ("C-c t E" . eshell))
+
+  (use-package eshell-toggle
+    :bind ("C-c t e" . eshell-toggle))
 
   (use-package eshell-prompt-extras
     :init
@@ -719,7 +785,16 @@
      ([remap man] . consult-man)
      ([remap recentf-open-files] . consult-recent-file)
      ([remap switch-to-buffer] . consult-buffer)
-     ([remap yank-pop] . consult-yank-pop))
+     ([remap yank-pop] . consult-yank-pop)
+     ("C-h D t" . consult-theme)
+     ("M-g M-g" . consult-line)
+     ("M-g M-m" . consult-line-multi)
+     ("C-x M-f" . consult-fd)
+     ("C-c ! j" . consult-flymake)
+     ("C-c o"   . consult-outline)
+     ("C-c M-r" . consult-ripgrep)
+     :map org-mode-map
+     ("C-c o" . consult-org-heading))
     :config
     (setq consult-line-numbers-widen t
           consult-async-min-input 2
@@ -1087,6 +1162,8 @@
   (when *is-a-mac*
     (setq-default locate-command "mdfind"))
 
+  (use-package ripgrep)
+
   (use-package wgrep
     :commands wgrep-change-to-wgrep-mode
     :config (setq wgrep-auto-save-buffer t))
@@ -1101,9 +1178,11 @@
 ** Copilot
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-copilot.el
+  ;; -*- lexical-binding: t; -*-
+
   (use-package copilot
     :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-    :defer 15
+    :hook prog-mode
     :bind (("C-TAB"    . copilot-accept-completion)
            ("C-<tab>"  . copilot-accept-completion))
     :config
@@ -1130,7 +1209,7 @@
      (after-init  . global-corfu-mode))
     :custom
     (corfu-cycle t)
-    (corfu-auto t) 
+    (corfu-auto t)
     (corfu-commit-predicate nil)
     (corfu-quit-no-match t)
     (corfu-auto-delay 0)
@@ -1211,8 +1290,6 @@
 
   (require 'eglot)
 
-  (setq read-process-output-max (* 3 1024 1024))
-  
   (provide 'init-eglot)
 #+end_src
 
@@ -1223,54 +1300,54 @@
 ** LSP Mode
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-lsp.el
-      ;; -*- lexical-binding: t; -*-
+  ;; -*- lexical-binding: t; -*-
 
-      (use-package lsp-mode
-        :commands lsp
-        :hook ((c-ts-mode    . lsp)
-               (c++-ts-mode  . lsp)
-               (ruby-mode . lsp)
-               (lsp-mode  . lsp-enable-which-key-integration))
-        :config
-        (setq lsp-log-io nil
-              lsp-idle-delay 0.1))
+  (use-package lsp-mode
+    :commands lsp
+    :hook ((c-ts-mode    . lsp)
+           (c++-ts-mode  . lsp)
+           (ruby-mode . lsp)
+           (lsp-mode  . lsp-enable-which-key-integration))
+    :config
+    (setq lsp-log-io nil
+          lsp-idle-delay 0.1))
 
-      (use-package lsp-java
-        :hook ((java-ts-mode . lsp)))
+  (use-package lsp-java
+    :hook ((java-ts-mode . lsp)))
 
-      (use-package lsp-dart
-        :hook (dart-mode . lsp)
-        :config
-        (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
-        (dap-register-debug-template "Flutter :: Custom debug"
-                                     (list :flutterPlatform "arm64"
-                                           :program "lib/main.dart"
-                                           :args '("--flavor" "customer_a"))))
+  (use-package lsp-dart
+    :hook (dart-mode . lsp)
+    :config
+    (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+    (dap-register-debug-template "Flutter :: Custom debug"
+                                 (list :flutterPlatform "arm64"
+                                       :program "lib/main.dart"
+                                       :args '("--flavor" "customer_a"))))
 
-      (use-package lsp-treemacs
-        :after lsp-mode treemacs
-        :config
-        (lsp-treemacs-sync-mode 1))
+  (use-package lsp-treemacs
+    :after lsp-mode treemacs
+    :config
+    (lsp-treemacs-sync-mode 1))
 
-      (use-package treemacs
-        :defer t
-        :bind (([f8] . treemacs)
-               ([f9] . treemacs-select-window))
-        :config
-        (progn
-          (setq treemacs-is-never-other-window t)
-          (setq treemacs-git-mode 'extended)))
+  (use-package treemacs
+    :defer t
+    :bind (([f8] . treemacs)
+           ([f9] . treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-is-never-other-window t)
+      (setq treemacs-git-mode 'extended)))
 
-      (use-package treemacs-projectile
-        :after treemacs projectile)
+  (use-package treemacs-projectile
+    :after treemacs projectile)
 
-      (use-package treemacs-magit
-        :after treemacs magit)
+  (use-package treemacs-magit
+    :after treemacs magit)
 
-      (use-package lsp-ui
-        :hook (lsp-mode . lsp-ui-mode))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
 
-      (provide 'init-lsp)
+  (provide 'init-lsp)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1356,7 +1433,7 @@ o - maximize current window
 
   (use-package org
     :config
-    (setq org-latex-listings 'minted)
+    (setq org-latex-src-block-backend 'minted)
 
     (add-to-list 'org-latex-packages-alist '("" "minted"))
 
@@ -1367,6 +1444,8 @@ o - maximize current window
 
   (use-package org-wc
     :after org)
+
+  (use-package olivetti)
 
   (use-package org-pomodoro
     :after org)
@@ -1397,6 +1476,8 @@ o - maximize current window
 ** Docker
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-docker.el
+  ;; -*- lexical-binding: t; -*-
+
   (use-package docker)
 
   (use-package docker-compose-mode)
@@ -1415,6 +1496,8 @@ o - maximize current window
 ** Yasnippet
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-yasnippet.el
+  ;; -*- lexical-binding: t; -*-
+
   (use-package yasnippet
     :defer 5
     :diminish yasnippet
@@ -1459,6 +1542,7 @@ o - maximize current window
 ** C/C++
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-cxx.el
+  ;; -*- lexical-binding: t; -*-
 
   (setq c-ts-mode-indent-offset 4)
 
@@ -1483,6 +1567,7 @@ o - maximize current window
 ** Java
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-java.el
+  ;; -*- lexical-binding: t; -*-
 
   (setq java-ts-mode-indent-offset 8)
 
@@ -1496,6 +1581,8 @@ o - maximize current window
 ** Go
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-go.el
+  ;; -*- lexical-binding: t; -*-
+
   (use-package go-mode
     :mode ("\\.go\\'" . go-mode))
 
@@ -1509,40 +1596,42 @@ o - maximize current window
 ** Ruby
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-ruby.el
-    ;; (use-package rbenv
-    ;;   :config
-    ;;   (setq rbenv-executable "/opt/local/bin/rbenv"
-    ;;         rbenv-binary-paths '((shims-path . "/Users/macpapo/.rbenv/shims")
-    ;;                             (bin-path . "/opt/local/bin/rbenv")))
-    ;;   (global-rbenv-mode))
+  ;; -*- lexical-binding: t; -*-
 
-    (use-package rvm
-      :config
-      (rvm-use-default))
+  (use-package rbenv
+    :config
+    (setq rbenv-executable "/opt/homebrew/bin/rbenv"
+          rbenv-binary-paths '((shims-path . "~/.rbenv/shims")
+                               (bin-path . "/opt/homebrew/bin/rbenv")))
+    (global-rbenv-mode))
 
-    (use-package inf-ruby
-      :hook (ruby-mode . inf-ruby-minor-mode))
+  ;; (use-package rvm
+  ;;   :config
+  ;;   (rvm-use-default))
 
-    (use-package robe
-      :hook ruby-mode
-      :config
-      (eval-after-load 'company
-        '(push 'company-robe company-backends)))
+  (use-package inf-ruby
+    :hook (ruby-mode . inf-ruby-minor-mode))
 
-    (use-package bundler
-      :after ruby-mode)
+  (use-package robe
+    :hook ruby-mode
+    :config
+    (eval-after-load 'company
+      '(push 'company-robe company-backends)))
 
-    (use-package rspec-mode
-      :hook ruby-mode
-      :config
-      (setq rspec-use-rake-when-possible nil))
+  (use-package bundler
+    :after ruby-mode)
 
-    (use-package yari
-      :bind (:map ruby-mode-map
-                  ("C-c k" . yari))
-      :after ruby-mode)
+  (use-package rspec-mode
+    :hook ruby-mode
+    :config
+    (setq rspec-use-rake-when-possible nil))
 
-    (provide 'init-ruby)
+  (use-package yari
+    :bind (:map ruby-mode-map
+                ("C-c k" . yari))
+    :after ruby-mode)
+
+  (provide 'init-ruby)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1552,6 +1641,8 @@ o - maximize current window
 ** Common lisp
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-clisp.el
+  ;; -*- lexical-binding: t; -*-
+
   (use-package slime
     :config
     (setq inferior-lisp-program "/opt/homebrew/bin/sbcl"))
@@ -1561,4 +1652,41 @@ o - maximize current window
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-clisp)
+#+end_src
+
+* Custom
+
+** Autotangle
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/auto-tangle.el
+  ;; -*- lexical-binding: t; -*-
+
+  (require 'ob-tangle)
+
+  (defun tangle-config ()
+    "Automatically tangle `config.org`, delete old .elc files, and byte-compile."
+    (when (string= (buffer-file-name)
+		   (expand-file-name (concat user-emacs-directory
+					     "config.org")))
+      (org-babel-tangle)
+      ;; (let ((tangled-files (org-babel-tangle)))
+      ;;   (dolist (file tangled-files)
+      ;;     (let ((elc-file (concat file "c")))
+      ;;       (when (file-exists-p elc-file)
+      ;;         (delete-file elc-file))
+      ;;       ;; Do not byte-compile init.el and early-init.el
+      ;;       (unless (or (string= (file-name-nondirectory file) "init.el")
+      ;;                   (string= (file-name-nondirectory file) "early-init.el"))
+
+      ;;         (byte-compile-file file)))))
+      ))
+
+  (add-hook 'org-mode-hook (lambda ()
+			     (add-hook 'after-save-hook #'tangle-config)))
+
+  (provide 'auto-tangle)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'auto-tangle)
 #+end_src

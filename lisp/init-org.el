@@ -2,7 +2,7 @@
 
 (use-package org
   :config
-  (setq org-latex-listings 'minted)
+  (setq org-latex-src-block-backend 'minted)
 
   (add-to-list 'org-latex-packages-alist '("" "minted"))
 
@@ -13,6 +13,8 @@
 
 (use-package org-wc
   :after org)
+
+(use-package olivetti)
 
 (use-package org-pomodoro
   :after org)

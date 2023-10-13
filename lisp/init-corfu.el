@@ -8,7 +8,7 @@
    (after-init  . global-corfu-mode))
   :custom
   (corfu-cycle t)
-  (corfu-auto t) 
+  (corfu-auto t)
   (corfu-commit-predicate nil)
   (corfu-quit-no-match t)
   (corfu-auto-delay 0)

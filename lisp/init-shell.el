@@ -1,8 +1,17 @@
 ;; -*- lexical-binding: t; -*-
 
+(use-package vterm
+  :bind ("C-c t V" . vterm))
+
+(use-package vterm-toggle
+  :bind ("C-c t v" . vterm-toggle))
+
 (use-package eshell
   :straight nil
-  :bind ("C-x M-e" . eshell))
+  :bind ("C-c t E" . eshell))
+
+(use-package eshell-toggle
+  :bind ("C-c t e" . eshell-toggle))
 
 (use-package eshell-prompt-extras
   :init

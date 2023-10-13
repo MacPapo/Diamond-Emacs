@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (setq c-ts-mode-indent-offset 4)
 
 (use-package modern-cpp-font-lock

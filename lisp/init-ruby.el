@@ -1,13 +1,15 @@
-;; (use-package rbenv
-;;   :config
-;;   (setq rbenv-executable "/opt/local/bin/rbenv"
-;;         rbenv-binary-paths '((shims-path . "/Users/macpapo/.rbenv/shims")
-;;                             (bin-path . "/opt/local/bin/rbenv")))
-;;   (global-rbenv-mode))
+;; -*- lexical-binding: t; -*-
 
-(use-package rvm
+(use-package rbenv
   :config
-  (rvm-use-default))
+  (setq rbenv-executable "/opt/homebrew/bin/rbenv"
+        rbenv-binary-paths '((shims-path . "~/.rbenv/shims")
+                             (bin-path . "/opt/homebrew/bin/rbenv")))
+  (global-rbenv-mode))
+
+;; (use-package rvm
+;;   :config
+;;   (rvm-use-default))
 
 (use-package inf-ruby
   :hook (ruby-mode . inf-ruby-minor-mode))

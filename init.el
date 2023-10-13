@@ -27,11 +27,12 @@
 
 (require 'init-pkgmanager)
 
+(when *is-a-mac*
+  (require 'init-macos))
+
 (require 'init-local nil t)
 
 (require 'init-theme)
-
-(require 'init-macos)
 
 (require 'init-editing-utils)
 
@@ -88,3 +89,5 @@
 (require 'init-ruby)
 
 (require 'init-clisp)
+
+(require 'auto-tangle)

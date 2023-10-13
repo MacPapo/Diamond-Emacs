@@ -1,8 +1,25 @@
 ;; -*- lexical-binding: t; -*-
 
 ;; NEW
+;; | Key    | Command                               |
+;; |--------+---------------------------------------|
+;; | b      | popwin:popup-buffer                   |
+;; | l      | popwin:popup-last-buffer              |
+;; | o      | popwin:display-buffer                 |
+;; | C-b    | popwin:switch-to-last-buffer          |
+;; | C-p    | popwin:original-pop-to-last-buffer    |
+;; | C-o    | popwin:original-display-last-buffer   |
+;; | SPC    | popwin:select-popup-window            |
+;; | s      | popwin:stick-popup-window             |
+;; | 0      | popwin:close-popup-window             |
+;; | f, C-f | popwin:find-file                      |
+;; | e      | popwin:messages                       |
+;; | C-u    | popwin:universal-display              |
+;; | 1      | popwin:one-window                     |
 (use-package popwin
-  :config (popwin-mode t))
+  :config
+  (global-set-key (kbd "C-z") popwin:keymap)
+  (popwin-mode t))
 
 ;; (use-package eros
 ;;   :config (eros-mode t))
@@ -15,9 +32,6 @@
 
 (use-package minions
   :config (minions-mode 1))
-
-(use-package back-button
-  :init (back-button-mode 1))
 
 (use-package move-dup
   :bind (("M-<up>"     . move-dup-move-lines-up)
@@ -127,7 +141,7 @@
   :hook prog-mode
   :config
   (setq-default indicate-buffer-boundaries 'left
-      	  display-fill-column-indicator-character ?\u254e))
+                display-fill-column-indicator-character ?\u254e))
 
 (use-package show-paren
   :straight nil
@@ -230,6 +244,42 @@
   :diminish which-key-mode
   :config
   (which-key-mode))
+
+;; (use-package whitespace
+;;   :straight nil  ; Non è necessario assicurarsi che sia installato perché fa parte di Emacs
+;;   :hook ((prog-mode . whitespace-mode)  ; Attiva whitespace-mode per i file di codice sorgente
+;;          (text-mode . whitespace-mode))  ; e per i file di testo
+;;   :config
+;;   ;; Definisci i tipi di spazi bianchi da evidenziare
+;;   (setq whitespace-style '(face
+;;                            tabs
+;;                            spaces
+;;                            trailing
+;;                            lines
+;;                            space-before-tab
+;;                            newline
+;;                            indentation
+;;                            empty
+;;                            space-after-tab
+;;                            space-mark
+;;                            tab-mark
+;;                            newline-mark))
+
+;;   ;; Puoi personalizzare ulteriormente l'aspetto degli spazi bianchi qui (se necessario)
+;;   (setq whitespace-display-mappings
+;;         ;; all numbers are Unicode codepoint in decimal. try (insert-char 182 ) to see it
+;;         '((space-mark 32 [183] [46]) ; 32 SPACE, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
+;;           (newline-mark 10 [182 10]) ; 10 LINE FEED
+;;           (tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
+;;           ))
+;;   ;; Configura i colori degli spazi bianchi
+;;   (set-face-attribute 'whitespace-space nil :foreground "gray80")
+;;   (set-face-attribute 'whitespace-tab nil :foreground "gray80")
+;;   (set-face-attribute 'whitespace-newline nil :foreground "gray80")
+
+;;   ;; Personalizza la lunghezza massima della riga (se desideri che `whitespace-mode` ti avvisi riguardo righe troppo lunghe)
+;;   (setq whitespace-line-column 80))
+
 
 ;; Default of 800 was too low.
 ;; Avoid Lisp nesting exceeding in swift-mode.
