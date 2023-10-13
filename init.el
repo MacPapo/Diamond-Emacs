@@ -46,12 +46,6 @@
 
 (require 'init-dired)
 
-(require 'init-vertico)
-
-;; (require 'init-helm)
-
-;;(require 'init-ivy)
-
 ;;(require 'init-ido)
 
 (require 'init-projectile)
