@@ -96,16 +96,7 @@
 
 (use-package helm-tramp
   :after helm
-  :bind (("C-c s" . helm-tramp))
-  ;; :hook ((helm-tramp-pre-command . '(lambda ()
-  ;;                                     (global-aggressive-indent-mode 0)
-  ;;                                     (projectile-mode 0)
-  ;;                                     (editorconfig-mode 0)))
-  ;;        (helm-tramp-quit        . '(lambda ()
-  ;;                                     (global-aggressive-indent-mode 1)
-  ;;                                     (projectile-mode 1)
-  ;; (editorconfig-mode 1))))
-  )
+  :bind (("C-c s" . helm-tramp)))
 
 (use-package helm-make
   :after helm
