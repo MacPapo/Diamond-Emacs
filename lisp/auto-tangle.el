@@ -5,8 +5,8 @@
 (defun tangle-config ()
   "Automatically tangle `config.org`, delete old .elc files, and byte-compile."
   (when (string= (buffer-file-name)
-		 (expand-file-name (concat user-emacs-directory
-					   "config.org")))
+      	   (expand-file-name (concat user-emacs-directory
+      				     "config.org")))
     (org-babel-tangle)
     ;; (let ((tangled-files (org-babel-tangle)))
     ;;   (dolist (file tangled-files)
@@ -21,6 +21,6 @@
     ))
 
 (add-hook 'org-mode-hook (lambda ()
-			   (add-hook 'after-save-hook #'tangle-config)))
+      		     (add-hook 'after-save-hook #'tangle-config)))
 
 (provide 'auto-tangle)
