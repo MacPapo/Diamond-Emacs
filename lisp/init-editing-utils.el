@@ -21,17 +21,7 @@
   (global-set-key (kbd "C-z") popwin:keymap)
   (popwin-mode t))
 
-;; (use-package eros
-;;   :config (eros-mode t))
-
-(use-package markdown-mode
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown"))
-
 (use-package vundo)
-
-(use-package minions
-  :config (minions-mode 1))
 
 (use-package move-dup
   :bind (("M-<up>"     . move-dup-move-lines-up)
@@ -39,39 +29,55 @@
          ("C-M-<up>"   . move-dup-duplicate-up)
          ("C-M-<down>" . move-dup-duplicate-down)))
 
-(use-package emacs-surround
-  :straight (:host github :repo "ganmacs/emacs-surround" :branch "master")
-  :bind ("C-q" . emacs-surround))
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :config (doom-modeline-mode 1)
-;;   :custom
-;;   ((doom-modeline-buffer-encoding nil)
-;;    (doom-modeline-minor-modes t)
-;;    (doom-modeline-gnus-timer nil)
-;;    (doom-modeline-bar-width 3)
-;;    (doom-modeline-icon (unless (daemonp) t))))
-
-(use-package nerd-icons
-  :custom
-  (nerd-icons-font-family "Symbols Nerd Font Mono"))
+(use-package super-save
+  :diminish super-save-mode
+  :config
+  ;; add integration with ace-window
+  (add-to-list 'super-save-triggers 'ace-window)
+  (super-save-mode +1))
 ;; END NEW
 
-(use-package electric-pair
+(use-package elec-pair
   :straight nil
-  :hook after-init)
+  :config
+  (electric-pair-mode +1))
 
 (use-package electric-indent
   :straight nil
   :hook after-init)
+
+(use-package hl-line
+  :straight nil
+  :config
+  (global-hl-line-mode +1))
+
+(use-package delsel
+  :straight nil
+  :config
+  (require 'delsel)
+  (delete-selection-mode t))
+
+(setq-default
+ line-number-mode t
+ column-number-mode t
+ size-indication-mode t)
+
+(setq-default
+ fill-column 80)
+
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 
 (setq-default
  blink-cursor-interval 0.4
  bookmark-default-file (locate-user-emacs-file ".bookmarks.el")
  buffers-menu-max-size 30
  case-fold-search t
- column-number-mode t
  ediff-split-window-function 'split-window-horizontally
  ediff-window-setup-function 'ediff-setup-windows-plain
  indent-tabs-mode nil
@@ -90,10 +96,6 @@
  echo-keystrokes 0.02
  truncate-partial-width-windows nil)
 
-(use-package delete-selection
-  :straight nil
-  :hook after-init)
-
 (use-package hippie-expand
   :straight nil
   :bind ("M-/" . hippie-expand)
@@ -105,13 +107,13 @@
           try-expand-dabbrev-all-buffers
           try-expand-dabbrev-from-kill)))
 
-(use-package global-auto-revert
+(use-package autorevert
   :diminish auto-revert
   :straight nil
-  :hook after-init
   :config
   (setq global-auto-revert-non-file-buffers t
-        auto-revert-verbose nil))
+        auto-revert-verbose nil)
+  (global-auto-revert-mode +1))
 
 (use-package uniquify
   :straight nil
@@ -120,6 +122,13 @@
         uniquify-separator " • "
         uniquify-after-kill-buffer-p t
         uniquify-ignore-buffers-re "^\\*"))
+
+(use-package saveplace
+  :straight nil
+  :config
+  (setq save-place-file (expand-file-name "saveplace" diamond-savefile-dir))
+  ;; activate it for all buffers
+  (setq-default save-place t))
 
 (use-package transient-mark
   :straight nil
@@ -141,11 +150,12 @@
   :hook prog-mode
   :config
   (setq-default indicate-buffer-boundaries 'left
-                display-fill-column-indicator-character ?\u254e))
+      	        display-fill-column-indicator-character ?\u254e))
 
-(use-package show-paren
+(use-package paren
   :straight nil
-  :hook after-init)
+  :config
+  (show-paren-mode +1))
 
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
@@ -159,11 +169,14 @@
          ("C-'"   . avy-goto-char-2)
          ("M-g f" . avy-goto-line)
          ("M-g w" . avy-goto-word-1)
-         ("M-g e" . avy-goto-word-0)
-         ("M-Z"   . zap-up-to-char))
+         ("M-g e" . avy-goto-word-0))
   :config
   (setq avy-background t)
   (setq avy-style 'at-full))
+
+(use-package zop-to-char
+  :bind (("M-z" . zop-up-to-char)
+         ("M-Z" . zop-to-char)))
 
 (use-package origami
   :hook prog-mode
@@ -196,6 +209,7 @@
          :map isearch-mode-map
          ([remap isearch-delete-char]  . isearch-del-char))
   :init
+  (setq anzu-mode-lighter "")
   (global-anzu-mode +1))
 
 (use-package highlight-escape-sequences
@@ -203,12 +217,14 @@
   (add-hook 'after-init-hook 'hes-mode))
 
 (use-package recentf
-  :straight nil
-  :hook after-init
   :config
-  (setq-default
-   recentf-max-saved-items 1000
-   recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'"))))
+  (setq recentf-save-file (expand-file-name "recentf" diamond-savefile-dir)
+        recentf-max-saved-items 500
+        recentf-max-menu-items 15
+        ;; disable recentf-cleanup on Emacs start, because it can cause
+        ;; problems with remote files
+        recentf-auto-cleanup 'never)
+  (recentf-mode +1))
 
 (use-package info-colors
   :hook (Info-selection . info-colors-fontify-node))
@@ -217,11 +233,37 @@
 
 (use-package dotenv-mode)
 
-(use-package solaire-mode
-  :config
-  (solaire-global-mode +1))
+;; (use-package crux
+;;   :ensure t
+;;   :bind (("C-c o" . crux-open-with)
+;;          ("M-o" . crux-smart-open-line)
+;;          ("C-c n" . crux-cleanup-buffer-or-region)
+;;          ("C-c f" . crux-recentf-find-file)
+;;          ("C-M-z" . crux-indent-defun)
+;;          ("C-c u" . crux-view-url)
+;;          ("C-c e" . crux-eval-and-replace)
+;;          ("C-c w" . crux-swap-windows)
+;;          ("C-c D" . crux-delete-file-and-buffer)
+;;          ("C-c r" . crux-rename-buffer-and-file)
+;;          ("C-c t" . crux-visit-term-buffer)
+;;          ("C-c k" . crux-kill-other-buffers)
+;;          ("C-c TAB" . crux-indent-rigidly-and-copy-to-clipboard)
+;;          ("C-c I" . crux-find-user-init-file)
+;;          ("C-c S" . crux-find-shell-init-file)
+;;          ("s-r" . crux-recentf-find-file)
+;;          ("s-j" . crux-top-join-line)
+;;          ("C-^" . crux-top-join-line)
+;;          ("s-k" . crux-kill-whole-line)
+;;          ("C-<backspace>" . crux-kill-line-backwards)
+;;          ("s-o" . crux-smart-open-line-above)
+;;          ([remap move-beginning-of-line] . crux-move-beginning-of-line)
+;;          ([(shift return)] . crux-smart-open-line)
+;;          ([(control shift return)] . crux-smart-open-line-above)
+;;          ([remap kill-whole-line] . crux-kill-whole-line)
+;;          ("C-c s" . crux-ispell-word-then-abbrev)))
 
 (use-package crux
+  :demand t
   :bind
   ([remap move-beginning-of-line] . crux-move-beginning-of-line)
   ([remap kill-whole-line]        . crux-kill-whole-line)
@@ -231,54 +273,28 @@
   ("C-c n"                        . crux-cleanup-buffer-or-region)
   ("C-c d"                        . crux-duplicate-current-line-or-region)
   ("C-c M-d"                      . crux-duplicate-and-comment-current-line-or-region)
-  ("C-c r"                        . crux-rename-file-and-buffer)
   ("C-x C-u"                      . crux-upcase-region)
   ("C-x C-l"                      . crux-downcase-region)
   ("C-x M-c"                      . crux-capitalize-region)
   ("M-j"                          . crux-top-join-line))
 
 (use-package rainbow-delimiters
-  :hook prog-mode)
+  :hook prog-mode
+  :diminish rainbow-mode)
 
 (use-package which-key
   :diminish which-key-mode
   :config
   (which-key-mode))
 
-;; (use-package whitespace
-;;   :straight nil  ; Non è necessario assicurarsi che sia installato perché fa parte di Emacs
-;;   :hook ((prog-mode . whitespace-mode)  ; Attiva whitespace-mode per i file di codice sorgente
-;;          (text-mode . whitespace-mode))  ; e per i file di testo
-;;   :config
-;;   ;; Definisci i tipi di spazi bianchi da evidenziare
-;;   (setq whitespace-style '(face
-;;                            tabs
-;;                            spaces
-;;                            trailing
-;;                            lines
-;;                            space-before-tab
-;;                            newline
-;;                            indentation
-;;                            empty
-;;                            space-after-tab
-;;                            space-mark
-;;                            tab-mark
-;;                            newline-mark))
-
-;;   ;; Puoi personalizzare ulteriormente l'aspetto degli spazi bianchi qui (se necessario)
-;;   (setq whitespace-display-mappings
-;;         ;; all numbers are Unicode codepoint in decimal. try (insert-char 182 ) to see it
-;;         '((space-mark 32 [183] [46]) ; 32 SPACE, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
-;;           (newline-mark 10 [182 10]) ; 10 LINE FEED
-;;           (tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
-;;           ))
-;;   ;; Configura i colori degli spazi bianchi
-;;   (set-face-attribute 'whitespace-space nil :foreground "gray80")
-;;   (set-face-attribute 'whitespace-tab nil :foreground "gray80")
-;;   (set-face-attribute 'whitespace-newline nil :foreground "gray80")
-
-;;   ;; Personalizza la lunghezza massima della riga (se desideri che `whitespace-mode` ti avvisi riguardo righe troppo lunghe)
-;;   (setq whitespace-line-column 80))
+(use-package whitespace
+  ;; :init
+  ;; (dolist (hook '(prog-mode-hook text-mode-hook))
+  ;;   (add-hook hook #'whitespace-mode))
+  ;; (add-hook 'before-save-hook #'whitespace-cleanup)
+  :config
+  (setq whitespace-line-column 80) ;; limit line length
+  (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
 
 ;; Default of 800 was too low.

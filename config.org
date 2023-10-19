@@ -30,6 +30,10 @@
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
 
+  (defconst diamond-savefile-dir (expand-file-name "savefile" user-emacs-directory))
+  (unless (file-exists-p diamond-savefile-dir)
+    (make-directory diamond-savefile-dir))
+
   (setq initial-major-mode 'text-mode)
 #+end_src
 
@@ -124,7 +128,7 @@
   (setq default-input-method nil)
 
   (setq garbage-collection-messages t)
-  (let ((normal-gc-cons-threshold (* 100 1024 1024))  ; Set to 100MB
+  (let ((normal-gc-cons-threshold (* 50 1024 1024))  ; Set to 50MB
         (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
     (setq gc-cons-threshold init-gc-cons-threshold)
     (add-hook 'emacs-startup-hook
@@ -211,11 +215,23 @@
   (use-package sublime-themes)
   (use-package subatomic-theme)
   (use-package plan9-theme)
+  (use-package solarized-theme)
+  (use-package modus-themes
+    :straight (:host github :repo "protesilaos/modus-themes" :branch "main")
+    :config
+    ;; (setq modus-themes-italic-constructs t
+    ;;       modus-themes-bold-constructs nil
+    ;;       ;; modus-themes-mixed-fonts t
+    ;;       modus-themes-variable-pitch-ui t
+    ;;       modus-themes-custom-auto-reload t
+    ;;       modus-themes-disable-other-themes t)
+    )
 
   ;; (load-theme 'spolsky t)
   ;; (load-theme 'modus-vivendi t)
-  (load-theme 'plan9 t)
+  ;; (load-theme 'plan9 t)
   ;; (load-theme 'subatomic t)
+  (load-theme 'solarized-selenized-dark t)
 
   (use-package pulsar
     :config
@@ -267,17 +283,7 @@
     (global-set-key (kbd "C-z") popwin:keymap)
     (popwin-mode t))
 
-  ;; (use-package eros
-  ;;   :config (eros-mode t))
-
-  (use-package markdown-mode
-    :mode ("README\\.md\\'" . gfm-mode)
-    :init (setq markdown-command "multimarkdown"))
-
   (use-package vundo)
-
-  (use-package minions
-    :config (minions-mode 1))
 
   (use-package move-dup
     :bind (("M-<up>"     . move-dup-move-lines-up)
@@ -285,39 +291,55 @@
            ("C-M-<up>"   . move-dup-duplicate-up)
            ("C-M-<down>" . move-dup-duplicate-down)))
 
-  (use-package emacs-surround
-    :straight (:host github :repo "ganmacs/emacs-surround" :branch "master")
-    :bind ("C-q" . emacs-surround))
+  (use-package expand-region
+    :bind ("C-=" . er/expand-region))
 
-  ;; (use-package doom-modeline
-  ;;   :ensure t
-  ;;   :config (doom-modeline-mode 1)
-  ;;   :custom
-  ;;   ((doom-modeline-buffer-encoding nil)
-  ;;    (doom-modeline-minor-modes t)
-  ;;    (doom-modeline-gnus-timer nil)
-  ;;    (doom-modeline-bar-width 3)
-  ;;    (doom-modeline-icon (unless (daemonp) t))))
-
-  (use-package nerd-icons
-    :custom
-    (nerd-icons-font-family "Symbols Nerd Font Mono"))
+  (use-package super-save
+    :diminish super-save-mode
+    :config
+    ;; add integration with ace-window
+    (add-to-list 'super-save-triggers 'ace-window)
+    (super-save-mode +1))
   ;; END NEW
 
-  (use-package electric-pair
+  (use-package elec-pair
     :straight nil
-    :hook after-init)
+    :config
+    (electric-pair-mode +1))
 
   (use-package electric-indent
     :straight nil
     :hook after-init)
+
+  (use-package hl-line
+    :straight nil
+    :config
+    (global-hl-line-mode +1))
+
+  (use-package delsel
+    :straight nil
+    :config
+    (require 'delsel)
+    (delete-selection-mode t))
+
+  (setq-default
+   line-number-mode t
+   column-number-mode t
+   size-indication-mode t)
+
+  (setq-default
+   fill-column 80)
+
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
 
   (setq-default
    blink-cursor-interval 0.4
    bookmark-default-file (locate-user-emacs-file ".bookmarks.el")
    buffers-menu-max-size 30
    case-fold-search t
-   column-number-mode t
    ediff-split-window-function 'split-window-horizontally
    ediff-window-setup-function 'ediff-setup-windows-plain
    indent-tabs-mode nil
@@ -336,10 +358,6 @@
    echo-keystrokes 0.02
    truncate-partial-width-windows nil)
 
-  (use-package delete-selection
-    :straight nil
-    :hook after-init)
-
   (use-package hippie-expand
     :straight nil
     :bind ("M-/" . hippie-expand)
@@ -351,13 +369,13 @@
             try-expand-dabbrev-all-buffers
             try-expand-dabbrev-from-kill)))
 
-  (use-package global-auto-revert
+  (use-package autorevert
     :diminish auto-revert
     :straight nil
-    :hook after-init
     :config
     (setq global-auto-revert-non-file-buffers t
-          auto-revert-verbose nil))
+          auto-revert-verbose nil)
+    (global-auto-revert-mode +1))
 
   (use-package uniquify
     :straight nil
@@ -366,6 +384,13 @@
           uniquify-separator " • "
           uniquify-after-kill-buffer-p t
           uniquify-ignore-buffers-re "^\\*"))
+
+  (use-package saveplace
+    :straight nil
+    :config
+    (setq save-place-file (expand-file-name "saveplace" diamond-savefile-dir))
+    ;; activate it for all buffers
+    (setq-default save-place t))
 
   (use-package transient-mark
     :straight nil
@@ -387,11 +412,12 @@
     :hook prog-mode
     :config
     (setq-default indicate-buffer-boundaries 'left
-                  display-fill-column-indicator-character ?\u254e))
+        	        display-fill-column-indicator-character ?\u254e))
 
-  (use-package show-paren
+  (use-package paren
     :straight nil
-    :hook after-init)
+    :config
+    (show-paren-mode +1))
 
   (put 'narrow-to-region 'disabled nil)
   (put 'narrow-to-page 'disabled nil)
@@ -405,11 +431,14 @@
            ("C-'"   . avy-goto-char-2)
            ("M-g f" . avy-goto-line)
            ("M-g w" . avy-goto-word-1)
-           ("M-g e" . avy-goto-word-0)
-           ("M-Z"   . zap-up-to-char))
+           ("M-g e" . avy-goto-word-0))
     :config
     (setq avy-background t)
     (setq avy-style 'at-full))
+
+  (use-package zop-to-char
+    :bind (("M-z" . zop-up-to-char)
+           ("M-Z" . zop-to-char)))
 
   (use-package origami
     :hook prog-mode
@@ -442,6 +471,7 @@
            :map isearch-mode-map
            ([remap isearch-delete-char]  . isearch-del-char))
     :init
+    (setq anzu-mode-lighter "")
     (global-anzu-mode +1))
 
   (use-package highlight-escape-sequences
@@ -449,12 +479,14 @@
     (add-hook 'after-init-hook 'hes-mode))
 
   (use-package recentf
-    :straight nil
-    :hook after-init
     :config
-    (setq-default
-     recentf-max-saved-items 1000
-     recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'"))))
+    (setq recentf-save-file (expand-file-name "recentf" diamond-savefile-dir)
+          recentf-max-saved-items 500
+          recentf-max-menu-items 15
+          ;; disable recentf-cleanup on Emacs start, because it can cause
+          ;; problems with remote files
+          recentf-auto-cleanup 'never)
+    (recentf-mode +1))
 
   (use-package info-colors
     :hook (Info-selection . info-colors-fontify-node))
@@ -463,11 +495,37 @@
 
   (use-package dotenv-mode)
 
-  (use-package solaire-mode
-    :config
-    (solaire-global-mode +1))
+  ;; (use-package crux
+  ;;   :ensure t
+  ;;   :bind (("C-c o" . crux-open-with)
+  ;;          ("M-o" . crux-smart-open-line)
+  ;;          ("C-c n" . crux-cleanup-buffer-or-region)
+  ;;          ("C-c f" . crux-recentf-find-file)
+  ;;          ("C-M-z" . crux-indent-defun)
+  ;;          ("C-c u" . crux-view-url)
+  ;;          ("C-c e" . crux-eval-and-replace)
+  ;;          ("C-c w" . crux-swap-windows)
+  ;;          ("C-c D" . crux-delete-file-and-buffer)
+  ;;          ("C-c r" . crux-rename-buffer-and-file)
+  ;;          ("C-c t" . crux-visit-term-buffer)
+  ;;          ("C-c k" . crux-kill-other-buffers)
+  ;;          ("C-c TAB" . crux-indent-rigidly-and-copy-to-clipboard)
+  ;;          ("C-c I" . crux-find-user-init-file)
+  ;;          ("C-c S" . crux-find-shell-init-file)
+  ;;          ("s-r" . crux-recentf-find-file)
+  ;;          ("s-j" . crux-top-join-line)
+  ;;          ("C-^" . crux-top-join-line)
+  ;;          ("s-k" . crux-kill-whole-line)
+  ;;          ("C-<backspace>" . crux-kill-line-backwards)
+  ;;          ("s-o" . crux-smart-open-line-above)
+  ;;          ([remap move-beginning-of-line] . crux-move-beginning-of-line)
+  ;;          ([(shift return)] . crux-smart-open-line)
+  ;;          ([(control shift return)] . crux-smart-open-line-above)
+  ;;          ([remap kill-whole-line] . crux-kill-whole-line)
+  ;;          ("C-c s" . crux-ispell-word-then-abbrev)))
 
   (use-package crux
+    :demand t
     :bind
     ([remap move-beginning-of-line] . crux-move-beginning-of-line)
     ([remap kill-whole-line]        . crux-kill-whole-line)
@@ -477,54 +535,28 @@
     ("C-c n"                        . crux-cleanup-buffer-or-region)
     ("C-c d"                        . crux-duplicate-current-line-or-region)
     ("C-c M-d"                      . crux-duplicate-and-comment-current-line-or-region)
-    ("C-c r"                        . crux-rename-file-and-buffer)
     ("C-x C-u"                      . crux-upcase-region)
     ("C-x C-l"                      . crux-downcase-region)
     ("C-x M-c"                      . crux-capitalize-region)
     ("M-j"                          . crux-top-join-line))
 
   (use-package rainbow-delimiters
-    :hook prog-mode)
+    :hook prog-mode
+    :diminish rainbow-mode)
 
   (use-package which-key
     :diminish which-key-mode
     :config
     (which-key-mode))
 
-  ;; (use-package whitespace
-  ;;   :straight nil  ; Non è necessario assicurarsi che sia installato perché fa parte di Emacs
-  ;;   :hook ((prog-mode . whitespace-mode)  ; Attiva whitespace-mode per i file di codice sorgente
-  ;;          (text-mode . whitespace-mode))  ; e per i file di testo
-  ;;   :config
-  ;;   ;; Definisci i tipi di spazi bianchi da evidenziare
-  ;;   (setq whitespace-style '(face
-  ;;                            tabs
-  ;;                            spaces
-  ;;                            trailing
-  ;;                            lines
-  ;;                            space-before-tab
-  ;;                            newline
-  ;;                            indentation
-  ;;                            empty
-  ;;                            space-after-tab
-  ;;                            space-mark
-  ;;                            tab-mark
-  ;;                            newline-mark))
-
-  ;;   ;; Puoi personalizzare ulteriormente l'aspetto degli spazi bianchi qui (se necessario)
-  ;;   (setq whitespace-display-mappings
-  ;;         ;; all numbers are Unicode codepoint in decimal. try (insert-char 182 ) to see it
-  ;;         '((space-mark 32 [183] [46]) ; 32 SPACE, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
-  ;;           (newline-mark 10 [182 10]) ; 10 LINE FEED
-  ;;           (tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
-  ;;           ))
-  ;;   ;; Configura i colori degli spazi bianchi
-  ;;   (set-face-attribute 'whitespace-space nil :foreground "gray80")
-  ;;   (set-face-attribute 'whitespace-tab nil :foreground "gray80")
-  ;;   (set-face-attribute 'whitespace-newline nil :foreground "gray80")
-
-  ;;   ;; Personalizza la lunghezza massima della riga (se desideri che `whitespace-mode` ti avvisi riguardo righe troppo lunghe)
-  ;;   (setq whitespace-line-column 80))
+  (use-package whitespace
+    ;; :init
+    ;; (dolist (hook '(prog-mode-hook text-mode-hook))
+    ;;   (add-hook hook #'whitespace-mode))
+    ;; (add-hook 'before-save-hook #'whitespace-cleanup)
+    :config
+    (setq whitespace-line-column 80) ;; limit line length
+    (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
 
   ;; Default of 800 was too low.
@@ -569,18 +601,18 @@
   ;;         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
   ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-  (setq treesit-load-name-override-list nil
-        treesit-font-lock-level 4)
-
   (use-package treesit-auto
+    :demand
     :config
+    (setq treesit-load-name-override-list nil
+          treesit-font-lock-level 4)
     (global-treesit-auto-mode))
 
   (provide 'init-treesitter)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
- ;; (require 'init-treesitter)
+  (require 'init-treesitter)
 #+end_src
 
 ** Flymake Flycheck
@@ -678,12 +710,16 @@
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-dired.el
   ;; -*- lexical-binding: t; -*-
 
-  (require 'dired)
-  (setq-default dired-dwim-target t)
-
   ;; Prefer g-prefixed coreutils version of standard utilities when available
   (let ((gls (executable-find "gls")))
     (when gls (setq insert-directory-program gls)))
+
+  (use-package dired
+    :straight nil
+    :config
+    (setq dired-recursive-deletes 'always
+          dired-recursive-copies 'always
+          dired-dwim-target t))
 
   (use-package diredfl
     :config
@@ -765,8 +801,52 @@
 
   (use-package savehist
     :straight nil
-    :hook after-init)
+    :config
+    (setq savehist-additional-variables
+          ;; search entries
+          '(search-ring regexp-search-ring)
+          ;; save every minute
+          savehist-autosave-interval 60
+          ;; keep the home clean
+          savehist-file (expand-file-name "savehist" diamond-savefile-dir))
+    (savehist-mode +1))
 
+  ;; (use-package consult
+  ;;   :ensure t
+  ;;   :bind (
+  ;;          ;; C-x bindings (ctl-x-map)
+  ;;          ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+  ;;          ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+  ;;          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+  ;;          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+  ;;          ;; Custom M-# bindings for fast register access
+  ;;          ("M-#" . consult-register-load)
+  ;;          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+  ;;          ("C-M-#" . consult-register)
+  ;;          ;; Other custom bindings
+  ;;          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+  ;;          ("<help> a" . consult-apropos)            ;; orig. apropos-command
+  ;;          ;; M-g bindings (goto-map)
+  ;;          ("M-g e" . consult-compile-error)
+  ;;          ("M-g f" . consult-flycheck)
+  ;;          ("M-g g" . consult-goto-line)             ;; orig. goto-line
+  ;;          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+  ;;          ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+  ;;          ("M-g m" . consult-mark)
+  ;;          ("M-g k" . consult-global-mark)
+  ;;          ("M-g i" . consult-imenu)
+  ;;          ("M-g I" . consult-imenu-multi)
+  ;;          ;; M-s bindings (search-map)
+  ;;          ("M-s f" . consult-find)
+  ;;          ("M-s F" . consult-locate)
+  ;;          ("M-s g" . consult-grep)
+  ;;          ("M-s G" . consult-git-grep)
+  ;;          ("M-s r" . consult-ripgrep)
+  ;;          ("M-s l" . consult-line)
+  ;;          ("M-s L" . consult-line-multi)
+  ;;          ("M-s m" . consult-multi-occur)
+  ;;          ("M-s k" . consult-keep-lines)
+  ;;          ("M-s u" . consult-focus-lines)))
   (use-package consult
     :defer t
     :bind
@@ -902,8 +982,13 @@
   ;; -*- lexical-binding: t; -*-
 
   (use-package copilot
+    :diminish copilot-mode
     :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-    :hook prog-mode
+    :hook ((ruby-ts-mode . copilot-mode)
+           (c++-ts-mode  . copilot-mode)
+           (java-ts-mode . copilot-mode)
+           (lisp-mode    . copilot-mode)
+           (elisp-mode   . copilot-mode))
     :bind (("C-TAB"    . copilot-accept-completion)
            ("C-<tab>"  . copilot-accept-completion))
     :config
@@ -990,6 +1075,7 @@
                 ("<tab>" . company-complete-selection)))
 
   (use-package company-box
+    :diminish company-box-mode
     :hook company-mode
     :config
     (setq company-box-show-single-candidate t
@@ -1021,54 +1107,55 @@
 ** LSP Mode
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-lsp.el
-  ;; -*- lexical-binding: t; -*-
+    ;; -*- lexical-binding: t; -*-
 
-  (use-package lsp-mode
-    :commands lsp
-    :hook ((c-ts-mode    . lsp)
-           (c++-ts-mode  . lsp)
-           (ruby-mode . lsp)
-           (lsp-mode  . lsp-enable-which-key-integration))
-    :config
-    (setq lsp-log-io nil
-          lsp-idle-delay 0.1))
+    (use-package lsp-mode
+      :commands lsp
+      :hook ((c-ts-mode    . lsp)
+             (c++-ts-mode  . lsp)
+             (ruby-ts-mode . lsp)
+             (lsp-mode  . lsp-enable-which-key-integration))
+      :config
+      (setq lsp-log-io nil
+            lsp-idle-delay 0.1
+            tab-always-indent 'complete))
 
-  (use-package lsp-java
-    :hook ((java-ts-mode . lsp)))
+    (use-package lsp-java
+      :hook ((java-ts-mode . lsp)))
 
-  (use-package lsp-dart
-    :hook (dart-mode . lsp)
-    :config
-    (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
-    (dap-register-debug-template "Flutter :: Custom debug"
-                                 (list :flutterPlatform "arm64"
-                                       :program "lib/main.dart"
-                                       :args '("--flavor" "customer_a"))))
+    (use-package lsp-dart
+      :hook (dart-mode . lsp)
+      :config
+      (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+      (dap-register-debug-template "Flutter :: Custom debug"
+                                   (list :flutterPlatform "arm64"
+                                         :program "lib/main.dart"
+                                         :args '("--flavor" "customer_a"))))
 
-  (use-package lsp-treemacs
-    :after lsp-mode treemacs
-    :config
-    (lsp-treemacs-sync-mode 1))
+    (use-package lsp-treemacs
+      :after lsp-mode treemacs
+      :config
+      (lsp-treemacs-sync-mode 1))
 
-  (use-package treemacs
-    :defer t
-    :bind (([f8] . treemacs)
-           ([f9] . treemacs-select-window))
-    :config
-    (progn
-      (setq treemacs-is-never-other-window t)
-      (setq treemacs-git-mode 'extended)))
+    (use-package treemacs
+      :defer t
+      :bind (([f8] . treemacs)
+             ([f9] . treemacs-select-window))
+      :config
+      (progn
+        (setq treemacs-is-never-other-window t)
+        (setq treemacs-git-mode 'extended)))
 
-  (use-package treemacs-projectile
-    :after treemacs projectile)
+    (use-package treemacs-projectile
+      :after treemacs projectile)
 
-  (use-package treemacs-magit
-    :after treemacs magit)
+    (use-package treemacs-magit
+      :after treemacs magit)
 
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode))
+    (use-package lsp-ui
+      :hook (lsp-mode . lsp-ui-mode))
 
-  (provide 'init-lsp)
+    (provide 'init-lsp)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
@@ -1221,7 +1308,7 @@ o - maximize current window
 
   (use-package yasnippet
     :defer 5
-    :diminish yasnippet
+    :diminish yas-minor-mode
     :bind (:map  yas-minor-mode-map
                  ("<backtab>" . yas-expand))
     :config
@@ -1331,26 +1418,44 @@ o - maximize current window
   ;;   (rvm-use-default))
 
   (use-package inf-ruby
-    :hook (ruby-mode . inf-ruby-minor-mode))
+    :hook (ruby-ts-mode . inf-ruby-minor-mode))
+
+  (use-package rubocop
+    :diminish rubocop-mode
+    :hook ruby-ts-mode)
+
+  (use-package ruby-electric
+    :diminish ruby-electric-mode
+    :hook ruby-ts-mode)
 
   (use-package robe
-    :hook ruby-mode
+    :diminish robe-mode
+    :hook ruby-ts-mode
     :config
     (eval-after-load 'company
       '(push 'company-robe company-backends)))
 
   (use-package bundler
-    :after ruby-mode)
+    :after ruby-ts-mode)
 
   (use-package rspec-mode
-    :hook ruby-mode
+    :diminish rspec-mode
+    :hook ruby-ts-mode
     :config
     (setq rspec-use-rake-when-possible nil))
 
   (use-package yari
-    :bind (:map ruby-mode-map
-                ("C-c k" . yari))
-    :after ruby-mode)
+    :bind (:map ruby-ts-mode-map
+                ("C-c k" . yari)))
+
+  (use-package projectile-rails
+    :after ruby-ts-mode
+    :config
+    (projectile-rails-global-mode)
+    :bind
+    (:map projectile-rails-mode-map
+          ("C-c r" . projectile-rails-command-map)))
+
 
   (provide 'init-ruby)
 #+end_src
@@ -1374,6 +1479,47 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-clisp)
 #+end_src
+
+** Web
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-web.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package web-mode
+    :mode (("\\.html?\\'" . web-mode)
+           ("\\.erb\\'" . web-mode)
+           ("\\.hbs\\'" . web-mode))
+    :custom
+    (web-mode-markup-indent-offset 2)
+    (web-mode-css-indent-offset 2)
+    (web-mode-code-indent-offset 2))
+
+  (provide 'init-web)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-web)
+#+end_src
+
+
+** Markdown
+
+#+begin_src elisp :tangle ~/.emacs.d/lisp/init-markdown.el
+  ;; -*- lexical-binding: t; -*-
+
+  (use-package markdown-mode
+    :mode (("\\.md\\'" . gfm-mode)
+           ("\\.markdown\\'" . gfm-mode))
+    :config
+    (setq markdown-fontify-code-blocks-natively t))
+
+  (provide 'init-clisp)
+#+end_src
+
+#+begin_src elisp :tangle ~/.emacs.d/init.el
+  (require 'init-clisp)
+#+end_src
+
 
 * Custom
 

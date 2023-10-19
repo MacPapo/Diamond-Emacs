@@ -2,7 +2,7 @@
 
 (use-package yasnippet
   :defer 5
-  :diminish yasnippet
+  :diminish yas-minor-mode
   :bind (:map  yas-minor-mode-map
                ("<backtab>" . yas-expand))
   :config

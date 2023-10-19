@@ -23,6 +23,10 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
+(defconst diamond-savefile-dir (expand-file-name "savefile" user-emacs-directory))
+(unless (file-exists-p diamond-savefile-dir)
+  (make-directory diamond-savefile-dir))
+
 (setq initial-major-mode 'text-mode)
 
 (require 'init-pkgmanager)
@@ -36,7 +40,7 @@
 
 (require 'init-editing-utils)
 
-;; (require 'init-treesitter)
+(require 'init-treesitter)
 
 (require 'init-flymake)
 
@@ -81,6 +85,10 @@
 (require 'init-go)
 
 (require 'init-ruby)
+
+(require 'init-clisp)
+
+(require 'init-web)
 
 (require 'init-clisp)
 

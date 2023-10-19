@@ -26,11 +26,11 @@
 ;;         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
 ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-(setq treesit-load-name-override-list nil
-      treesit-font-lock-level 4)
-
 (use-package treesit-auto
+  :demand
   :config
+  (setq treesit-load-name-override-list nil
+        treesit-font-lock-level 4)
   (global-treesit-auto-mode))
 
 (provide 'init-treesitter)

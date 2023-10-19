@@ -4,11 +4,12 @@
   :commands lsp
   :hook ((c-ts-mode    . lsp)
          (c++-ts-mode  . lsp)
-         (ruby-mode . lsp)
+         (ruby-ts-mode . lsp)
          (lsp-mode  . lsp-enable-which-key-integration))
   :config
   (setq lsp-log-io nil
-        lsp-idle-delay 0.1))
+        lsp-idle-delay 0.1
+        tab-always-indent 'complete))
 
 (use-package lsp-java
   :hook ((java-ts-mode . lsp)))

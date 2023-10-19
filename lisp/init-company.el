@@ -39,6 +39,7 @@
               ("<tab>" . company-complete-selection)))
 
 (use-package company-box
+  :diminish company-box-mode
   :hook company-mode
   :config
   (setq company-box-show-single-candidate t

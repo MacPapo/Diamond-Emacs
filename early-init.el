@@ -86,7 +86,7 @@
 (setq default-input-method nil)
 
 (setq garbage-collection-messages t)
-(let ((normal-gc-cons-threshold (* 100 1024 1024))  ; Set to 100MB
+(let ((normal-gc-cons-threshold (* 50 1024 1024))  ; Set to 50MB
       (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
   (setq gc-cons-threshold init-gc-cons-threshold)
   (add-hook 'emacs-startup-hook
