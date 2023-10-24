@@ -40,7 +40,7 @@
 
 (require 'init-editing-utils)
 
-(require 'init-treesitter)
+;;(require 'init-treesitter)
 
 (require 'init-flymake)
 

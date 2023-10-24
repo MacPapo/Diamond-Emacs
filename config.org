@@ -612,7 +612,7 @@
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'init-treesitter)
+  ;;(require 'init-treesitter)
 #+end_src
 
 ** Flymake Flycheck
@@ -984,9 +984,9 @@
   (use-package copilot
     :diminish copilot-mode
     :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-    :hook ((ruby-ts-mode . copilot-mode)
-           (c++-ts-mode  . copilot-mode)
-           (java-ts-mode . copilot-mode)
+    :hook ((ruby-mode . copilot-mode)
+           (c++-mode  . copilot-mode)
+           (java-mode . copilot-mode)
            (lisp-mode    . copilot-mode)
            (elisp-mode   . copilot-mode))
     :bind (("C-TAB"    . copilot-accept-completion)
@@ -1111,9 +1111,9 @@
 
     (use-package lsp-mode
       :commands lsp
-      :hook ((c-ts-mode    . lsp)
-             (c++-ts-mode  . lsp)
-             (ruby-ts-mode . lsp)
+      :hook ((c-mode    . lsp)
+             (c++-mode  . lsp)
+             (ruby-mode . lsp)
              (lsp-mode  . lsp-enable-which-key-integration))
       :config
       (setq lsp-log-io nil
@@ -1121,7 +1121,7 @@
             tab-always-indent 'complete))
 
     (use-package lsp-java
-      :hook ((java-ts-mode . lsp)))
+      :hook ((java-mode . lsp)))
 
     (use-package lsp-dart
       :hook (dart-mode . lsp)
@@ -1352,7 +1352,7 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-cxx.el
   ;; -*- lexical-binding: t; -*-
 
-  (setq c-ts-mode-indent-offset 4)
+  (setq c-mode-indent-offset 4)
 
   (use-package modern-cpp-font-lock
     :hook (c++-mode . modern-c++-font-lock-mode))
@@ -1362,7 +1362,7 @@ o - maximize current window
   (use-package cmake-mode)
 
   (use-package flycheck-clang-analyzer
-    :hook (c++-ts-mode . (lambda () (setq flycheck-clang-language-standard "c++17")))
+    :hook (c++-mode . (lambda () (setq flycheck-clang-language-standard "c++17")))
     :config (flycheck-clang-analyzer-setup))
 
   (provide 'init-cxx)
@@ -1377,7 +1377,7 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-java.el
   ;; -*- lexical-binding: t; -*-
 
-  (setq java-ts-mode-indent-offset 8)
+  (setq java-mode-indent-offset 8)
 
   (provide 'init-java)
 #+end_src
@@ -1418,38 +1418,38 @@ o - maximize current window
   ;;   (rvm-use-default))
 
   (use-package inf-ruby
-    :hook (ruby-ts-mode . inf-ruby-minor-mode))
+    :hook (ruby-mode . inf-ruby-minor-mode))
 
   (use-package rubocop
     :diminish rubocop-mode
-    :hook ruby-ts-mode)
+    :hook ruby-mode)
 
   (use-package ruby-electric
     :diminish ruby-electric-mode
-    :hook ruby-ts-mode)
+    :hook ruby-mode)
 
   (use-package robe
     :diminish robe-mode
-    :hook ruby-ts-mode
+    :hook ruby-mode
     :config
     (eval-after-load 'company
       '(push 'company-robe company-backends)))
 
   (use-package bundler
-    :after ruby-ts-mode)
+    :after ruby-mode)
 
   (use-package rspec-mode
     :diminish rspec-mode
-    :hook ruby-ts-mode
+    :hook ruby-mode
     :config
     (setq rspec-use-rake-when-possible nil))
 
   (use-package yari
-    :bind (:map ruby-ts-mode-map
+    :bind (:map ruby-mode-map
                 ("C-c k" . yari)))
 
   (use-package projectile-rails
-    :after ruby-ts-mode
+    :after ruby-mode
     :config
     (projectile-rails-global-mode)
     :bind

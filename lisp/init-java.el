@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
 
-(setq java-ts-mode-indent-offset 8)
+(setq java-mode-indent-offset 8)
 
 (provide 'init-java)

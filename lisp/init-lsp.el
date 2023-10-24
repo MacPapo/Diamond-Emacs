@@ -2,9 +2,9 @@
 
 (use-package lsp-mode
   :commands lsp
-  :hook ((c-ts-mode    . lsp)
-         (c++-ts-mode  . lsp)
-         (ruby-ts-mode . lsp)
+  :hook ((c-mode    . lsp)
+         (c++-mode  . lsp)
+         (ruby-mode . lsp)
          (lsp-mode  . lsp-enable-which-key-integration))
   :config
   (setq lsp-log-io nil
@@ -12,7 +12,7 @@
         tab-always-indent 'complete))
 
 (use-package lsp-java
-  :hook ((java-ts-mode . lsp)))
+  :hook ((java-mode . lsp)))
 
 (use-package lsp-dart
   :hook (dart-mode . lsp)

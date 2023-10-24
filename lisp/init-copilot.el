@@ -3,9 +3,9 @@
 (use-package copilot
   :diminish copilot-mode
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :hook ((ruby-ts-mode . copilot-mode)
-         (c++-ts-mode  . copilot-mode)
-         (java-ts-mode . copilot-mode)
+  :hook ((ruby-mode . copilot-mode)
+         (c++-mode  . copilot-mode)
+         (java-mode . copilot-mode)
          (lisp-mode    . copilot-mode)
          (elisp-mode   . copilot-mode))
   :bind (("C-TAB"    . copilot-accept-completion)
