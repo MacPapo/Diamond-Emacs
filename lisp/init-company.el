@@ -14,10 +14,10 @@
   (setq company-tooltip-align-annotations t
         company-selection-wrap-around t
         company-lighter-base "©"
-        company-tooltip-limit 14
-        company-idle-delay 0.05 ;; correggimi
+        company-tooltip-limit 10
+        company-idle-delay 0.25 ;; correggimi
         company-minimum-prefix-length 2
-        company-require-match 'never
+        ;; company-require-match 'never
         ;; company-format-margin-function 'company-text-icons-margin
         company-tooltip-minimum 4
         ;; company-text-face-extra-attributes '(:weight bold :slant italic)
@@ -29,21 +29,13 @@
         company-tooltip-flip-when-above t
         company-show-quick-access 'left
         company-backends '(company-capf)
-        company-frontends '(company-pseudo-tooltip-frontend
-                            company-echo-metadata-frontend)
+        ;;company-frontends '(company-pseudo-tooltip-frontend
+        ;;                    company-echo-metadata-frontend)
         company-files-exclusions '(".git/" ".DS_Store")
-        company-transformers '(delete-consecutive-dups
-                               company-sort-by-occurrence)
+        ;;company-transformers '(delete-consecutive-dups
+        ;;                       company-sort-by-occurrence)
         company-global-modes '(not erc-mode message-mode help-mode eshell-mode))
   :bind (:map company-active-map
               ("<tab>" . company-complete-selection)))
-
-(use-package company-box
-  :diminish company-box-mode
-  :hook company-mode
-  :config
-  (setq company-box-show-single-candidate t
-        company-box-backends-colors nil
-        company-box-tooltip-limit 50))
 
 (provide 'init-company)

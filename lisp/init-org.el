@@ -14,7 +14,8 @@
 (use-package org-wc
   :after org)
 
-(use-package olivetti)
+(use-package olivetti
+  :after org)
 
 (use-package org-pomodoro
   :after org)

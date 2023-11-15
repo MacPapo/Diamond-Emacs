@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package yasnippet
-  :defer 5
+  :defer t
   :diminish yas-minor-mode
   :bind (:map  yas-minor-mode-map
                ("<backtab>" . yas-expand))

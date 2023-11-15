@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package projectile
-  :defer 5
+  :defer t
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map))
   :config
@@ -14,10 +14,10 @@
                                                              (projectile-project-name))))
   (projectile-mode +1))
 
-(use-package projectile-git-autofetch
-  :diminish projectile-git-autofetch-mode
-  :config
-  (projectile-git-autofetch-mode 1))
+;; (use-package projectile-git-autofetch
+;;   :diminish projectile-git-autofetch-mode
+;;   :config
+;;   (projectile-git-autofetch-mode 1))
 
 (use-package ibuffer
   :straight nil

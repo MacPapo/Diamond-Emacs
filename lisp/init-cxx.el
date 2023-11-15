@@ -5,7 +5,8 @@
 (use-package modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
 
-(use-package disaster)
+(use-package disaster
+  :defer t)
 
 (use-package cmake-mode)
 

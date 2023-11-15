@@ -8,7 +8,7 @@
          (lsp-mode  . lsp-enable-which-key-integration))
   :config
   (setq lsp-log-io nil
-        lsp-idle-delay 0.1
+        lsp-idle-delay 0.25
         tab-always-indent 'complete))
 
 (use-package lsp-java
@@ -17,7 +17,7 @@
 (use-package lsp-dart
   :hook (dart-mode . lsp)
   :config
-  (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+  (setq lsp-dart-sdk-dir "~/FlutterDev/flutter")
   (dap-register-debug-template "Flutter :: Custom debug"
                                (list :flutterPlatform "arm64"
                                      :program "lib/main.dart"
@@ -39,9 +39,6 @@
 
 (use-package treemacs-projectile
   :after treemacs projectile)
-
-(use-package treemacs-magit
-  :after treemacs magit)
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode))

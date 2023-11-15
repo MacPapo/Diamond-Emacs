@@ -11,32 +11,4 @@
         dired-recursive-copies 'always
         dired-dwim-target t))
 
-(use-package diredfl
-  :config
-  (diredfl-global-mode 1))
-
-(use-package dired-recent
-  :init
-  (dired-recent-mode 1))
-
-(use-package dired-hacks-utils
-  :bind (:map dired-mode-map
-              ("M-n" . dired-hacks-next-file)
-              ("M-p" . dired-hacks-previous-file)))
-
-(use-package dired-filter
-  :bind (:map dired-mode-map
-              ("/" . dired-filter-mode)))
-
-(use-package dired-subtree
-  :bind (:map dired-mode-map
-              ("i" . dired-subtree-insert)
-              (";" . dired-subtree-remove)))
-
-(use-package dired-narrow
-  :bind (:map dired-mode-map
-              ("s" . dired-narrow))
-  :config
-  (setq dired-narrow-exit-when-1-left nil))
-
 (provide 'init-dired)

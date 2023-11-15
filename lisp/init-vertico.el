@@ -5,8 +5,10 @@
          (minibuffer-setup . vertico-repeat-save)
          (minibuffer-setup . cursor-intangible-mode))
   :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char)
-              ("?"   . minibuffer-completion-help))
+              ("RET"   . vertico-directory-enter)
+              ("DEL"   . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)
+              ("?"     . minibuffer-completion-help))
   :init
   (defun crm-indicator (args)
     (cons (format "[CRM%s] %s"
@@ -21,7 +23,7 @@
   (setq enable-recursive-minibuffers t)
   :config
   (setq vertico-resize nil
-        vertico-count 17
+        vertico-count 12
         vertico-cycle t)
   (setq-default completion-in-region-function
                 (lambda (&rest args)
@@ -29,11 +31,9 @@
                              #'consult-completion-in-region
                            #'completion--in-region)
                          args))))
+
 (use-package orderless
   :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
@@ -88,6 +88,12 @@
 ;;          ("M-s u" . consult-focus-lines)))
 (use-package consult
   :defer t
+  :config
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   :bind
   (([remap bookmark-jump] . consult-bookmark)
    ([remap goto-line] . consult-goto-line)
@@ -142,8 +148,7 @@
   :after (embark consult))
 
 (use-package marginalia
-  :init
-  (marginalia-mode)
+  :hook ((vertico-mode . marginalia-mode))
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle)))
 

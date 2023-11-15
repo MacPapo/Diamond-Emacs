@@ -6,28 +6,9 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(setq use-file-dialog nil)
-(setq use-dialog-box nil)
-(setq inhibit-startup-screen t)
-
-(setq-default
- window-resize-pixelwise t
- frame-resize-pixelwise t)
-
-(let ((no-border '(internal-border-width . 0)))
-  (add-to-list 'default-frame-alist no-border)
-  (add-to-list 'initial-frame-alist no-border))
-
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
-
 (defconst diamond-savefile-dir (expand-file-name "savefile" user-emacs-directory))
 (unless (file-exists-p diamond-savefile-dir)
   (make-directory diamond-savefile-dir))
-
-(setq initial-major-mode 'text-mode)
 
 (require 'init-pkgmanager)
 
@@ -39,8 +20,6 @@
 (require 'init-theme)
 
 (require 'init-editing-utils)
-
-;;(require 'init-treesitter)
 
 (require 'init-flymake)
 
@@ -58,11 +37,7 @@
 
 (require 'init-copilot)
 
-;;(require 'init-corfu)
-
 (require 'init-company)
-
-;;(require 'init-eglot)
 
 (require 'init-lsp)
 

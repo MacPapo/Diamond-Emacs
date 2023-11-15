@@ -1,44 +1,17 @@
 ;; -*- lexical-binding: t; -*-
 
-;; NEW
-;; | Key    | Command                               |
-;; |--------+---------------------------------------|
-;; | b      | popwin:popup-buffer                   |
-;; | l      | popwin:popup-last-buffer              |
-;; | o      | popwin:display-buffer                 |
-;; | C-b    | popwin:switch-to-last-buffer          |
-;; | C-p    | popwin:original-pop-to-last-buffer    |
-;; | C-o    | popwin:original-display-last-buffer   |
-;; | SPC    | popwin:select-popup-window            |
-;; | s      | popwin:stick-popup-window             |
-;; | 0      | popwin:close-popup-window             |
-;; | f, C-f | popwin:find-file                      |
-;; | e      | popwin:messages                       |
-;; | C-u    | popwin:universal-display              |
-;; | 1      | popwin:one-window                     |
-(use-package popwin
-  :config
-  (global-set-key (kbd "C-z") popwin:keymap)
-  (popwin-mode t))
-
 (use-package vundo)
 
 (use-package move-dup
+  :defer t
   :bind (("M-<up>"     . move-dup-move-lines-up)
          ("M-<down>"   . move-dup-move-lines-down)
          ("C-M-<up>"   . move-dup-duplicate-up)
          ("C-M-<down>" . move-dup-duplicate-down)))
 
 (use-package expand-region
+  :defer t
   :bind ("C-=" . er/expand-region))
-
-(use-package super-save
-  :diminish super-save-mode
-  :config
-  ;; add integration with ace-window
-  (add-to-list 'super-save-triggers 'ace-window)
-  (super-save-mode +1))
-;; END NEW
 
 (use-package elec-pair
   :straight nil
@@ -96,17 +69,6 @@
  echo-keystrokes 0.02
  truncate-partial-width-windows nil)
 
-(use-package hippie-expand
-  :straight nil
-  :bind ("M-/" . hippie-expand)
-  :config
-  (setq hippie-expand-try-functions-list
-        '(try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill)))
-
 (use-package autorevert
   :diminish auto-revert
   :straight nil
@@ -150,7 +112,7 @@
   :hook prog-mode
   :config
   (setq-default indicate-buffer-boundaries 'left
-      	        display-fill-column-indicator-character ?\u254e))
+                      display-fill-column-indicator-character ?\u254e))
 
 (use-package paren
   :straight nil
@@ -169,7 +131,8 @@
          ("C-'"   . avy-goto-char-2)
          ("M-g f" . avy-goto-line)
          ("M-g w" . avy-goto-word-1)
-         ("M-g e" . avy-goto-word-0))
+         ("M-g e" . avy-goto-word-0)
+         ("C-j"   . avy-goto-char-timer))
   :config
   (setq avy-background t)
   (setq avy-style 'at-full))
@@ -200,21 +163,18 @@
   :demand t
   :diminish whole-line-or-region-local-mode)
 
-(global-set-key (kbd "M-j") 'join-line)
-
 (use-package anzu
+  :diminish anzu-mode
   :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
          ([remap query-replace]        . anzu-query-replace)
          ("C-c a r"                    . anzu-query-replace-at-cursor)
          :map isearch-mode-map
          ([remap isearch-delete-char]  . isearch-del-char))
   :init
-  (setq anzu-mode-lighter "")
   (global-anzu-mode +1))
 
 (use-package highlight-escape-sequences
-  :init
-  (add-hook 'after-init-hook 'hes-mode))
+  :hook (after-init . hes-mode))
 
 (use-package recentf
   :config
@@ -263,7 +223,6 @@
 ;;          ("C-c s" . crux-ispell-word-then-abbrev)))
 
 (use-package crux
-  :demand t
   :bind
   ([remap move-beginning-of-line] . crux-move-beginning-of-line)
   ([remap kill-whole-line]        . crux-kill-whole-line)
@@ -287,14 +246,14 @@
   :config
   (which-key-mode))
 
-(use-package whitespace
-  ;; :init
-  ;; (dolist (hook '(prog-mode-hook text-mode-hook))
-  ;;   (add-hook hook #'whitespace-mode))
-  ;; (add-hook 'before-save-hook #'whitespace-cleanup)
-  :config
-  (setq whitespace-line-column 80) ;; limit line length
-  (setq whitespace-style '(face tabs empty trailing lines-tail)))
+;; (use-package whitespace
+;;   ;; :init
+;;   ;; (dolist (hook '(prog-mode-hook text-mode-hook))
+;;   ;;   (add-hook hook #'whitespace-mode))
+;;   ;; (add-hook 'before-save-hook #'whitespace-cleanup)
+;;   :config
+;;   (setq whitespace-line-column 80) ;; limit line length
+;;   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
 
 ;; Default of 800 was too low.

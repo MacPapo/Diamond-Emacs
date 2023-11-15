@@ -1,25 +1,14 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package rbenv
+(use-package rvm
   :config
-  (setq rbenv-executable "/opt/homebrew/bin/rbenv"
-        rbenv-binary-paths '((shims-path . "~/.rbenv/shims")
-                             (bin-path . "/opt/homebrew/bin/rbenv")))
-  (global-rbenv-mode))
-
-;; (use-package rvm
-;;   :config
-;;   (rvm-use-default))
+  (rvm-use-default))
 
 (use-package inf-ruby
   :hook (ruby-mode . inf-ruby-minor-mode))
 
 (use-package rubocop
   :diminish rubocop-mode
-  :hook ruby-mode)
-
-(use-package ruby-electric
-  :diminish ruby-electric-mode
   :hook ruby-mode)
 
 (use-package robe
@@ -39,6 +28,7 @@
   (setq rspec-use-rake-when-possible nil))
 
 (use-package yari
+  :after ruby-mode
   :bind (:map ruby-mode-map
               ("C-c k" . yari)))
 
@@ -49,6 +39,5 @@
   :bind
   (:map projectile-rails-mode-map
         ("C-c r" . projectile-rails-command-map)))
-
 
 (provide 'init-ruby)

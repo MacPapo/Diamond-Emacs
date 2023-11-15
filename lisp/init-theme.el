@@ -2,30 +2,11 @@
 
 (setq custom-safe-themes t)
 
-(use-package autothemer)
-
 (use-package zenburn-theme)
-
-(use-package sublime-themes)
-(use-package subatomic-theme)
 (use-package plan9-theme)
 (use-package solarized-theme)
-(use-package modus-themes
-  :straight (:host github :repo "protesilaos/modus-themes" :branch "main")
-  :config
-  ;; (setq modus-themes-italic-constructs t
-  ;;       modus-themes-bold-constructs nil
-  ;;       ;; modus-themes-mixed-fonts t
-  ;;       modus-themes-variable-pitch-ui t
-  ;;       modus-themes-custom-auto-reload t
-  ;;       modus-themes-disable-other-themes t)
-  )
 
-;; (load-theme 'spolsky t)
-;; (load-theme 'modus-vivendi t)
-;; (load-theme 'plan9 t)
-;; (load-theme 'subatomic t)
-(load-theme 'solarized-selenized-dark t)
+(load-theme 'plan9 t)
 
 (use-package pulsar
   :config

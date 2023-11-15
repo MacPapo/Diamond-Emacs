@@ -13,35 +13,22 @@
   (when (file-exists-p custom-file)
     (load custom-file))
 
-  (setq use-file-dialog nil)
-  (setq use-dialog-box nil)
-  (setq inhibit-startup-screen t)
-
-  (setq-default
-   window-resize-pixelwise t
-   frame-resize-pixelwise t)
-
-  (let ((no-border '(internal-border-width . 0)))
-    (add-to-list 'default-frame-alist no-border)
-    (add-to-list 'initial-frame-alist no-border))
-
-  (setq frame-title-format
-        '((:eval (if (buffer-file-name)
-                     (abbreviate-file-name (buffer-file-name))
-                   "%b"))))
-
   (defconst diamond-savefile-dir (expand-file-name "savefile" user-emacs-directory))
   (unless (file-exists-p diamond-savefile-dir)
     (make-directory diamond-savefile-dir))
 
-  (setq initial-major-mode 'text-mode)
 #+end_src
 
 ** GC Optimizations
 
 #+begin_src elisp :tangle ~/.emacs.d/early-init.el
-  ;; -*- lexical-binding: t; -*
+  ;;; early-init.el --- Emacs Minimal Config ;; -*- lexical-binding: t; -*-
+
+  ;;; Code:
   (defconst *is-a-mac* (eq system-type 'darwin))
+  (defconst *rvm-installed* (and (file-directory-p "~/.rvm")
+                                 (file-executable-p "~/.rvm/bin/rvm")))
+
   (setq package-enable-at-startup nil)
 
           ;;; Runtime optimizations
@@ -126,13 +113,28 @@
   (set-language-environment "UTF-8")
 
   (setq default-input-method nil)
+  (global-so-long-mode 1)
 
-  (setq garbage-collection-messages t)
-  (let ((normal-gc-cons-threshold (* 50 1024 1024))  ; Set to 50MB
-        (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
-    (setq gc-cons-threshold init-gc-cons-threshold)
-    (add-hook 'emacs-startup-hook
-              (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+  (define-advice load-file (:override (file) silence)
+    (load file nil 'nomessage))
+
+  (setq inhibit-startup-screen t
+        inhibit-startup-echo-area-message t
+        initial-scratch-message ";; Happy Hacking\n\n")
+
+  (setq pop-up-windows nil)
+
+  ;; Reduce the frequency of garbage collection
+  (setq gc-cons-threshold (* 128 1000 1000)) ; 128mb
+  (setq gc-cons-percentage 0.6)
+  (add-hook 'after-init-hook
+            (lambda ()
+              ;; Restore after startup
+              (setq gc-cons-threshold (* 20 1000 1000)) ; 20mb
+              (setq gc-cons-percentage 0.1)))
+
+  (provide 'early-init)
+  ;;; early-init.el ends here
 #+end_src
 
 ** Package manager configuration
@@ -208,30 +210,11 @@
 
   (setq custom-safe-themes t)
 
-  (use-package autothemer)
-
   (use-package zenburn-theme)
-
-  (use-package sublime-themes)
-  (use-package subatomic-theme)
   (use-package plan9-theme)
   (use-package solarized-theme)
-  (use-package modus-themes
-    :straight (:host github :repo "protesilaos/modus-themes" :branch "main")
-    :config
-    ;; (setq modus-themes-italic-constructs t
-    ;;       modus-themes-bold-constructs nil
-    ;;       ;; modus-themes-mixed-fonts t
-    ;;       modus-themes-variable-pitch-ui t
-    ;;       modus-themes-custom-auto-reload t
-    ;;       modus-themes-disable-other-themes t)
-    )
 
-  ;; (load-theme 'spolsky t)
-  ;; (load-theme 'modus-vivendi t)
-  ;; (load-theme 'plan9 t)
-  ;; (load-theme 'subatomic t)
-  (load-theme 'solarized-selenized-dark t)
+  (load-theme 'plan9 t)
 
   (use-package pulsar
     :config
@@ -262,45 +245,18 @@
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-editing-utils.el
   ;; -*- lexical-binding: t; -*-
 
-  ;; NEW
-  ;; | Key    | Command                               |
-  ;; |--------+---------------------------------------|
-  ;; | b      | popwin:popup-buffer                   |
-  ;; | l      | popwin:popup-last-buffer              |
-  ;; | o      | popwin:display-buffer                 |
-  ;; | C-b    | popwin:switch-to-last-buffer          |
-  ;; | C-p    | popwin:original-pop-to-last-buffer    |
-  ;; | C-o    | popwin:original-display-last-buffer   |
-  ;; | SPC    | popwin:select-popup-window            |
-  ;; | s      | popwin:stick-popup-window             |
-  ;; | 0      | popwin:close-popup-window             |
-  ;; | f, C-f | popwin:find-file                      |
-  ;; | e      | popwin:messages                       |
-  ;; | C-u    | popwin:universal-display              |
-  ;; | 1      | popwin:one-window                     |
-  (use-package popwin
-    :config
-    (global-set-key (kbd "C-z") popwin:keymap)
-    (popwin-mode t))
-
   (use-package vundo)
 
   (use-package move-dup
+    :defer t
     :bind (("M-<up>"     . move-dup-move-lines-up)
            ("M-<down>"   . move-dup-move-lines-down)
            ("C-M-<up>"   . move-dup-duplicate-up)
            ("C-M-<down>" . move-dup-duplicate-down)))
 
   (use-package expand-region
+    :defer t
     :bind ("C-=" . er/expand-region))
-
-  (use-package super-save
-    :diminish super-save-mode
-    :config
-    ;; add integration with ace-window
-    (add-to-list 'super-save-triggers 'ace-window)
-    (super-save-mode +1))
-  ;; END NEW
 
   (use-package elec-pair
     :straight nil
@@ -358,17 +314,6 @@
    echo-keystrokes 0.02
    truncate-partial-width-windows nil)
 
-  (use-package hippie-expand
-    :straight nil
-    :bind ("M-/" . hippie-expand)
-    :config
-    (setq hippie-expand-try-functions-list
-          '(try-complete-file-name-partially
-            try-complete-file-name
-            try-expand-dabbrev
-            try-expand-dabbrev-all-buffers
-            try-expand-dabbrev-from-kill)))
-
   (use-package autorevert
     :diminish auto-revert
     :straight nil
@@ -412,7 +357,7 @@
     :hook prog-mode
     :config
     (setq-default indicate-buffer-boundaries 'left
-        	        display-fill-column-indicator-character ?\u254e))
+                        display-fill-column-indicator-character ?\u254e))
 
   (use-package paren
     :straight nil
@@ -431,7 +376,8 @@
            ("C-'"   . avy-goto-char-2)
            ("M-g f" . avy-goto-line)
            ("M-g w" . avy-goto-word-1)
-           ("M-g e" . avy-goto-word-0))
+           ("M-g e" . avy-goto-word-0)
+           ("C-j"   . avy-goto-char-timer))
     :config
     (setq avy-background t)
     (setq avy-style 'at-full))
@@ -462,21 +408,18 @@
     :demand t
     :diminish whole-line-or-region-local-mode)
 
-  (global-set-key (kbd "M-j") 'join-line)
-
   (use-package anzu
+    :diminish anzu-mode
     :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
            ([remap query-replace]        . anzu-query-replace)
            ("C-c a r"                    . anzu-query-replace-at-cursor)
            :map isearch-mode-map
            ([remap isearch-delete-char]  . isearch-del-char))
     :init
-    (setq anzu-mode-lighter "")
     (global-anzu-mode +1))
 
   (use-package highlight-escape-sequences
-    :init
-    (add-hook 'after-init-hook 'hes-mode))
+    :hook (after-init . hes-mode))
 
   (use-package recentf
     :config
@@ -525,7 +468,6 @@
   ;;          ("C-c s" . crux-ispell-word-then-abbrev)))
 
   (use-package crux
-    :demand t
     :bind
     ([remap move-beginning-of-line] . crux-move-beginning-of-line)
     ([remap kill-whole-line]        . crux-kill-whole-line)
@@ -549,14 +491,14 @@
     :config
     (which-key-mode))
 
-  (use-package whitespace
-    ;; :init
-    ;; (dolist (hook '(prog-mode-hook text-mode-hook))
-    ;;   (add-hook hook #'whitespace-mode))
-    ;; (add-hook 'before-save-hook #'whitespace-cleanup)
-    :config
-    (setq whitespace-line-column 80) ;; limit line length
-    (setq whitespace-style '(face tabs empty trailing lines-tail)))
+  ;; (use-package whitespace
+  ;;   ;; :init
+  ;;   ;; (dolist (hook '(prog-mode-hook text-mode-hook))
+  ;;   ;;   (add-hook hook #'whitespace-mode))
+  ;;   ;; (add-hook 'before-save-hook #'whitespace-cleanup)
+  ;;   :config
+  ;;   (setq whitespace-line-column 80) ;; limit line length
+  ;;   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
 
   ;; Default of 800 was too low.
@@ -568,51 +510,6 @@
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-editing-utils)
-#+end_src
-
-** Treesitter
-
-#+begin_src elisp :tangle ~/.emacs.d/lisp/init-treesitter.el
-  ;; -*- lexical-binding: t; -*-
-
-  ;; (setq treesit-language-source-alist
-  ;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-  ;;         (c "https://github.com/tree-sitter/tree-sitter-c")
-  ;;         (ruby "https://github.com/tree-sitter/tree-sitter-ruby.git")
-  ;;         (cmake "https://github.com/uyha/tree-sitter-cmake")
-  ;;         (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
-  ;;         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-  ;;         (css "https://github.com/tree-sitter/tree-sitter-css")
-  ;;         (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
-  ;;         (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-  ;;         (go "https://github.com/tree-sitter/tree-sitter-go")
-  ;;         (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
-  ;;         (html "https://github.com/tree-sitter/tree-sitter-html")
-  ;;         (js . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
-  ;;         (json "https://github.com/tree-sitter/tree-sitter-json")
-  ;;         (lua "https://github.com/Azganoth/tree-sitter-lua")
-  ;;         (make "https://github.com/alemuller/tree-sitter-make")
-  ;;         (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-  ;;         (python "https://github.com/tree-sitter/tree-sitter-python")
-  ;;         (r "https://github.com/r-lib/tree-sitter-r")
-  ;;         (rust "https://github.com/tree-sitter/tree-sitter-rust")
-  ;;         (toml "https://github.com/tree-sitter/tree-sitter-toml")
-  ;;         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-  ;;         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-  ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-  (use-package treesit-auto
-    :demand
-    :config
-    (setq treesit-load-name-override-list nil
-          treesit-font-lock-level 4)
-    (global-treesit-auto-mode))
-
-  (provide 'init-treesitter)
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  ;;(require 'init-treesitter)
 #+end_src
 
 ** Flymake Flycheck
@@ -721,34 +618,6 @@
           dired-recursive-copies 'always
           dired-dwim-target t))
 
-  (use-package diredfl
-    :config
-    (diredfl-global-mode 1))
-
-  (use-package dired-recent
-    :init
-    (dired-recent-mode 1))
-
-  (use-package dired-hacks-utils
-    :bind (:map dired-mode-map
-                ("M-n" . dired-hacks-next-file)
-                ("M-p" . dired-hacks-previous-file)))
-
-  (use-package dired-filter
-    :bind (:map dired-mode-map
-                ("/" . dired-filter-mode)))
-
-  (use-package dired-subtree
-    :bind (:map dired-mode-map
-                ("i" . dired-subtree-insert)
-                (";" . dired-subtree-remove)))
-
-  (use-package dired-narrow
-    :bind (:map dired-mode-map
-                ("s" . dired-narrow))
-    :config
-    (setq dired-narrow-exit-when-1-left nil))
-
   (provide 'init-dired)
 #+end_src
 
@@ -766,8 +635,10 @@
            (minibuffer-setup . vertico-repeat-save)
            (minibuffer-setup . cursor-intangible-mode))
     :bind (:map vertico-map
-                ("DEL" . vertico-directory-delete-char)
-                ("?"   . minibuffer-completion-help))
+                ("RET"   . vertico-directory-enter)
+                ("DEL"   . vertico-directory-delete-char)
+                ("M-DEL" . vertico-directory-delete-word)
+                ("?"     . minibuffer-completion-help))
     :init
     (defun crm-indicator (args)
       (cons (format "[CRM%s] %s"
@@ -782,7 +653,7 @@
     (setq enable-recursive-minibuffers t)
     :config
     (setq vertico-resize nil
-          vertico-count 17
+          vertico-count 12
           vertico-cycle t)
     (setq-default completion-in-region-function
                   (lambda (&rest args)
@@ -790,11 +661,9 @@
                                #'consult-completion-in-region
                              #'completion--in-region)
                            args))))
+
   (use-package orderless
     :init
-    ;; Configure a custom style dispatcher (see the Consult wiki)
-    ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
     (setq completion-styles '(orderless basic)
           completion-category-defaults nil
           completion-category-overrides '((file (styles partial-completion)))))
@@ -849,6 +718,12 @@
   ;;          ("M-s u" . consult-focus-lines)))
   (use-package consult
     :defer t
+    :config
+    (setq register-preview-delay 0.5
+          register-preview-function #'consult-register-format)
+    (advice-add #'register-preview :override #'consult-register-window)
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
     :bind
     (([remap bookmark-jump] . consult-bookmark)
      ([remap goto-line] . consult-goto-line)
@@ -903,8 +778,7 @@
     :after (embark consult))
 
   (use-package marginalia
-    :init
-    (marginalia-mode)
+    :hook ((vertico-mode . marginalia-mode))
     :bind (:map minibuffer-local-map
                 ("M-A" . marginalia-cycle)))
 
@@ -921,7 +795,7 @@
   ;; -*- lexical-binding: t; -*-
 
   (use-package projectile
-    :defer 5
+    :defer t
     :bind (:map projectile-mode-map
                 ("C-c p" . projectile-command-map))
     :config
@@ -934,10 +808,10 @@
                                                                (projectile-project-name))))
     (projectile-mode +1))
 
-  (use-package projectile-git-autofetch
-    :diminish projectile-git-autofetch-mode
-    :config
-    (projectile-git-autofetch-mode 1))
+  ;; (use-package projectile-git-autofetch
+  ;;   :diminish projectile-git-autofetch-mode
+  ;;   :config
+  ;;   (projectile-git-autofetch-mode 1))
 
   (use-package ibuffer
     :straight nil
@@ -1001,36 +875,6 @@
   (require 'init-copilot)
 #+end_src
 
-
-** Corfu
-
-#+begin_src elisp :tangle ~/.emacs.d/lisp/init-corfu.el
-  ;; -*- lexical-binding: t; -*-
-
-  (use-package corfu
-    :hook
-    ((shell-mode  . (lambda () (setq-local corfu-auto nil)))
-     (eshell-mode . (lambda () (setq-local corfu-auto nil)))
-     (term-mode   . (lambda () (setq-local corfu-auto nil)))
-     (after-init  . global-corfu-mode))
-    :custom
-    (corfu-cycle t)
-    (corfu-auto t)
-    (corfu-commit-predicate nil)
-    (corfu-quit-no-match t)
-    (corfu-auto-delay 0)
-    (corfu-auto-prefix 1)
-    :bind (:map corfu-map
-                ("TAB" . corfu-insert)
-                ([tab] . corfu-insert))
-
-    (provide 'init-corfu)
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  ;;(require 'init-corfu)
-#+end_src
-
 ** Company
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-company.el
@@ -1050,10 +894,10 @@
     (setq company-tooltip-align-annotations t
           company-selection-wrap-around t
           company-lighter-base "©"
-          company-tooltip-limit 14
-          company-idle-delay 0.05 ;; correggimi
+          company-tooltip-limit 10
+          company-idle-delay 0.25 ;; correggimi
           company-minimum-prefix-length 2
-          company-require-match 'never
+          ;; company-require-match 'never
           ;; company-format-margin-function 'company-text-icons-margin
           company-tooltip-minimum 4
           ;; company-text-face-extra-attributes '(:weight bold :slant italic)
@@ -1065,43 +909,20 @@
           company-tooltip-flip-when-above t
           company-show-quick-access 'left
           company-backends '(company-capf)
-          company-frontends '(company-pseudo-tooltip-frontend
-                              company-echo-metadata-frontend)
+          ;;company-frontends '(company-pseudo-tooltip-frontend
+          ;;                    company-echo-metadata-frontend)
           company-files-exclusions '(".git/" ".DS_Store")
-          company-transformers '(delete-consecutive-dups
-                                 company-sort-by-occurrence)
+          ;;company-transformers '(delete-consecutive-dups
+          ;;                       company-sort-by-occurrence)
           company-global-modes '(not erc-mode message-mode help-mode eshell-mode))
     :bind (:map company-active-map
                 ("<tab>" . company-complete-selection)))
-
-  (use-package company-box
-    :diminish company-box-mode
-    :hook company-mode
-    :config
-    (setq company-box-show-single-candidate t
-          company-box-backends-colors nil
-          company-box-tooltip-limit 50))
-
+  
   (provide 'init-company)
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-company)
-#+end_src
-
-
-** Eglot
-
-#+begin_src elisp :tangle ~/.emacs.d/lisp/init-eglot.el
-  ;; -*- lexical-binding: t; -*-
-
-  (require 'eglot)
-
-  (provide 'init-eglot)
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  ;;(require 'init-eglot)
 #+end_src
 
 ** LSP Mode
@@ -1117,7 +938,7 @@
              (lsp-mode  . lsp-enable-which-key-integration))
       :config
       (setq lsp-log-io nil
-            lsp-idle-delay 0.1
+            lsp-idle-delay 0.25
             tab-always-indent 'complete))
 
     (use-package lsp-java
@@ -1126,7 +947,7 @@
     (use-package lsp-dart
       :hook (dart-mode . lsp)
       :config
-      (setq lsp-dart-sdk-dir "/opt/homebrew/Caskroom/flutter/3.13.6/flutter")
+      (setq lsp-dart-sdk-dir "~/FlutterDev/flutter")
       (dap-register-debug-template "Flutter :: Custom debug"
                                    (list :flutterPlatform "arm64"
                                          :program "lib/main.dart"
@@ -1148,9 +969,6 @@
 
     (use-package treemacs-projectile
       :after treemacs projectile)
-
-    (use-package treemacs-magit
-      :after treemacs magit)
 
     (use-package lsp-ui
       :hook (lsp-mode . lsp-ui-mode))
@@ -1206,9 +1024,11 @@ o - maximize current window
   (use-package git-modes)
 
   (use-package git-timemachine
+    :defer t
     :bind ("C-x v t" . git-timemachine-toggle))
 
   (use-package magit
+    :defer t
     :bind
     (([(meta f12)] . magit-status)
      ("C-x g"      . magit-status)
@@ -1253,7 +1073,8 @@ o - maximize current window
   (use-package org-wc
     :after org)
 
-  (use-package olivetti)
+  (use-package olivetti
+    :after org)
 
   (use-package org-pomodoro
     :after org)
@@ -1286,11 +1107,14 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-docker.el
   ;; -*- lexical-binding: t; -*-
 
-  (use-package docker)
+  (use-package docker
+    :defer t)
 
-  (use-package docker-compose-mode)
+  (use-package docker-compose-mode
+    :defer t)
 
   (use-package dockerfile-mode
+    :defer t
     :config
     (put 'dockerfile-image-name 'safe-local-variable #'stringp))
 
@@ -1307,7 +1131,7 @@ o - maximize current window
   ;; -*- lexical-binding: t; -*-
 
   (use-package yasnippet
-    :defer 5
+    :defer t
     :diminish yas-minor-mode
     :bind (:map  yas-minor-mode-map
                  ("<backtab>" . yas-expand))
@@ -1338,7 +1162,7 @@ o - maximize current window
 
   (use-package flutter
     :config
-    (setq flutter-sdk-path "/opt/homebrew/Caskroom/flutter/3.13.6/flutter/"))
+    (setq flutter-sdk-path "~/FlutterDev/flutter/"))
 
   (provide 'init-dart)
 #+end_src
@@ -1357,7 +1181,8 @@ o - maximize current window
   (use-package modern-cpp-font-lock
     :hook (c++-mode . modern-c++-font-lock-mode))
 
-  (use-package disaster)
+  (use-package disaster
+    :defer t)
 
   (use-package cmake-mode)
 
@@ -1406,26 +1231,15 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-ruby.el
   ;; -*- lexical-binding: t; -*-
 
-  (use-package rbenv
+  (use-package rvm
     :config
-    (setq rbenv-executable "/opt/homebrew/bin/rbenv"
-          rbenv-binary-paths '((shims-path . "~/.rbenv/shims")
-                               (bin-path . "/opt/homebrew/bin/rbenv")))
-    (global-rbenv-mode))
-
-  ;; (use-package rvm
-  ;;   :config
-  ;;   (rvm-use-default))
+    (rvm-use-default))
 
   (use-package inf-ruby
     :hook (ruby-mode . inf-ruby-minor-mode))
 
   (use-package rubocop
     :diminish rubocop-mode
-    :hook ruby-mode)
-
-  (use-package ruby-electric
-    :diminish ruby-electric-mode
     :hook ruby-mode)
 
   (use-package robe
@@ -1445,6 +1259,7 @@ o - maximize current window
     (setq rspec-use-rake-when-possible nil))
 
   (use-package yari
+    :after ruby-mode
     :bind (:map ruby-mode-map
                 ("C-c k" . yari)))
 
@@ -1455,7 +1270,6 @@ o - maximize current window
     :bind
     (:map projectile-rails-mode-map
           ("C-c r" . projectile-rails-command-map)))
-
 
   (provide 'init-ruby)
 #+end_src
@@ -1469,9 +1283,9 @@ o - maximize current window
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-clisp.el
   ;; -*- lexical-binding: t; -*-
 
-  (use-package slime
-    :config
-    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl"))
+  ;; (use-package slime
+  ;;   :config
+  ;;   (setq inferior-lisp-program "/opt/homebrew/bin/sbcl"))
 
   (provide 'init-clisp)
 #+end_src
@@ -1533,23 +1347,9 @@ o - maximize current window
   (defun tangle-config ()
     "Automatically tangle `config.org`, delete old .elc files, and byte-compile."
     (when (string= (buffer-file-name)
-		   (expand-file-name (concat user-emacs-directory
-					     "config.org")))
-      (org-babel-tangle)
-      ;; (let ((tangled-files (org-babel-tangle)))
-      ;;   (dolist (file tangled-files)
-      ;;     (let ((elc-file (concat file "c")))
-      ;;       (when (file-exists-p elc-file)
-      ;;         (delete-file elc-file))
-      ;;       ;; Do not byte-compile init.el and early-init.el
-      ;;       (unless (or (string= (file-name-nondirectory file) "init.el")
-      ;;                   (string= (file-name-nondirectory file) "early-init.el"))
-
-      ;;         (byte-compile-file file)))))
-      ))
-
-  (add-hook 'org-mode-hook (lambda ()
-			     (add-hook 'after-save-hook #'tangle-config)))
+                   (expand-file-name (concat user-emacs-directory
+                                             "config.org")))
+      (org-babel-tangle)))
 
   (provide 'auto-tangle)
 #+end_src

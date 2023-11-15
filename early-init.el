@@ -1,5 +1,10 @@
-;; -*- lexical-binding: t; -*
+;;; early-init.el --- Emacs Minimal Config ;; -*- lexical-binding: t; -*-
+
+;;; Code:
 (defconst *is-a-mac* (eq system-type 'darwin))
+(defconst *rvm-installed* (and (file-directory-p "~/.rvm")
+                               (file-executable-p "~/.rvm/bin/rvm")))
+
 (setq package-enable-at-startup nil)
 
         ;;; Runtime optimizations
@@ -84,10 +89,25 @@
 (set-language-environment "UTF-8")
 
 (setq default-input-method nil)
+(global-so-long-mode 1)
 
-(setq garbage-collection-messages t)
-(let ((normal-gc-cons-threshold (* 50 1024 1024))  ; Set to 50MB
-      (init-gc-cons-threshold (* 128 1024 1024)))   ; Set to 128MB
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+(define-advice load-file (:override (file) silence)
+  (load file nil 'nomessage))
+
+(setq inhibit-startup-screen t
+      inhibit-startup-echo-area-message t
+      initial-scratch-message ";; Happy Hacking\n\n")
+
+(setq pop-up-windows nil)
+
+;; Reduce the frequency of garbage collection
+(setq gc-cons-threshold (* 128 1000 1000)) ; 128mb
+(setq gc-cons-percentage 0.6)
+(add-hook 'after-init-hook
+          (lambda ()
+            ;; Restore after startup
+            (setq gc-cons-threshold (* 20 1000 1000)) ; 20mb
+            (setq gc-cons-percentage 0.1)))
+
+(provide 'early-init)
+;;; early-init.el ends here

@@ -3,9 +3,11 @@
 (use-package git-modes)
 
 (use-package git-timemachine
+  :defer t
   :bind ("C-x v t" . git-timemachine-toggle))
 
 (use-package magit
+  :defer t
   :bind
   (([(meta f12)] . magit-status)
    ("C-x g"      . magit-status)
