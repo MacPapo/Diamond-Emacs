@@ -66,5 +66,3 @@
 (require 'init-web)
 
 (require 'init-clisp)
-
-(require 'auto-tangle)

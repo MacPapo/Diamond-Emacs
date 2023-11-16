@@ -1,8 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package rvm
+  :defer t
   :config
-  (rvm-use-default))
+  (advice-add 'inf-ruby-console-auto :before #'rvm-activate-corresponding-ruby))
 
 (use-package inf-ruby
   :hook (ruby-mode . inf-ruby-minor-mode))

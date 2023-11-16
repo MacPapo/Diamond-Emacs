@@ -102,12 +102,7 @@
 
 ;; Reduce the frequency of garbage collection
 (setq gc-cons-threshold (* 128 1000 1000)) ; 128mb
-(setq gc-cons-percentage 0.6)
-(add-hook 'after-init-hook
-          (lambda ()
-            ;; Restore after startup
-            (setq gc-cons-threshold (* 20 1000 1000)) ; 20mb
-            (setq gc-cons-percentage 0.1)))
+(setq gc-cons-percentage 0.5)
 
 (provide 'early-init)
 ;;; early-init.el ends here

@@ -2,11 +2,11 @@
 
 (setq custom-safe-themes t)
 
-(use-package zenburn-theme)
 (use-package plan9-theme)
 (use-package solarized-theme)
 
-(load-theme 'plan9 t)
+;; (load-theme 'plan9 t)
+(load-theme 'solarized-dark t)
 
 (use-package pulsar
   :config

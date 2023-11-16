@@ -126,12 +126,7 @@
 
   ;; Reduce the frequency of garbage collection
   (setq gc-cons-threshold (* 128 1000 1000)) ; 128mb
-  (setq gc-cons-percentage 0.6)
-  (add-hook 'after-init-hook
-            (lambda ()
-              ;; Restore after startup
-              (setq gc-cons-threshold (* 20 1000 1000)) ; 20mb
-              (setq gc-cons-percentage 0.1)))
+  (setq gc-cons-percentage 0.5)
 
   (provide 'early-init)
   ;;; early-init.el ends here
@@ -210,11 +205,11 @@
 
   (setq custom-safe-themes t)
 
-  (use-package zenburn-theme)
   (use-package plan9-theme)
   (use-package solarized-theme)
 
-  (load-theme 'plan9 t)
+  ;; (load-theme 'plan9 t)
+  (load-theme 'solarized-dark t)
 
   (use-package pulsar
     :config
@@ -314,6 +309,41 @@
    echo-keystrokes 0.02
    truncate-partial-width-windows nil)
 
+  (setq x-selection-timeout 100)
+
+  (setq auto-hscroll-mode 'current-line)
+  (setq auto-save-interval 64)
+  (setq auto-save-timeout 2)
+  (setq enable-recursive-minibuffers t)
+  (setq history-delete-duplicates t)
+  (setq history-length 200)
+
+  (setq dired-listing-switches "-laGh1v --group-directories-first")
+
+  ;; Also auto refresh dired, but be quiet about it
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
+  (setq auto-revert-use-notify nil)
+
+  (setq list-directory-brief-switches "-CFh"
+        list-directory-verbose-switches "-lh")
+
+  (setq backup-by-copying t)
+  (setq delete-old-versions t)
+  (setq version-control t)
+  (setq create-lockfiles nil)
+  (setq redisplay-dont-pause t)
+  (setq undo-limit 800000)
+  (setq x-stretch-cursor t)
+
+  ;; isearch config
+  (setq isearch-repeat-on-direction-change t
+        isearch-wrap-pause nil
+        isearch-lazy-count t
+        lazy-count-prefix-format "[%s of %s] "
+        isearch-forward-thing-at-point '(region url email symbol sexp)
+        isearch-allow-prefix t)
+
   (use-package autorevert
     :diminish auto-revert
     :straight nil
@@ -379,6 +409,7 @@
            ("M-g e" . avy-goto-word-0)
            ("C-j"   . avy-goto-char-timer))
     :config
+    (setq avy-timeout-seconds 0.25)
     (setq avy-background t)
     (setq avy-style 'at-full))
 
@@ -408,15 +439,17 @@
     :demand t
     :diminish whole-line-or-region-local-mode)
 
-  (use-package anzu
-    :diminish anzu-mode
-    :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
-           ([remap query-replace]        . anzu-query-replace)
-           ("C-c a r"                    . anzu-query-replace-at-cursor)
-           :map isearch-mode-map
-           ([remap isearch-delete-char]  . isearch-del-char))
-    :init
-    (global-anzu-mode +1))
+  (setq show-paren-delay 0)
+
+  ;; (use-package anzu
+  ;;   :diminish anzu-mode
+  ;;   :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
+  ;;          ([remap query-replace]        . anzu-query-replace)
+  ;;          ("C-c a r"                    . anzu-query-replace-at-cursor)
+  ;;          :map isearch-mode-map
+  ;;          ([remap isearch-delete-char]  . isearch-del-char))
+  ;;   :init
+  ;;   (global-anzu-mode +1))
 
   (use-package highlight-escape-sequences
     :hook (after-init . hes-mode))
@@ -568,13 +601,7 @@
 
 #+begin_src elisp :tangle ~/.emacs.d/lisp/init-shell.el
   ;; -*- lexical-binding: t; -*-
-
-  (use-package vterm
-    :bind ("C-c t V" . vterm))
-
-  (use-package vterm-toggle
-    :bind ("C-c t v" . vterm-toggle))
-
+  
   (use-package eshell
     :straight nil
     :bind ("C-c t E" . eshell))
@@ -741,9 +768,7 @@
      ("C-x M-f" . consult-fd)
      ("C-c ! j" . consult-flymake)
      ("C-c o"   . consult-outline)
-     ("C-c M-r" . consult-ripgrep)
-     :map org-mode-map
-     ("C-c o" . consult-org-heading))
+     ("C-c M-r" . consult-ripgrep))
     :config
     (setq consult-line-numbers-widen t
           consult-async-min-input 2
@@ -807,11 +832,6 @@
                                                        (format " Proj[%s]"
                                                                (projectile-project-name))))
     (projectile-mode +1))
-
-  ;; (use-package projectile-git-autofetch
-  ;;   :diminish projectile-git-autofetch-mode
-  ;;   :config
-  ;;   (projectile-git-autofetch-mode 1))
 
   (use-package ibuffer
     :straight nil
@@ -1002,7 +1022,12 @@ o - maximize current window
 
   (use-package winner-mode
     :straight nil
-    :hook after-init)
+    :hook after-init
+    :bind (("M-N" . winner-redo)
+           ("M-P" . winner-undo))
+    :config
+    (winner-mode 1)
+    (remove-hook 'minibuffer-setup-hook 'winner-save-unconditionally))
 
   (use-package ace-window
     :bind ("M-o" . ace-window)
@@ -1060,6 +1085,7 @@ o - maximize current window
   ;; -*- lexical-binding: t; -*-
 
   (use-package org
+    :defer t
     :config
     (setq org-latex-src-block-backend 'minted)
 
@@ -1083,7 +1109,7 @@ o - maximize current window
     :hook org-mode)
 
   (use-package org-super-agenda
-    :after org-agenda
+    :defer t
     :config
     (setq org-agenda-files '("~/org/agenda/agenda.org"
                              "~/org/agenda/sessione.org"))
@@ -1160,7 +1186,15 @@ o - maximize current window
     :bind (:map dart-mode-map
                 ("C-M-x" . flutter-run-or-hot-reload)))
 
+  (use-package dart-server
+    :after dart-mode
+    :bind (:map dart-mode-map
+                ("C-c C-o" . dart-server-format))
+    :config
+    (setq dart-server-enable-analysis-server t))
+
   (use-package flutter
+    :after dart-mode
     :config
     (setq flutter-sdk-path "~/FlutterDev/flutter/"))
 
@@ -1184,7 +1218,8 @@ o - maximize current window
   (use-package disaster
     :defer t)
 
-  (use-package cmake-mode)
+  (use-package cmake-mode
+    :defer t)
 
   (use-package flycheck-clang-analyzer
     :hook (c++-mode . (lambda () (setq flycheck-clang-language-standard "c++17")))
@@ -1232,8 +1267,9 @@ o - maximize current window
   ;; -*- lexical-binding: t; -*-
 
   (use-package rvm
+    :defer t
     :config
-    (rvm-use-default))
+    (advice-add 'inf-ruby-console-auto :before #'rvm-activate-corresponding-ruby))
 
   (use-package inf-ruby
     :hook (ruby-mode . inf-ruby-minor-mode))
@@ -1332,28 +1368,4 @@ o - maximize current window
 
 #+begin_src elisp :tangle ~/.emacs.d/init.el
   (require 'init-clisp)
-#+end_src
-
-
-* Custom
-
-** Autotangle
-
-#+begin_src elisp :tangle ~/.emacs.d/lisp/auto-tangle.el
-  ;; -*- lexical-binding: t; -*-
-
-  (require 'ob-tangle)
-
-  (defun tangle-config ()
-    "Automatically tangle `config.org`, delete old .elc files, and byte-compile."
-    (when (string= (buffer-file-name)
-                   (expand-file-name (concat user-emacs-directory
-                                             "config.org")))
-      (org-babel-tangle)))
-
-  (provide 'auto-tangle)
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/init.el
-  (require 'auto-tangle)
 #+end_src

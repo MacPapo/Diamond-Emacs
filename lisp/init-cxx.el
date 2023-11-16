@@ -8,7 +8,8 @@
 (use-package disaster
   :defer t)
 
-(use-package cmake-mode)
+(use-package cmake-mode
+  :defer t)
 
 (use-package flycheck-clang-analyzer
   :hook (c++-mode . (lambda () (setq flycheck-clang-language-standard "c++17")))

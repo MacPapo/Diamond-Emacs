@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package org
+  :defer t
   :config
   (setq org-latex-src-block-backend 'minted)
 
@@ -24,7 +25,7 @@
   :hook org-mode)
 
 (use-package org-super-agenda
-  :after org-agenda
+  :defer t
   :config
   (setq org-agenda-files '("~/org/agenda/agenda.org"
                            "~/org/agenda/sessione.org"))

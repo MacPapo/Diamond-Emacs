@@ -14,11 +14,6 @@
                                                              (projectile-project-name))))
   (projectile-mode +1))
 
-;; (use-package projectile-git-autofetch
-;;   :diminish projectile-git-autofetch-mode
-;;   :config
-;;   (projectile-git-autofetch-mode 1))
-
 (use-package ibuffer
   :straight nil
   :bind (("C-x C-b" . ibuffer)))

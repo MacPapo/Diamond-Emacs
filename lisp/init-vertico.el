@@ -111,9 +111,7 @@
    ("C-x M-f" . consult-fd)
    ("C-c ! j" . consult-flymake)
    ("C-c o"   . consult-outline)
-   ("C-c M-r" . consult-ripgrep)
-   :map org-mode-map
-   ("C-c o" . consult-org-heading))
+   ("C-c M-r" . consult-ripgrep))
   :config
   (setq consult-line-numbers-widen t
         consult-async-min-input 2

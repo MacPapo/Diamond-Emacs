@@ -1,11 +1,5 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package vterm
-  :bind ("C-c t V" . vterm))
-
-(use-package vterm-toggle
-  :bind ("C-c t v" . vterm-toggle))
-
 (use-package eshell
   :straight nil
   :bind ("C-c t E" . eshell))

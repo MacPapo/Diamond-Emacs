@@ -69,6 +69,41 @@
  echo-keystrokes 0.02
  truncate-partial-width-windows nil)
 
+(setq x-selection-timeout 100)
+
+(setq auto-hscroll-mode 'current-line)
+(setq auto-save-interval 64)
+(setq auto-save-timeout 2)
+(setq enable-recursive-minibuffers t)
+(setq history-delete-duplicates t)
+(setq history-length 200)
+
+(setq dired-listing-switches "-laGh1v --group-directories-first")
+
+;; Also auto refresh dired, but be quiet about it
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+(setq auto-revert-use-notify nil)
+
+(setq list-directory-brief-switches "-CFh"
+      list-directory-verbose-switches "-lh")
+
+(setq backup-by-copying t)
+(setq delete-old-versions t)
+(setq version-control t)
+(setq create-lockfiles nil)
+(setq redisplay-dont-pause t)
+(setq undo-limit 800000)
+(setq x-stretch-cursor t)
+
+;; isearch config
+(setq isearch-repeat-on-direction-change t
+      isearch-wrap-pause nil
+      isearch-lazy-count t
+      lazy-count-prefix-format "[%s of %s] "
+      isearch-forward-thing-at-point '(region url email symbol sexp)
+      isearch-allow-prefix t)
+
 (use-package autorevert
   :diminish auto-revert
   :straight nil
@@ -134,6 +169,7 @@
          ("M-g e" . avy-goto-word-0)
          ("C-j"   . avy-goto-char-timer))
   :config
+  (setq avy-timeout-seconds 0.25)
   (setq avy-background t)
   (setq avy-style 'at-full))
 
@@ -163,15 +199,17 @@
   :demand t
   :diminish whole-line-or-region-local-mode)
 
-(use-package anzu
-  :diminish anzu-mode
-  :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
-         ([remap query-replace]        . anzu-query-replace)
-         ("C-c a r"                    . anzu-query-replace-at-cursor)
-         :map isearch-mode-map
-         ([remap isearch-delete-char]  . isearch-del-char))
-  :init
-  (global-anzu-mode +1))
+(setq show-paren-delay 0)
+
+;; (use-package anzu
+;;   :diminish anzu-mode
+;;   :bind (([remap query-replace-regexp] . anzu-query-replace-regexp)
+;;          ([remap query-replace]        . anzu-query-replace)
+;;          ("C-c a r"                    . anzu-query-replace-at-cursor)
+;;          :map isearch-mode-map
+;;          ([remap isearch-delete-char]  . isearch-del-char))
+;;   :init
+;;   (global-anzu-mode +1))
 
 (use-package highlight-escape-sequences
   :hook (after-init . hes-mode))
