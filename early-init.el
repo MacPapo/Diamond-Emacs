@@ -46,8 +46,7 @@
 
 ;; Increase how much is read from processes in a single chunk (default is 4kb).
 ;; This is further increased elsewhere, where needed (like our LSP module).
-(setq read-process-output-max (* 3 1024 1024)) ; 3 MiB
-
+(setq read-process-output-max (* 2 1024 1024)) ; 2 MiB
 
 ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
 ;; receiving input, which should help a little with scrolling performance.

@@ -65,4 +65,6 @@
 
 (require 'init-web)
 
-(require 'init-clisp)
+(require 'init-markdown)
+
+(require 'init-csv)

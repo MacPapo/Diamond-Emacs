@@ -6,4 +6,4 @@
   :config
   (setq markdown-fontify-code-blocks-natively t))
 
-(provide 'init-clisp)
+(provide 'init-markdown)
